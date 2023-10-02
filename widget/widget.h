@@ -11,8 +11,8 @@ static const Color WHITE = Color (255, 255, 255, 255);
 enum Mouse_key
 {
     Unknown_mouse_key = -1,
-    Left, 
-    Right,
+    M_Left, 
+    M_Right,
     Middle
 };
 
