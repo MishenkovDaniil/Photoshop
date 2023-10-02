@@ -13,6 +13,18 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos) :
         return;
     }
     canvas_texture.create (width, height);
+    // sf::Uint8 *pixels = (sf::Uint8 *)calloc (width * height * 4, sizeof ())
+    // Color *pixels = new Color[width * height];
+    // for (int i = 0; i < width * height; ++i)
+    // {
+    //     pixels[i] = color;
+    // }
+    // canvas_texture.update ((sf::Uint8 *)((sf::Color *)pixels));
+    // delete[] pixels;
+    sf::RectangleShape rect (sf::Vector2f (width, height));
+    rect.setFillColor (color);
+    canvas_texture.draw (rect);
+    canvas_texture.display ();
 };
 
 Canvas::~Canvas () 
@@ -23,7 +35,8 @@ Canvas::~Canvas ()
 
 void Canvas::render (sf::RenderTarget &target) const
 {
-    sf::Sprite canvas_sprite (canvas_texture);
+    sf::Sprite canvas_sprite (canvas_texture.getTexture ());
+    canvas_sprite.setPosition (lh_pos_);
     target.draw (canvas_sprite);
 }
 
@@ -35,8 +48,7 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         {
             case Brush:
             {
-                on_brush (mouse_key, pos);
-                return true;
+                return on_brush (mouse_key, pos);
             }
             default:
             {
@@ -91,19 +103,22 @@ bool Canvas::on_time (float delta_sec)
 
 bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
 {
-    static sf::Uint8 pixel[4] = {0};
-    if (mouse_key == Left)
+    Vector pp;
+      (pos.get_x () - lh_pos_.get_x (), pos.get_y () - lh_pos_.get_y ());
+    sf::Vertex vertex;
+    (pp, draw_tool.color);
+
+    if (mouse_key == M_Left)
     {
         if (draw_tool.is_pressed)
         {
-            pixel[0] = color_.r_;
-            pixel[1] = color_.g_;
-            pixel[2] = color_.b_;
-            pixel[3] = color_.a_;
+            pp = pos - lh_pos_;
+            vertex = sf::Vertex (pp, draw_tool.color);
         }
         else ///if (!draw_tool.is_pressed)
         {
-            canvas_texture.update (pixel, 1, 1, pos.get_x (), pos.get_y ());
+            canvas_texture.draw (&vertex, 1, sf::Points);
+            canvas_texture.display ();
         }
         return true;
     }

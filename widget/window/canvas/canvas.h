@@ -8,7 +8,7 @@
 struct Draw_tool 
 {
     Button_type type = Unknown_button;
-    Color color;
+    Color color = Color (255, 0, 255, 255);
     bool is_pressed = false;
 };
 
@@ -20,7 +20,7 @@ class Canvas : public Widget
     Color color_;
     Vector lh_pos_;
     Draw_tool draw_tool = {};
-    sf::Texture canvas_texture;
+    sf::RenderTexture canvas_texture;
 
 public: 
     Canvas (int width, int height, const Color color, const Vector lh_pos);
