@@ -19,7 +19,7 @@ int main ()
     sf::RenderTexture render_texture;
     render_texture.create (window_size.x, window_size.y);
 
-    Widget_manager widget_manager (10);
+    Widget_manager widget_manager; 
     
     Vector pos (50, 50);
     Color w_color (255, 0, 0);
@@ -28,6 +28,12 @@ int main ()
 
     widget_manager.add_widget (&simple_window);
     
+
+    Button button(Vector (0, 0), 50, 50, nullptr, Color (255, 0, 0, 255));
+    widget_manager.add_widget (&button);
+
+    Button button_2(Vector (500, 200), 100, 70, nullptr, Color (0, 255, 0, 255));
+    widget_manager.add_widget (&button_2);
 
     sf::Sprite window_sprite;
     bool status = true;
