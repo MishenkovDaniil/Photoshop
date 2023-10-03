@@ -13,6 +13,13 @@ Widget_manager::~Widget_manager ()
     list_dtor (&widgets);
 }
 
+void Widget_manager::add_widget (Widget *widget)
+{
+    assert (widget && "added widget is nullptr");
+    
+    list_insert (&widgets, 0, widget);
+}
+
 void Widget_manager::render (sf::RenderTarget &target) const 
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
