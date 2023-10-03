@@ -81,50 +81,50 @@ struct List
     canary_t right_canary = CANARY;
     #endif
 };
-list_elem_t list_get (const List *list, int remove_place, unsigned int *err = &ERRNO);
+static list_elem_t list_get (const List *list, int remove_place, unsigned int *err = &ERRNO);
 
 
-void list_ctor          (List *list, int capacity,                     unsigned int *err = &ERRNO);
-void fill_list          (List *list, int start,                        unsigned int *err);
-void list_dtor          (List *list,                                   unsigned int *err = &ERRNO);
-int  list_insert        (List *list, int put_place, list_elem_t value, unsigned int *err = &ERRNO);
-list_elem_t list_remove (List *list, int remove_place,                 unsigned int *err = &ERRNO);
-int  check_list         (const List *list,                             unsigned int *err);
-void list_dump          (const List *list,                             unsigned int *err);
-void dump_list_members  (const List *list,                             unsigned int *err);
-void dump_elems         (const List *list,                             unsigned int *err);
-void dump_list_errors   (const List *list,                             unsigned int *err);
-void make_graph         (const List *list, FILE *list_graph);
-void list_realloc       (List *list, int previous_capacity,            unsigned int *err = &ERRNO);
-int  linearize_list     (List *list,                                   unsigned int *err = &ERRNO);
-void list_free          (List *list);
-int  find_logic_number  (List *list, int phys_index, unsigned int *err = &ERRNO);
-int  find_number        (List *list, int phys_index, unsigned int *err = &ERRNO);
-void set_error_bit      (unsigned int *error, int bit);
+static void list_ctor          (List *list, int capacity,                     unsigned int *err = &ERRNO);
+static void fill_list          (List *list, int start,                        unsigned int *err);
+static void list_dtor          (List *list,                                   unsigned int *err = &ERRNO);
+static int  list_insert        (List *list, int put_place, list_elem_t value, unsigned int *err = &ERRNO);
+static list_elem_t list_remove (List *list, int remove_place,                 unsigned int *err = &ERRNO);
+static int  check_list         (const List *list,                             unsigned int *err);
+static void list_dump          (const List *list,                             unsigned int *err);
+static void dump_list_members  (const List *list,                             unsigned int *err);
+static void dump_elems         (const List *list,                             unsigned int *err);
+static void dump_list_errors   (const List *list,                             unsigned int *err);
+static void make_graph         (const List *list, FILE *list_graph);
+static void list_realloc       (List *list, int previous_capacity,            unsigned int *err = &ERRNO);
+static int  linearize_list     (List *list,                                   unsigned int *err = &ERRNO);
+static void list_free          (List *list);
+static int  find_logic_number  (List *list, int phys_index, unsigned int *err = &ERRNO);
+static int  find_number        (List *list, int phys_index, unsigned int *err = &ERRNO);
+static void set_error_bit      (unsigned int *error, int bit);
 
-void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
+static void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
                       const char *file, const char *func);
-void debug_list_ctor          (List *list, int capacity, unsigned int *err,
+static void debug_list_ctor          (List *list, int capacity, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-void debug_list_dtor          (List *list, unsigned int *err,
+static void debug_list_dtor          (List *list, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-int debug_list_insert         (List *list, int put_place, list_elem_t value, unsigned int *err,
+static int debug_list_insert         (List *list, int put_place, list_elem_t value, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-list_elem_t debug_list_remove (List *list, int remove_place, unsigned int *err,
+static list_elem_t debug_list_remove (List *list, int remove_place, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-int debug_linearize_list      (List *list, unsigned int *err,
+static int debug_linearize_list      (List *list, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-int debug_find_logic_number   (List *list, int phys_index, unsigned int *err,
+static int debug_find_logic_number   (List *list, int phys_index, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-int debug_find_number         (List *list, int phys_index, unsigned int *err,
+static int debug_find_number         (List *list, int phys_index, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
 
-void set_error_bit (unsigned int *error, int bit)
+static void set_error_bit (unsigned int *error, int bit)
 {
     *error |= bit;
 }
 
-void list_ctor (List *list, int capacity, unsigned int *err)
+static void list_ctor (List *list, int capacity, unsigned int *err)
 {
     assert (list);
 
@@ -151,7 +151,7 @@ void list_ctor (List *list, int capacity, unsigned int *err)
     check_list (list, err);
 }
 
-int list_insert (List *list, int put_place, list_elem_t value, unsigned int *err)
+static int list_insert (List *list, int put_place, list_elem_t value, unsigned int *err)
 {
     assert (list);
     assert (err);
@@ -198,7 +198,7 @@ int list_insert (List *list, int put_place, list_elem_t value, unsigned int *err
 }
 
 // inline function??
-list_elem_t list_remove (List *list, int remove_place, unsigned int *err)
+static list_elem_t list_remove (List *list, int remove_place, unsigned int *err)
 {
 // size capacity size_t
     if (!(remove_place > 0 && remove_place < list->capacity) || (list->elems[remove_place].prev == EMPTY))
@@ -241,7 +241,7 @@ list_elem_t list_remove (List *list, int remove_place, unsigned int *err)
     return return_value;
 }
 
-list_elem_t list_get (const List *list, int get_place, unsigned int *err)
+static list_elem_t list_get (const List *list, int get_place, unsigned int *err)
 {
     if (!(get_place > 0 && get_place < list->capacity) || (list->elems[get_place].prev == EMPTY))
     {
@@ -269,7 +269,7 @@ list_elem_t list_get (const List *list, int get_place, unsigned int *err)
 }
 
 
-void list_realloc (List *list, int previous_capacity, unsigned int *err)
+static void list_realloc (List *list, int previous_capacity, unsigned int *err)
 {
     if (!(previous_capacity) || list->size >= list->capacity - 1)
     {
@@ -306,7 +306,7 @@ void list_realloc (List *list, int previous_capacity, unsigned int *err)
 
 //headers in dump (h2)
 //---------------------
-int find_logic_number (List *list, int phys_index, unsigned int *err)
+static int find_logic_number (List *list, int phys_index, unsigned int *err)
 {
     printf ("the function will be working too long, do you really want to call it? (yes/no)");
 
@@ -341,7 +341,7 @@ int find_logic_number (List *list, int phys_index, unsigned int *err)
     return 0;
 }
 
-int find_number (List *list, int phys_index, unsigned int *err)
+static int find_number (List *list, int phys_index, unsigned int *err)
 {
     printf ("the function will be working too long, do you really want to call it? (yes/no)");
 
@@ -380,7 +380,7 @@ int find_number (List *list, int phys_index, unsigned int *err)
 
 }
 
-int linearize_list (List *list, unsigned int *err)
+static int linearize_list (List *list, unsigned int *err)
 {
     //no additional memory
     List_elem *temp_elems = (List_elem *)calloc (list->capacity, sizeof (List_elem));
@@ -433,7 +433,7 @@ int linearize_list (List *list, unsigned int *err)
     return 0;
 }
 
-void fill_list (List *list, int start, unsigned int *err)
+static void fill_list (List *list, int start, unsigned int *err)
 {
     for (int index = start; index < list->capacity; index++)
     {
@@ -456,7 +456,7 @@ void fill_list (List *list, int start, unsigned int *err)
     }
 }
 
-void list_dtor (List *list, unsigned int *err)
+static void list_dtor (List *list, unsigned int *err)
 {
     if (list != nullptr && list->elems != nullptr)
     {
@@ -468,7 +468,7 @@ void list_dtor (List *list, unsigned int *err)
     }
 }
 
-void list_free (List *list)
+static void list_free (List *list)
 {
     #ifdef CANARY_PROT
     list->elems = (List_elem *)((char *)list->elems - sizeof (CANARY));
@@ -480,7 +480,7 @@ void list_free (List *list)
     list = nullptr;
 }
 
-int check_list (const List *list, unsigned int *err)
+static int check_list (const List *list, unsigned int *err)
 {
     int index = NULL_ELEM;
     int counter = 0;
@@ -548,7 +548,7 @@ int check_list (const List *list, unsigned int *err)
     }
 }
 
-void list_dump (const List *list, unsigned int *err)
+static void list_dump (const List *list, unsigned int *err)
 {
     static int PNG_FILE_NUMBER = 1;
 
@@ -580,7 +580,7 @@ void list_dump (const List *list, unsigned int *err)
     fprintf (list_log, "\n\n\n\n\n");
 }
 
-void make_graph (const List *list, FILE *list_graph)
+static void make_graph (const List *list, FILE *list_graph)
 {
     int idx = 0;
     fprintf (list_graph, "digraph {\n\tgraph [dpi = 100]\n\t"
@@ -628,7 +628,7 @@ void make_graph (const List *list, FILE *list_graph)
     fprintf (list_graph, "}");
 }
 
-void dump_list_members (const List *list, unsigned int *err)
+static void dump_list_members (const List *list, unsigned int *err)
 {
     #ifdef LIST_DEBUG
     fprintf (list_log, "%s at file %s, called at %s at %s, line %d\n", list->debug_info.func, list->debug_info.file,
@@ -644,7 +644,7 @@ void dump_list_members (const List *list, unsigned int *err)
     dump_elems (list, err);
 }
 
-void dump_elems (const List *list, unsigned int *err)
+static void dump_elems (const List *list, unsigned int *err)
 {
     for (int index = 0; index < list->capacity; index++)
     {
@@ -653,7 +653,7 @@ void dump_elems (const List *list, unsigned int *err)
     }
 }
 
-void dump_list_errors (const List *list, unsigned int *err)
+static void dump_list_errors (const List *list, unsigned int *err)
 {
 
 #define log_error(__error_bit, __msg)        \
@@ -684,7 +684,7 @@ void dump_list_errors (const List *list, unsigned int *err)
 #undef log_error
 }
 
-void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
+static void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
                       const char *file, const char *debug_func)
 {
     #ifdef LIST_DEBUG
@@ -698,25 +698,25 @@ void init_debug_info (List *list, const int call_line, const char *call_file, co
 }
 
 
-void debug_list_ctor (List *list, int capacity, unsigned int *err,
+static void debug_list_ctor (List *list, int capacity, unsigned int *err,
                       const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
-                    "void list_ctor (List *list, int capacity, unsigned int *err = &ERRNO)");
+                    "static void list_ctor (List *list, int capacity, unsigned int *err = &ERRNO)");
 
     list_ctor (list, capacity, err);
 }
 
-void debug_list_dtor (List *list, unsigned int *err,
+static void debug_list_dtor (List *list, unsigned int *err,
                       const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
-                    "void list_dtor (List *list, unsigned int *err = &ERRNO)");
+                    "static void list_dtor (List *list, unsigned int *err = &ERRNO)");
 
     list_dtor (list, err);
 }
 
-int debug_list_insert (List *list, int put_place, list_elem_t value, unsigned int *err,
+static int debug_list_insert (List *list, int put_place, list_elem_t value, unsigned int *err,
                        const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
@@ -725,7 +725,7 @@ int debug_list_insert (List *list, int put_place, list_elem_t value, unsigned in
     return list_insert (list, put_place, value, err);
 }
 
-list_elem_t debug_list_remove (List *list, int remove_place, unsigned int *err,
+static list_elem_t debug_list_remove (List *list, int remove_place, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
@@ -734,7 +734,7 @@ list_elem_t debug_list_remove (List *list, int remove_place, unsigned int *err,
     return list_remove (list, remove_place, err);
 }
 
-int debug_linearize_list (List *list, unsigned int *err,
+static int debug_linearize_list (List *list, unsigned int *err,
                           const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
@@ -743,7 +743,7 @@ int debug_linearize_list (List *list, unsigned int *err,
     return linearize_list (list, err);
 }
 
-int debug_find_logic_number (List *list, int phys_index, unsigned int *err,
+static int debug_find_logic_number (List *list, int phys_index, unsigned int *err,
                              const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
@@ -752,7 +752,7 @@ int debug_find_logic_number (List *list, int phys_index, unsigned int *err,
     return find_logic_number (list, phys_index, err);
 }
 
-int debug_find_number (List *list, int phys_index, unsigned int *err,
+static int debug_find_number (List *list, int phys_index, unsigned int *err,
                        const int call_line, const char *call_file, const char *call_func)
 {
     init_debug_info (list, call_line, call_file, call_func, __FILE__,
