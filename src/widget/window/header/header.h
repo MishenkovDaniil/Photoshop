@@ -8,7 +8,9 @@
 // #include "../../../../resources/font.ttf"
 
 
-static int HEADER_HEIGHT = 30;
+static const int HEADER_HEIGHT = 30;
+static const int CHARACTER_SIZE = 20;
+static const Color TEXT_COLOR = Color (0, 0, 0);
 static const char *DEFAULT_FONT_FILE = "/home/daniil/programming/code/C++_projects/photoshop/resources/font.ttf";
 
 class Header : public Widget
@@ -22,7 +24,7 @@ class Header : public Widget
     const char *font_file_ = DEFAULT_FONT_FILE;
 
 public: 
-    Header (Vector lh_pos, int width, const char *string, Color background = Color (100, 100, 100));
+    Header (Vector lh_pos, int width, const char *string, Color background = Color (150, 150, 150));
     ~Header ();
 
     void render (sf::RenderTarget &target) const override;

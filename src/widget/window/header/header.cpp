@@ -29,12 +29,8 @@ Header::~Header ()
 
 void Header::render (sf::RenderTarget &target) const
 {
-    // sf::Texture button_texture;
     sf::RectangleShape header (sf::Vector2f (width_, height_));
                        header.setFillColor((sf::Color)background_color); 
-                    // button.setOutlineColor (sf::Color::White);
-                    // button.setOutlineThickness (1);
-                    // button.setTexture (&button_texture);
                        header.setPosition (lh_pos_);
     
     sf::Text text;
@@ -42,11 +38,11 @@ void Header::render (sf::RenderTarget &target) const
     font.loadFromFile (font_file_);
     text.setString (string_);
     text.setFont (font);
-    text.setFillColor (Color (0,0,0));
-    text.setCharacterSize (10);
+    text.setFillColor (TEXT_COLOR);
+    text.setCharacterSize (CHARACTER_SIZE);
 
     double text_width = text.findCharacterPos(str_len - 1).x - text.findCharacterPos (0).x;
-    text.setPosition (lh_pos_.get_x () + (width_ - text_width) / 2, lh_pos_.get_y () + height_ / 2 - 5);
+    text.setPosition (lh_pos_.get_x () + (width_ - text_width) / 2, lh_pos_.get_y () + height_ / 2 - CHARACTER_SIZE / 2);
     
     target.draw (header);
     target.draw (text);
