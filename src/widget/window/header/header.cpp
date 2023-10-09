@@ -14,7 +14,7 @@ Header::Header (Vector lh_pos, int width, const char *string, Color background) 
         string_ = new char [str_len + 1];
         assert (string_);
 
-        strncpy (string_, string, str_len);
+        strncpy (string_, string, str_len + 1);
     }
 }
 
