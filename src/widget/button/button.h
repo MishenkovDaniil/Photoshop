@@ -7,12 +7,10 @@ enum Button_type
     Brush
 };
 
-class Piston;
-class Mol_manager;
-
 #include <SFML/Graphics.hpp>
-
+class Window;
 #include "../widget.h"
+#include "../window/window.h"
 #include "../../graphic_structures/color/color.h"
 #include "../../graphic_structures/point/point.h"
 #include "../../graphic_structures/vector/vector.h"
@@ -20,7 +18,10 @@ class Mol_manager;
 static const int START_CAPACITY = 10;
 static const Color Black = Color (0, 0, 0, 255);
 
-typedef bool (*Button_run_fn) (Point &object, sf::Keyboard::Key key);
+typedef bool (*Button_run_fn) (Window *window, sf::Keyboard::Key key );
+
+// TODO::
+// think of rm button frame and frame is needed make rectangle and set button on it
 
 class Button :public Widget
 {
@@ -33,23 +34,28 @@ protected:
     bool is_pressed_ = false;
     Color fill_color_;
     Button_run_fn run_fn_ = nullptr;
+    Window *controlled_window_ = nullptr;
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, Color fill_color = Black) :
+    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, Color fill_color = Black) :
             lh_corner_ (lh_corner),
             width_ (width),
             height_ (height),
             run_fn_ (func),
-            fill_color_ (fill_color) {};
+            fill_color_ (fill_color),
+            controlled_window_ (controlled_window) {};
     virtual ~Button () {};
 
-    bool get_status () const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
     bool contains (double x, double y) const;
+    Button_run_fn get_func          ()const {return run_fn_;};
+    Color         get_fill_color    ()const {return fill_color_;};
+    bool          get_status        ()const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
+    int           get_width         ()const {return width_;};
+    int           get_height        ()const {return height_;};
 
-    // virtual bool run (Point &object, sf::Keyboard::Key key) = 0;
     // virtual void update (bool is_pressed) = 0;
-    bool run (Point &object, sf::Keyboard::Key key);
+    virtual bool run (Window *window, sf::Keyboard::Key key);
     void render (sf::RenderTarget &target)              const override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;

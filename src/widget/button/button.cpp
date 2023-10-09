@@ -4,7 +4,6 @@
 
 #include "button.h"
 
-
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
@@ -17,7 +16,7 @@ bool Button::contains (double x, double y) const
             y <= (lh_corner_.get_y () + height_));
 }
 
-bool Button::run (Point &object, sf::Keyboard::Key key)
+bool Button::run (Window *window, sf::Keyboard::Key key)
 {
     if (!run_fn_)
     {
@@ -25,7 +24,7 @@ bool Button::run (Point &object, sf::Keyboard::Key key)
         return false;
     }
 
-    return run_fn_ (object, key);
+    return run_fn_ (window, key);
 }
 
 void Button::render (sf::RenderTarget &target) const
@@ -44,13 +43,17 @@ void Button::render (sf::RenderTarget &target) const
 
 bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    // TODO
-    return false;
+    return true;
+    // return false;
 } 
 
 bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 { 
-    // TODO
+    if (contains (pos.get_x (), pos.get_y ()))
+    {
+        return run (controlled_window_, sf::Keyboard::Key::Unknown);
+    }
+
     return false;
 } 
 
