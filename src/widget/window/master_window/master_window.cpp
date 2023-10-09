@@ -55,7 +55,7 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
@@ -78,7 +78,7 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
@@ -101,7 +101,7 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
@@ -124,7 +124,7 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
@@ -147,7 +147,7 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
@@ -169,7 +169,7 @@ bool Master_window::on_time (float delta_sec)
             fprintf (stderr, "Event error: nil button is detected.\n"
                              "Hint: nil button idx in windows list = %d.\n"
                              "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
-            return;
+            return false;
         }
         assert (window);
 
