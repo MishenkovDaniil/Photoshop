@@ -343,7 +343,7 @@ static int find_logic_number (List *list, int phys_index, unsigned int *err)
 
 static int find_number (List *list, int phys_index, unsigned int *err)
 {
-    printf ("the function will be working too long, do you really want to call it? (yes/no)");
+    printf ("the function will be working too long, do you really want to call it? (yes/no)\n");
 
     const int answer_size = 5;
     char status[answer_size] = {};
@@ -546,6 +546,8 @@ static int check_list (const List *list, unsigned int *err)
     {
     list_dump (list, err);
     }
+
+    return 0;
 }
 
 static void list_dump (const List *list, unsigned int *err)
@@ -599,7 +601,7 @@ static void make_graph (const List *list, FILE *list_graph)
         else
         {
             fprintf (list_graph, "\tlabel_%d [shape = record, style = \"filled\", fillcolor = \"lightblue\","
-                                 "label = \"%d\\n | d[%d]\\n | n[%d]\\n | P [%d]\"];\n ",
+                                 "label = \"%d\\n | d[%p]\\n | n[%d]\\n | P [%d]\"];\n ",
                                  idx, idx, list->elems[idx].data, list->elems[idx].next, list->elems[idx].prev);
         }
         idx++;
@@ -648,7 +650,7 @@ static void dump_elems (const List *list, unsigned int *err)
 {
     for (int index = 0; index < list->capacity; index++)
     {
-        fprintf (list_log, "idx[%d]\t data [%d]\t next is [%d]\t prev is [%d]\n",
+        fprintf (list_log, "idx[%d]\t data [%p]\t next is [%d]\t prev is [%d]\n",
                  index, list->elems[index].data, list->elems[index].next, list->elems[index].prev);
     }
 }
