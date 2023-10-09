@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 
+class Button;
 #include "../../../list.h"
 #include "../../widget.h"
 #include "../../button/button.h"

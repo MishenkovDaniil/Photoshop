@@ -29,7 +29,7 @@ void Menu::add_button (Button *button)
 void Menu::render (sf::RenderTarget &target) const 
 {
     sf::RectangleShape rect (Vector (width_, height_));
-    rect.setFillColor (Color (100, 100, 100,255));
+    rect.setFillColor (Color (200, 200, 200));
     rect.setPosition (lh_pos_);
     target.draw (rect);
 
@@ -51,22 +51,57 @@ void Menu::render (sf::RenderTarget &target) const
 
 bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    //TODO...
+    for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
+    {
+        Button *button = (Button *)list_get (&buttons, button_idx + 1);
+        if (!button)
+        {
+            fprintf (stderr, "Event error: nil button is detected.\n"
+                             "Hint: nil button idx in buttons list = %d.\n"
+                             "Hint: buttons list size = %d.\n", button_idx + 1, buttons.size);
+            return false;
+        }
+        assert (button);
+
+        if (button->on_mouse_pressed (mouse_key, pos))
+        {
+            return true;
+        }
+    }
+
     return false;
 } 
 
 bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
-    //TODO...
+    for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
+    {
+        Button *button = (Button *)list_get (&buttons, button_idx + 1);
+        if (!button)
+        {
+            fprintf (stderr, "Event error: nil button is detected.\n"
+                             "Hint: nil button idx in buttons list = %d.\n"
+                             "Hint: buttons list size = %d.\n", button_idx + 1, buttons.size);
+            return false;
+        }
+        assert (button);
+
+        if (button->on_mouse_released (mouse_key, pos))
+        {
+            return true;
+        }
+    }
+
     return false;
 } 
 
-bool Menu::on_mouse_moved    (Vector &new_pos)
+bool Menu::on_mouse_moved    (Vector &new_pos) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
+                                                // connect hovering with 'on_time ()'
 {
     //TODO...
     return false;
 }   
-  /// x, y - absolute values 
+
 bool Menu::on_keyboard_pressed  (Keyboard_key key)
 {
     //TODO...
