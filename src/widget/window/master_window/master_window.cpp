@@ -44,8 +44,6 @@ void Master_window::render (sf::RenderTarget &target) const
 
 bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
 {
-    Window::on_mouse_pressed (mouse_key, pos);
-    menu_->on_mouse_pressed (mouse_key, pos);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -59,17 +57,21 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        window->on_mouse_pressed (mouse_key, pos);
+        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos);
+        if (is_released_on_child)
+            return true;
     }
+
+    if (Window::on_mouse_pressed (mouse_key, pos))
+        return true;
+    if (menu_->on_mouse_pressed (mouse_key, pos))
+        return true;
 
     return false;   
 }
 
 bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos) 
 {
-    Window::on_mouse_released (mouse_key, pos);
-    menu_->on_mouse_released (mouse_key, pos);
-
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_idx + 1);
@@ -82,7 +84,20 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        window->on_mouse_released (mouse_key, pos);
+        bool is_released_on_child = window->on_mouse_released (mouse_key, pos);
+        if (is_released_on_child)
+        {
+            return true;
+        }
+    }
+
+    if (Window::on_mouse_released (mouse_key, pos))
+    {
+        return true;
+    }
+    if (menu_->on_mouse_released (mouse_key, pos))
+    {
+        return true;
     }
 
     return false;   
@@ -90,8 +105,6 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 
 bool Master_window::on_mouse_moved (Vector &new_pos) 
 {
-    Window::on_mouse_moved (new_pos);
-    menu_->on_mouse_moved (new_pos);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -105,16 +118,22 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
         }
         assert (window);
 
-        window->on_mouse_moved (new_pos);
+        bool is_released_on_child = window->on_mouse_moved (new_pos);
+        if (is_released_on_child)
+            return true;
     }
+
+    if (Window::on_mouse_moved (new_pos))
+        return true;
+    if (menu_->on_mouse_moved (new_pos))
+        return true;
 
     return false;
 }   
 
 bool Master_window::on_keyboard_pressed  (Keyboard_key key) 
 {
-    Window::on_keyboard_pressed (key);
-    menu_->on_keyboard_pressed (key);
+    bool status = false;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -128,16 +147,18 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
         }
         assert (window);
 
-        window->on_keyboard_pressed (key);
+        status |= window->on_keyboard_pressed (key);
     }
 
-    return false;   
+    status |= Window::on_keyboard_pressed (key);
+    status |= menu_->on_keyboard_pressed (key);
+
+    return status;   
 }
 
 bool Master_window::on_keyboard_released (Keyboard_key key) 
 {
-    Window::on_keyboard_released (key);
-    menu_->on_keyboard_released (key);
+    bool status = false;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -151,16 +172,19 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
         }
         assert (window);
 
-        window->on_keyboard_released (key);
+        status |= window->on_keyboard_released (key);
     }
-    return false;   
+
+    status |= Window::on_keyboard_released (key);
+    status |= menu_->on_keyboard_released (key);
+
+    return status;   
 }
 
 bool Master_window::on_time (float delta_sec)
 {
-    Window::on_time (delta_sec);
-    menu_->on_time (delta_sec);
-
+    bool status = false;
+    
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_idx + 1);
@@ -173,7 +197,11 @@ bool Master_window::on_time (float delta_sec)
         }
         assert (window);
 
-        window->on_time (delta_sec);
+        status |= window->on_time (delta_sec);
     }
-    return false;
+
+    status |= Window::on_time (delta_sec);
+    status |= menu_->on_time (delta_sec);
+    
+    return status;
 }

@@ -18,6 +18,10 @@ public:
     ~Master_window () {};
 
     void add_menu_button (Button *button);
+    void add_window (Window *window);
+    
+    int get_list_size () {return windows.size;};
+    Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
 
     void render (sf::RenderTarget &target) const override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
@@ -26,6 +30,8 @@ public:
     bool on_keyboard_pressed  (Keyboard_key key) override;
     bool on_keyboard_released (Keyboard_key key) override;
     bool on_time (float delta_sec) override;
+
+    friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
 };
 
 #endif /* MASTER_WINDOW_H */
