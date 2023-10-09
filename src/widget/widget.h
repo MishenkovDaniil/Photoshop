@@ -64,7 +64,7 @@ enum Keyboard_key
     RShift,
     RAlt,
     RSystem,
-    Menu,
+    // Menu,
     LBracket,
     RBracket,
     Semicolon,
