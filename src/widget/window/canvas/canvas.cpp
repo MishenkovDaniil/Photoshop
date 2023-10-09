@@ -23,6 +23,9 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos) :
     // delete[] pixels;
     sf::RectangleShape rect (sf::Vector2f (width, height));
     rect.setFillColor (color);
+    rect.setOutlineColor (Color (50, 50, 50));
+    rect.setOutlineThickness (-1);
+    rect.setPosition (0, -1);
     canvas_texture.draw (rect);
     canvas_texture.display ();
 };

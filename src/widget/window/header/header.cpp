@@ -31,6 +31,8 @@ void Header::render (sf::RenderTarget &target) const
 {
     sf::RectangleShape header (sf::Vector2f (width_, height_));
                        header.setFillColor((sf::Color)background_color); 
+                       header.setOutlineColor (Color (50, 50, 50));
+                       header.setOutlineThickness (-1);
                        header.setPosition (lh_pos_);
     
     sf::Text text;

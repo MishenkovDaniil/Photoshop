@@ -29,8 +29,10 @@ void Menu::add_button (Button *button)
 void Menu::render (sf::RenderTarget &target) const 
 {
     sf::RectangleShape rect (Vector (width_, height_));
-    rect.setFillColor (Color (200, 200, 200));
-    rect.setPosition (lh_pos_);
+    rect.setFillColor    (Color (200, 200, 200));
+    rect.setOutlineColor (Color (50, 50, 50));
+    rect.setOutlineThickness (-1);
+    rect.setPosition (lh_pos_ + Vector (0, -1));
     target.draw (rect);
 
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
