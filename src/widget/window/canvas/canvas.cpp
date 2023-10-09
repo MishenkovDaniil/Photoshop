@@ -101,25 +101,37 @@ bool Canvas::on_time (float delta_sec)
     return false;
 }
 
+bool Canvas::contains (int x, int y)
+{
+    return ((x > lh_pos_.get_x ()) && 
+            (x < lh_pos_.get_x ()  + width_) && 
+            (y > lh_pos_.get_y ()) &&
+            (y < lh_pos_.get_y () + height_));
+}
+
 bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
 {
-    Vector pp;
-      (pos.get_x () - lh_pos_.get_x (), pos.get_y () - lh_pos_.get_y ());
-    sf::Vertex vertex;
-    (pp, draw_tool.color);
+    Vector brush_pos;
+    static sf::Vertex vertex[2];
+    static int idx = 0;
+
+    if ((!contains (pos.get_x (), pos.get_y ())) && !idx)
+        return false;
 
     if (mouse_key == M_Left)
     {
-        if (draw_tool.is_pressed)
+        brush_pos = pos - lh_pos_;
+        vertex[idx] = sf::Vertex (brush_pos, draw_tool.color);
+
+        if (idx)
         {
-            pp = pos - lh_pos_;
-            vertex = sf::Vertex (pp, draw_tool.color);
-        }
-        else ///if (!draw_tool.is_pressed)
-        {
-            canvas_texture.draw (&vertex, 1, sf::Points);
+            (vertex[0].position == vertex[1].position) ? canvas_texture.draw(&vertex[0], 1, sf::Points) :
+                                                            canvas_texture.draw (vertex,   2, sf::Lines);
             canvas_texture.display ();
         }
+
+        idx = !idx;
+
         return true;
     }
     

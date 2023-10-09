@@ -4,7 +4,7 @@
 #include "../../widget.h"
 #include "../../button/button.h"
 
-
+class Master_window;
 struct Draw_tool 
 {
     Button_type type = Unknown_button;
@@ -25,14 +25,19 @@ class Canvas : public Widget
 public: 
     Canvas (int width, int height, const Color color, const Vector lh_pos);
     ~Canvas ();
-    void render                 (sf::RenderTarget &target)    const override final;
-    bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos)  override final;
-    bool on_mouse_released      (Mouse_key mouse_key, Vector &pos)  override final;
-    bool on_mouse_moved         (Vector &new_pos)                   override final;    /// x, y - absolute values 
-    bool on_keyboard_pressed    (Keyboard_key key)                  override final;
-    bool on_keyboard_released   (Keyboard_key key)                  override final;
-    bool on_time                (float delta_sec)                   override final;
+    void render                 (sf::RenderTarget &target)    const override;
+    bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos)  override;
+    bool on_mouse_released      (Mouse_key mouse_key, Vector &pos)  override;
+    bool on_mouse_moved         (Vector &new_pos)                   override;    /// x, y - absolute values 
+    bool on_keyboard_pressed    (Keyboard_key key)                  override;
+    bool on_keyboard_released   (Keyboard_key key)                  override;
+    bool on_time                (float delta_sec)                   override;
     bool on_brush ( Mouse_key mouse_key, Vector &pos);
+
+    bool contains (int x, int y);
+    
+    friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
+    friend Window;
 };
 
 #endif /* CANVAS_H */

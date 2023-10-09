@@ -4,12 +4,15 @@
 #include "widget/widget.h"
 #include "widget/window/window.h"
 #include "widget/button/button.h"
+#include "widget/window/menu/menu.h"
 #include "widget/widget_manager/widget_manager.h"
 #include "widget/window/canvas/canvas.h"
+#include "widget/window/master_window/master_window.h"
 // #include "widget/window/master_window/master_window.h"
 
 static const int FULLSCREEN_WIDTH = 1920;
 static const int FULLSCREEN_HEIGHT = 1080;
+bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
 
 int main ()
 {
@@ -19,21 +22,25 @@ int main ()
     sf::RenderTexture render_texture;
     render_texture.create (window_size.x, window_size.y);
 
-    Widget_manager widget_manager; 
-    
     Vector pos (50, 50);
     Color w_color (255, 0, 0);
     Color frame_color (0, 255, 0);
-    Window simple_window (800, 800, pos);
 
-    widget_manager.add_widget (&simple_window);
+    Widget_manager widget_manager; 
+
+    // Menu menu (pos, 800);
+    // Button menu_button_2(pos + Vector (50, 30), 100, 20, nullptr, Color (0, 255, 0, 255));
+    // menu.add_button (&menu_button);
+    // menu.add_button (&menu_button_2);
     
+    Master_window main_window (window_size.x - 100, window_size.y - 100, pos, "master");
+    Button menu_button (pos + Vector (0, 30), 50, 20, (Button_run_fn)brush_button_act, &main_window, Color (255, 0, 0, 255));
+    main_window.add_menu_button (&menu_button);
+    // main_window.add_menu_button (&menu_button_2);
+    widget_manager.add_widget (&main_window);
 
-    Button button(Vector (0, 0), 50, 50, nullptr, Color (255, 0, 0, 255));
-    widget_manager.add_widget (&button);
-
-    Button button_2(Vector (500, 200), 100, 70, nullptr, Color (0, 255, 0, 255));
-    widget_manager.add_widget (&button_2);
+    Window child_window (800, 800, Vector (200, 200), "window_1");
+    main_window.add_window (&child_window);
 
     sf::Sprite window_sprite;
     bool status = true;
@@ -95,4 +102,38 @@ int main ()
     }
 
     return 0;
+}
+
+bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key)
+{
+    assert (m_window);
+    static bool run = false;
+
+    run = !run;
+
+    if (run)
+    {
+        for (int i = 0; i < m_window->windows.size; ++i)
+        {
+            Window *window = (Window *)list_get (&(m_window->windows), i + 1);
+            //  m_window->get_list_elem (i + 1);
+            window->canvas_->draw_tool.type = Brush;
+            window->canvas_->draw_tool.is_pressed = true;
+            window->canvas_->draw_tool.color = Color (255, 0, 255);
+        }
+        printf ("works\n");
+    }
+    else 
+    {
+        for (int i = 0; i < m_window->windows.size; ++i)
+        {
+            Window *window = (Window *)list_get (&(m_window->windows), i + 1);
+
+            // Window *window = m_window->get_list_elem (i + 1);
+            window->canvas_->draw_tool.is_pressed = false;
+            window->canvas_->draw_tool.type = Unknown_button;
+        }
+        printf("end\n");
+    }
+    return true;
 }
