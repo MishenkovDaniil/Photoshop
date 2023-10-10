@@ -32,7 +32,7 @@ public:
     bool on_mouse_moved    (Vector &new_pos) override;   
     bool on_keyboard_pressed  (Keyboard_key key) override;
     bool on_keyboard_released (Keyboard_key key) override;
-    bool on_time (float delta_sec);
+    bool on_time (float delta_sec) override;
 
     friend Window;
 };
