@@ -1,6 +1,5 @@
 #include "canvas.h"
 
-
 Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos) :
     width_ (width),
     height_ (height),
@@ -111,13 +110,14 @@ bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
     Vector brush_pos;
     static sf::Vertex vertex[2];
     static int idx = 0;
-
+    
     if ((!contains (pos.get_x (), pos.get_y ())) && !idx)
         return false;
 
     if (mouse_key == M_Left)
     {
-        brush_pos = pos - lh_pos_;
+        brush_pos = Vector (draw_rect_.left, draw_rect_.top) + pos - lh_pos_;
+        
         vertex[idx] = sf::Vertex (brush_pos, draw_tool.color);
 
         if (idx)
