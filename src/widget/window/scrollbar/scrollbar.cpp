@@ -6,6 +6,7 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          height - 2 * SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_space, 
                          window, 
+                         nullptr, 
                          Color (150, 150, 150)),
     lh_pos_ (rh_pos - Vector (SCROLLBAR_WIDTH, 0)),
     scrollbar_height_ (height),
@@ -16,19 +17,22 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          SCROLLBAR_WIDTH - 2, 
                          SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_up, 
-                         window, 
+                         window,
+                         nullptr, 
                          Color (50, 50, 50));
     down_  = new Button (lh_pos_ + Vector (0, height - SCROLLBAR_BUTTON_H),
                          SCROLLBAR_WIDTH - 2, 
                          SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_down, 
                          window, 
+                         nullptr, 
                          Color (50, 50, 50));
-    mid_   = new Button (lh_pos_ + Vector (0, height / 2 - 50), 
+    mid_   = new Button (lh_pos_ + Vector (0, SCROLLBAR_BUTTON_H), 
                          SCROLLBAR_WIDTH - 2, 
                          100, 
                          change_canvas_rect_mid,
                          window,
+                         nullptr, 
                          Color (0, 0, 0),
                          MOVE_BUTTON);
 
@@ -76,6 +80,8 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos)
     if (   up_->on_mouse_moved (new_pos)) return true;
     if ( down_->on_mouse_moved (new_pos)) return true;
 
+    double old_mid_y = mid_->lh_corner_.get_y ();
+
     double new_y = new_pos.get_y();
     double old_y = mid_->press_pos_.get_y ();
     double delta = std::abs (new_y - old_y);
@@ -89,7 +95,13 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos)
         new_pos += Vector (0, -new_y + old_y + lh_corner_.get_y () + height_ - (mid_->lh_corner_.get_y () + mid_->height_));
     }
 
-    if (mid_->on_mouse_moved (new_pos)) return true;
+    if (mid_->on_mouse_moved (new_pos)) 
+    {
+        double arg = (double)(mid_->lh_corner_.get_y () - old_mid_y) / (((double)(height_ - mid_->height_))); 
+        mid_->set_arg ((void *)&arg);
+        mid_->run ();
+        return true;
+    }
 
     return false;
 }   
@@ -112,20 +124,24 @@ bool Scrollbar::on_time (float delta_sec)
     return false;
 }
 
-bool change_canvas_rect_up (Window *window, sf::Keyboard::Key key)
+bool change_canvas_rect_up (Window *window, void *arg)
 {
-    return change_canvas_rect_up_down (window, sf::Keyboard::Key::Up);
+    sf::Keyboard::Key key = sf::Keyboard::Key::Up;
+
+    return change_canvas_rect_up_down (window, &key);
 }
 
-bool change_canvas_rect_down (Window *window, sf::Keyboard::Key key)
+bool change_canvas_rect_down (Window *window, void *arg)
 {
-    return change_canvas_rect_up_down (window, sf::Keyboard::Key::Down);
+    sf::Keyboard::Key key = sf::Keyboard::Key::Down;
+
+    return change_canvas_rect_up_down (window, &key);
 }
 
-bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key)
+bool change_canvas_rect_up_down (Window *window, void *arg)
 {
     assert (window);
-    switch (key)
+    switch (*((sf::Keyboard::Key *)arg))
     {
         case sf::Keyboard::Key::Up:
         {
@@ -145,12 +161,22 @@ bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key)
     return true;
 } 
 
-bool change_canvas_rect_mid (Window *window, sf::Keyboard::Key key)
+bool change_canvas_rect_mid (Window *window, void *arg)
 {
+    double val = *(double *)arg;
+
+    int texture_height = window->canvas_->canvas_texture.getSize ().y;
+    int real_height = window->canvas_->height_;
+    int top = window->canvas_->draw_rect_.top;
+    top += val * (double)(texture_height - real_height);
+    top = std::min (top, texture_height - real_height);
+
+    window->canvas_->draw_rect_.top = top; 
+
     return true;
 }
 
-bool change_canvas_rect_space (Window *window, sf::Keyboard::Key key)
+bool change_canvas_rect_space (Window *window, void *arg)
 {
     return true;
 }

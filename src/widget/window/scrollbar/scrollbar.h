@@ -41,10 +41,10 @@ public:
     bool on_time (float delta_sec) override;
 };
 
-bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key);
-bool change_canvas_rect_mid     (Window *window, sf::Keyboard::Key key);
-bool change_canvas_rect_space   (Window *window, sf::Keyboard::Key key);
-bool change_canvas_rect_up      (Window *window, sf::Keyboard::Key key);
-bool change_canvas_rect_down    (Window *window, sf::Keyboard::Key key);
+bool change_canvas_rect_up_down (Window *window, void *arg);
+bool change_canvas_rect_mid     (Window *window, void *arg);
+bool change_canvas_rect_space   (Window *window, void *arg);
+bool change_canvas_rect_up      (Window *window, void *arg);
+bool change_canvas_rect_down    (Window *window, void *arg);
 
 #endif /* SCROLLBAR_H */
