@@ -27,7 +27,7 @@ protected:
     Scrollbar *scrollbar_   = nullptr;
 
 public:
-    Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = false);
+    Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = true);
     virtual ~Window ();
 
     void render (sf::RenderTarget &target)  override;
