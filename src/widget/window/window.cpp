@@ -3,6 +3,11 @@
 
 #include "window.h"
 
+#include "../widget.h"
+#include "menu/menu.h"
+#include "header/header.h"
+#include "canvas/canvas.h"
+#include "scrollbar/scrollbar.h"
 
 Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar) :
     width_ (width),
@@ -58,17 +63,22 @@ bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     bool status = false;
 
-    status |= canvas_->on_mouse_released (mouse_key, pos);
-    status |= header_->on_mouse_released (mouse_key, pos);
     if (scrollbar_) status |= scrollbar_->on_mouse_released (mouse_key, pos);
+    status |= header_->on_mouse_released (mouse_key, pos);
+    status |= canvas_->on_mouse_released (mouse_key, pos);
     
     return status;
 } 
 
 bool Window::on_mouse_moved    (Vector &new_pos)
 {
-    //TODO
-    return false;
+    bool status = false;
+
+    if (scrollbar_) status |= scrollbar_->on_mouse_moved (new_pos);
+    status |= header_->on_mouse_moved (new_pos);
+    status |= canvas_->on_mouse_moved (new_pos);
+    
+    return status;
 }   
 
 bool Window::on_keyboard_pressed  (Keyboard_key key)

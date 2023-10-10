@@ -5,11 +5,12 @@ class Canvas;
 class Master_window;
 class Header;
 class Scrollbar;
+
 #include "../widget.h"
-#include "canvas/canvas.h"
 #include "menu/menu.h"
 #include "header/header.h"
-#include "scrollbar/scrollbar.h"
+#include "canvas/canvas.h"
+// #include "scrollbar/scrollbar.h"
 
 class Window : public Widget
 {
