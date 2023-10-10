@@ -4,7 +4,7 @@
 #include "window.h"
 
 
-Window::Window (int width, int height, Vector lh_pos, const char *w_name) :
+Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar) :
     width_ (width),
     height_ (height),
     lh_pos_ (lh_pos)
@@ -12,34 +12,57 @@ Window::Window (int width, int height, Vector lh_pos, const char *w_name) :
     header_ = new Header (lh_pos, width, w_name);
     canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (lh_pos.get_x (), HEADER_HEIGHT  + lh_pos.get_y ()));
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
+
+    if (need_scrollbar)
+    {
+        scrollbar_ = new Scrollbar (lh_pos + Vector (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->height_, height - HEADER_HEIGHT, this);
+        assert (scrollbar_);
+    }
 }
 
 Window::~Window ()
 {
     width_  = __INT_MAX__; 
     height_ = __INT_MAX__;
-    if (header_) delete header_;
-    if (canvas_) delete canvas_;
+    if (header_)    delete header_;
+    if (canvas_)    delete canvas_;
+    if (scrollbar_) delete scrollbar_;
 }
 
-void Window::render (sf::RenderTarget &target) const
+void Window::render (sf::RenderTarget &target)
 {
+    sf::RectangleShape rect (Vector (width_, height_));
+    rect.setFillColor (Color (0, 0,0,0));
+    rect.setOutlineColor (Color (50, 50, 50));
+    rect.setOutlineThickness (-1);
+    rect.setPosition (lh_pos_);
+
     canvas_->render (target);
+    if (scrollbar_) scrollbar_->render (target);
     header_->render (target);
+    target.draw (rect);
 }
 
 bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    bool canvas_status = canvas_->on_mouse_pressed (mouse_key, pos);
-    bool header_status = header_->on_mouse_pressed (mouse_key, pos);
-    return canvas_status | header_status;
+    bool status = false;
+
+    status |= canvas_->on_mouse_pressed (mouse_key, pos);
+    status |= header_->on_mouse_pressed (mouse_key, pos);
+    if (scrollbar_) status |= scrollbar_->on_mouse_pressed (mouse_key, pos);
+
+    return status;
 } 
 
 bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
-    bool canvas_status = canvas_->on_mouse_released (mouse_key, pos);
-    bool header_status = header_->on_mouse_released (mouse_key, pos);
-    return canvas_status | header_status;
+    bool status = false;
+
+    status |= canvas_->on_mouse_released (mouse_key, pos);
+    status |= header_->on_mouse_released (mouse_key, pos);
+    if (scrollbar_) status |= scrollbar_->on_mouse_released (mouse_key, pos);
+    
+    return status;
 } 
 
 bool Window::on_mouse_moved    (Vector &new_pos)

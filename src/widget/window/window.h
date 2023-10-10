@@ -4,10 +4,12 @@
 class Canvas;
 class Master_window;
 class Header;
+class Scrollbar;
 #include "../widget.h"
 #include "canvas/canvas.h"
 #include "menu/menu.h"
 #include "header/header.h"
+#include "scrollbar/scrollbar.h"
 
 class Window : public Widget
 {
@@ -19,21 +21,28 @@ protected:
                                     /// frame decorator
     // const Color &frame_color_;   /// 
     
-    Canvas *canvas_ = nullptr;
-    Header *header_ = nullptr;
+    Canvas    *canvas_      = nullptr;
+    Header    *header_      = nullptr;
+    Scrollbar *scrollbar_   = nullptr;
 
 public:
-    Window (int width, int height, Vector lh_pos, const char *w_name);
+    Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = true);
     virtual ~Window ();
 
-    void render (sf::RenderTarget &target) const override;
+    void render (sf::RenderTarget &target)  override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_moved    (Vector &new_pos) override;    /// x, y - absolute values 
     bool on_keyboard_pressed  (Keyboard_key key) override;
     bool on_keyboard_released (Keyboard_key key) override;
     bool on_time (float delta_sec);
+
     friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_mid (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_space (Window *window, sf::Keyboard::Key key);
+
+    friend Scrollbar;
 };
 
 
