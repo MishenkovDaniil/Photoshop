@@ -52,9 +52,13 @@ bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     bool status = false;
 
-    status |= canvas_->on_mouse_pressed (mouse_key, pos);
-    status |= header_->on_mouse_pressed (mouse_key, pos);
-    if (scrollbar_) status |= scrollbar_->on_mouse_pressed (mouse_key, pos);
+    status = canvas_->on_mouse_pressed (mouse_key, pos);
+    if (status) return true;
+    
+    status = header_->on_mouse_pressed (mouse_key, pos);
+    if (status) return true;
+
+    if (scrollbar_) status = scrollbar_->on_mouse_pressed (mouse_key, pos);
 
     return status;
 } 
@@ -63,9 +67,16 @@ bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     bool status = false;
 
-    if (scrollbar_) status |= scrollbar_->on_mouse_released (mouse_key, pos);
-    status |= header_->on_mouse_released (mouse_key, pos);
-    status |= canvas_->on_mouse_released (mouse_key, pos);
+    if (scrollbar_) 
+    {
+        status = scrollbar_->on_mouse_released (mouse_key, pos);
+        if (status) return true;
+    }
+
+    status = header_->on_mouse_released (mouse_key, pos);
+    if (status) return true;
+    
+    status = canvas_->on_mouse_released (mouse_key, pos);
     
     return status;
 } 
@@ -74,9 +85,16 @@ bool Window::on_mouse_moved    (Vector &new_pos)
 {
     bool status = false;
 
-    if (scrollbar_) status |= scrollbar_->on_mouse_moved (new_pos);
-    status |= header_->on_mouse_moved (new_pos);
-    status |= canvas_->on_mouse_moved (new_pos);
+    if (scrollbar_) 
+    {
+        status = scrollbar_->on_mouse_moved (new_pos);
+        if (status) return true;
+    }
+    
+    status = header_->on_mouse_moved (new_pos);
+    if (status) return true;
+
+    status = canvas_->on_mouse_moved (new_pos);
     
     return status;
 }   
