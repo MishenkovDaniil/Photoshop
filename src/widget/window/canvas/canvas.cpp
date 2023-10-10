@@ -12,20 +12,12 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos) :
         fprintf (stderr, "Error: incorrect size of canvas.\n");
         return;
     }
-    canvas_texture.create (width, height);
-    // sf::Uint8 *pixels = (sf::Uint8 *)calloc (width * height * 4, sizeof ())
-    // Color *pixels = new Color[width * height];
-    // for (int i = 0; i < width * height; ++i)
-    // {
-    //     pixels[i] = color;
-    // }
-    // canvas_texture.update ((sf::Uint8 *)((sf::Color *)pixels));
-    // delete[] pixels;
+    canvas_texture.create (width, height * 2);
+    draw_rect_  = sf::IntRect (0, 0, width, height);
+
     sf::RectangleShape rect (sf::Vector2f (width, height));
     rect.setFillColor (color);
-    rect.setOutlineColor (Color (50, 50, 50));
-    rect.setOutlineThickness (-1);
-    rect.setPosition (0, -1);
+    
     canvas_texture.draw (rect);
     canvas_texture.display ();
 };
@@ -36,10 +28,12 @@ Canvas::~Canvas ()
     height_ = __INT_MAX__;
 };
 
-void Canvas::render (sf::RenderTarget &target) const
+void Canvas::render (sf::RenderTarget &target)
 {
     sf::Sprite canvas_sprite (canvas_texture.getTexture ());
     canvas_sprite.setPosition (lh_pos_);
+    canvas_sprite.setTextureRect (draw_rect_);
+     
     target.draw (canvas_sprite);
 }
 

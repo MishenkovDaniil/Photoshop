@@ -20,12 +20,15 @@ class Canvas : public Widget
     Color color_;
     Vector lh_pos_;
     Draw_tool draw_tool = {};
+
+public:
     sf::RenderTexture canvas_texture;
+    sf::IntRect draw_rect_;
 
 public: 
     Canvas (int width, int height, const Color color, const Vector lh_pos);
     ~Canvas ();
-    void render                 (sf::RenderTarget &target)    const override;
+    void render                 (sf::RenderTarget &target)     override;
     bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos)  override;
     bool on_mouse_released      (Mouse_key mouse_key, Vector &pos)  override;
     bool on_mouse_moved         (Vector &new_pos)                   override;    /// x, y - absolute values 
@@ -37,6 +40,10 @@ public:
     bool contains (int x, int y);
     
     friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_mid (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_space (Window *window, sf::Keyboard::Key key);
+
     friend Window;
 };
 
