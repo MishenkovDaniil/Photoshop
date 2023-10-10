@@ -21,7 +21,6 @@ class Canvas : public Widget
     Vector lh_pos_;
     Draw_tool draw_tool = {};
 
-public:
     sf::RenderTexture canvas_texture;
     sf::IntRect draw_rect_;
 
@@ -39,10 +38,10 @@ public:
 
     bool contains (int x, int y);
     
-    friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
-    friend bool change_canvas_rect_up_down (Window *window, sf::Keyboard::Key key);
-    friend bool change_canvas_rect_mid (Window *window, sf::Keyboard::Key key);
-    friend bool change_canvas_rect_space (Window *window, sf::Keyboard::Key key);
+    friend bool brush_button_act            (Master_window *m_window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_up_down  (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_mid      (Window *window, sf::Keyboard::Key key);
+    friend bool change_canvas_rect_space    (Window *window, sf::Keyboard::Key key);
 
     friend Window;
 };
