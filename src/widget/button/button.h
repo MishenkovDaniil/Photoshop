@@ -22,6 +22,9 @@ typedef bool (*Button_run_fn) (Window *window, sf::Keyboard::Key key );
 
 // TODO::
 // think of rm button frame and frame is needed make rectangle and set button on it
+static int MOVE_BUTTON = 0b010;
+static int RELEASE_BUTTON = 0b100;
+static int PRESS_BUTTON = 0b001;
 
 class Button :public Widget
 {
@@ -32,19 +35,22 @@ protected:
     int height_ = 0;
 
     bool is_pressed_ = false;
+    Vector press_pos_;
     Color fill_color_;
     Button_run_fn run_fn_ = nullptr;
     Window *controlled_window_ = nullptr;
+    int run_mask_ = 0;
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, Color fill_color = Black) :
+    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
             lh_corner_ (lh_corner),
             width_ (width),
             height_ (height),
             run_fn_ (func),
             fill_color_ (fill_color),
-            controlled_window_ (controlled_window) {};
+            controlled_window_ (controlled_window),
+            run_mask_ (run_mask) {};
     virtual ~Button () {};
 
     bool contains (double x, double y) const;
@@ -63,6 +69,8 @@ public:
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
     bool on_time (float delta_sec)                            override;
+
+    friend Scrollbar;
 };
 
 // class Texture_button : public Button

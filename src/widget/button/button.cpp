@@ -7,7 +7,6 @@
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
-
 bool Button::contains (double x, double y) const
 {
     return (lh_corner_.get_x () <= x && 
@@ -34,8 +33,6 @@ void Button::render (sf::RenderTarget &target)
 /*TODO: 
 //make constant for thickness and add possibility to change it (in constructor for example)*/
     rect.setOutlineThickness (1); 
-/*TODO: 
-//make constant for thickness and add possibility to change it (in constructor for example)*/
     rect.setPosition (lh_corner_.get_x (), lh_corner_.get_y ());
 
     target.draw (rect);
@@ -43,23 +40,49 @@ void Button::render (sf::RenderTarget &target)
 
 bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    return true;
-    // return false;
+    // return true
+    // if (contains (pos.get_x (), pos.get_y ()))
+    // {
+    //     return run (controlled_window_, sf::Keyboard::Key::Unknown);
+    // }
+    if (contains (pos.get_x (), pos.get_y ()))
+    {
+        if (run_mask_ & PRESS_BUTTON)
+        {
+            return run (controlled_window_, sf::Keyboard::Key::Unknown);
+        }
+        press_pos_ = pos;
+        is_pressed_ = true;
+        return true;
+    }
+
+    return false;
 } 
 
 bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 { 
     if (contains (pos.get_x (), pos.get_y ()))
     {
-        return run (controlled_window_, sf::Keyboard::Key::Unknown);
+        if (run_mask_ & RELEASE_BUTTON)
+        {
+            return run (controlled_window_, sf::Keyboard::Key::Unknown);
+        }
     }
+    
+    is_pressed_ = false;
     
     return false;
 } 
 
 bool Button::on_mouse_moved    (Vector &new_pos)
 { 
-    // TODO
+    if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
+    {
+        lh_corner_ += Vector (0, new_pos.get_y () - press_pos_.get_y ());
+        press_pos_ += Vector (0, new_pos.get_y () - press_pos_.get_y ());
+        return true;
+    }
+
     return false;
 }   
 
