@@ -15,7 +15,7 @@ class Master_window : public Window
 
 public:
     Master_window (int width, int height, Vector lh_pos, const char *w_name, int list_capacity = INIT_WINDOWS_CAPACITY);
-    ~Master_window () {};
+    ~Master_window ();
 
     void add_menu_button (Button *button);
     void add_window (Window *window);
@@ -31,7 +31,7 @@ public:
     bool on_keyboard_released (Keyboard_key key) override;
     bool on_time (float delta_sec) override;
 
-    friend bool brush_button_act (Master_window *m_window, sf::Keyboard::Key key);
+    friend bool brush_button_act (Master_window *m_window, void *arg);
 };
 
 #endif /* MASTER_WINDOW_H */
