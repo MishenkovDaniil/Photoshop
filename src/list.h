@@ -102,6 +102,7 @@ static int  find_logic_number  (List *list, int phys_index, unsigned int *err = 
 static int  find_number        (List *list, int phys_index, unsigned int *err = &ERRNO);
 static void set_error_bit      (unsigned int *error, int bit);
 
+#ifdef LIST_DEBUG
 static void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
                       const char *file, const char *func);
 static void debug_list_ctor          (List *list, int capacity, unsigned int *err,
@@ -118,6 +119,7 @@ static int debug_find_logic_number   (List *list, int phys_index, unsigned int *
                                const int call_line, const char *call_file, const char *call_func);
 static int debug_find_number         (List *list, int phys_index, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
+#endif
 
 static void set_error_bit (unsigned int *error, int bit)
 {
@@ -377,7 +379,7 @@ static int find_number (List *list, int phys_index, unsigned int *err)
         List new_list = {};
         new_list.elems[NULL_ELEM].data = POISON;
     }
-
+    return -1;
 }
 
 static int linearize_list (List *list, unsigned int *err)
@@ -686,6 +688,7 @@ static void dump_list_errors (const List *list, unsigned int *err)
 #undef log_error
 }
 
+#ifdef LIST_DEBUG
 static void init_debug_info (List *list, const int call_line, const char *call_file, const char *call_func,
                       const char *file, const char *debug_func)
 {
@@ -762,6 +765,7 @@ static int debug_find_number (List *list, int phys_index, unsigned int *err,
 
     return find_number (list, phys_index, err);
 }
+#endif 
 
 #ifdef LIST_DEBUG
 
