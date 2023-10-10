@@ -1,7 +1,7 @@
 #include "master_window.h"
 
 Master_window::Master_window (int width, int height, Vector lh_pos, const char *w_name, int list_capacity) :
-    Window (width, height, lh_pos, w_name)
+    Window (width, height, lh_pos, w_name, false)
 {   
     menu_ = new Menu(lh_pos_ + Vector (0, HEADER_HEIGHT), width);
     assert (menu_);
@@ -21,7 +21,7 @@ void Master_window::add_window (Window *window)
     list_insert (&windows, 0, window);
 }
 
-void Master_window::render (sf::RenderTarget &target) const 
+void Master_window::render (sf::RenderTarget &target) 
 {
     Window::render (target);
     menu_->render (target);

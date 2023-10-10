@@ -27,7 +27,7 @@ Header::~Header ()
     }
 }
 
-void Header::render (sf::RenderTarget &target) const
+void Header::render (sf::RenderTarget &target)
 {
     sf::RectangleShape header (sf::Vector2f (width_, height_));
                        header.setFillColor((sf::Color)background_color); 

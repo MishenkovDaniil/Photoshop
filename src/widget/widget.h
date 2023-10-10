@@ -126,13 +126,13 @@ enum Keyboard_key
 class Widget 
 {
 public:
-virtual void render (sf::RenderTarget &target) const = 0;
-virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) = 0;
-virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos) = 0;
-virtual bool on_mouse_moved    (Vector &new_pos) = 0;    /// x, y - absolute values 
-virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
-virtual bool on_keyboard_released (Keyboard_key key) = 0;
-virtual bool on_time (float delta_sec) = 0;
+    virtual void render (sf::RenderTarget &target) = 0;
+    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) = 0;
+    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos) = 0;
+    virtual bool on_mouse_moved    (Vector &new_pos) = 0;    /// x, y - absolute values 
+    virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
+    virtual bool on_keyboard_released (Keyboard_key key) = 0;
+    virtual bool on_time (float delta_sec) = 0;
 };
 
 #endif /* WIDGET_H */

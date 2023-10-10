@@ -20,7 +20,7 @@ void Widget_manager::add_widget (Widget *widget)
     list_insert (&widgets, 0, widget);
 }
 
-void Widget_manager::render (sf::RenderTarget &target) const 
+void Widget_manager::render (sf::RenderTarget &target) 
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -156,5 +156,5 @@ bool Widget_manager::on_keyboard_released (Keyboard_key key)
 bool Widget_manager::on_time (float delta_sec)
 {
     // TODO...
-    ;
+    return false;
 }

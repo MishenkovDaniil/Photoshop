@@ -23,7 +23,7 @@ public:
     int get_list_size () {return windows.size;};
     Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
 
-    void render (sf::RenderTarget &target) const override;
+    void render (sf::RenderTarget &target) override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_moved    (Vector &new_pos) override;    /// x, y - absolute values 

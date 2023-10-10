@@ -56,7 +56,7 @@ public:
 
     // virtual void update (bool is_pressed) = 0;
     virtual bool run (Window *window, sf::Keyboard::Key key);
-    void render (sf::RenderTarget &target)              const override;
+    void render (sf::RenderTarget &target)               override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_moved    (Vector &new_pos)                  override;

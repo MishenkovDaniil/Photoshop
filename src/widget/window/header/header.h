@@ -26,7 +26,7 @@ public:
     Header (Vector lh_pos, int width, const char *string, Color background = Color (150, 150, 150));
     ~Header ();
 
-    void render (sf::RenderTarget &target) const override;
+    void render (sf::RenderTarget &target) override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_moved    (Vector &new_pos) override;   

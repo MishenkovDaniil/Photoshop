@@ -26,7 +26,7 @@ void Menu::add_button (Button *button)
     list_insert (&buttons, 0, button);
 }
 
-void Menu::render (sf::RenderTarget &target) const 
+void Menu::render (sf::RenderTarget &target) 
 {
     sf::RectangleShape rect (Vector (width_, height_));
     rect.setFillColor    (Color (200, 200, 200));

@@ -27,7 +27,7 @@ bool Button::run (Window *window, sf::Keyboard::Key key)
     return run_fn_ (window, key);
 }
 
-void Button::render (sf::RenderTarget &target) const
+void Button::render (sf::RenderTarget &target)
 {
     sf::RectangleShape rect (Vector (width_, height_));
     rect.setFillColor (fill_color_);
@@ -53,7 +53,7 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     {
         return run (controlled_window_, sf::Keyboard::Key::Unknown);
     }
-
+    
     return false;
 } 
 
