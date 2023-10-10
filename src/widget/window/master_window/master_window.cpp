@@ -8,6 +8,11 @@ Master_window::Master_window (int width, int height, Vector lh_pos, const char *
     list_ctor (&windows, 10);
 }
 
+Master_window::~Master_window ()
+{
+    delete menu_;
+    list_dtor (&windows);
+}
 
 void Master_window::add_menu_button (Button *button)
 {
@@ -44,7 +49,6 @@ void Master_window::render (sf::RenderTarget &target)
 
 bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
 {
-
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_idx + 1);
