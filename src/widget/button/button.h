@@ -18,7 +18,7 @@ class Window;
 static const int START_CAPACITY = 10;
 static const Color Black = Color (0, 0, 0, 255);
 
-typedef bool (*Button_run_fn) (Window *window, sf::Keyboard::Key key );
+typedef bool (*Button_run_fn) (Window *window, void *arg);
 
 // TODO::
 // think of rm button frame and frame is needed make rectangle and set button on it
@@ -40,17 +40,21 @@ protected:
     Button_run_fn run_fn_ = nullptr;
     Window *controlled_window_ = nullptr;
     int run_mask_ = 0;
+    void *arg_ = nullptr;
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
+    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
             lh_corner_ (lh_corner),
             width_ (width),
             height_ (height),
             run_fn_ (func),
             fill_color_ (fill_color),
             controlled_window_ (controlled_window),
-            run_mask_ (run_mask) {};
+            run_mask_ (run_mask),
+            arg_ (arg), 
+            press_pos_ (Vector ()) {};
+    
     virtual ~Button () {};
 
     bool contains (double x, double y) const;
@@ -59,9 +63,10 @@ public:
     bool          get_status        ()const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
     int           get_width         ()const {return width_;};
     int           get_height        ()const {return height_;};
+    void set_arg (void *arg)                {arg_ = arg;};
 
     // virtual void update (bool is_pressed) = 0;
-    virtual bool run (Window *window, sf::Keyboard::Key key);
+    virtual bool run ();
     void render (sf::RenderTarget &target)               override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;

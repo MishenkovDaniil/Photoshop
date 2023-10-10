@@ -15,7 +15,7 @@ bool Button::contains (double x, double y) const
             y <= (lh_corner_.get_y () + height_));
 }
 
-bool Button::run (Window *window, sf::Keyboard::Key key)
+bool Button::run ()
 {
     if (!run_fn_)
     {
@@ -23,7 +23,7 @@ bool Button::run (Window *window, sf::Keyboard::Key key)
         return false;
     }
 
-    return run_fn_ (window, key);
+    return run_fn_ (controlled_window_, arg_);
 }
 
 void Button::render (sf::RenderTarget &target)
@@ -40,16 +40,11 @@ void Button::render (sf::RenderTarget &target)
 
 bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    // return true
-    // if (contains (pos.get_x (), pos.get_y ()))
-    // {
-    //     return run (controlled_window_, sf::Keyboard::Key::Unknown);
-    // }
     if (contains (pos.get_x (), pos.get_y ()))
     {
         if (run_mask_ & PRESS_BUTTON)
         {
-            return run (controlled_window_, sf::Keyboard::Key::Unknown);
+            return run ();
         }
         press_pos_ = pos;
         is_pressed_ = true;
@@ -65,7 +60,7 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     {
         if (run_mask_ & RELEASE_BUTTON)
         {
-            return run (controlled_window_, sf::Keyboard::Key::Unknown);
+            return run ();
         }
     }
     
