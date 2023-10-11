@@ -52,13 +52,17 @@ bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     bool status = false;
 
+    if (scrollbar_) 
+    {
+        status = scrollbar_->on_mouse_pressed (mouse_key, pos);
+        if (status) return true;
+    }
+    
     status = canvas_->on_mouse_pressed (mouse_key, pos);
     if (status) return true;
     
     status = header_->on_mouse_pressed (mouse_key, pos);
-    if (status) return true;
 
-    if (scrollbar_) status = scrollbar_->on_mouse_pressed (mouse_key, pos);
 
     return status;
 } 
@@ -113,6 +117,15 @@ bool Window::on_keyboard_released (Keyboard_key key)
 
 bool Window::on_time (float delta_sec)
 {
-    //TODO
-    return false;
+    bool on_time_status = false;
+
+    if (scrollbar_) 
+    {
+        on_time_status |= scrollbar_->on_time (delta_sec);
+    }
+    
+    on_time_status |= header_->on_time (delta_sec);
+    on_time_status |= canvas_->on_time (delta_sec);
+    
+    return on_time_status;
 }
