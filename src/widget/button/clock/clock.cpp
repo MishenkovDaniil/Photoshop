@@ -83,3 +83,22 @@ bool Clock::on_time (float delta_sec)
 
     return true;
 }   
+
+void Clock::change_time (float seconds, float minutes, float hours)
+{   
+    if (seconds < 0 || (int)seconds > 59)
+    {
+        fprintf (stderr, "Clock_error: seconds value in change time func is under zero.\n");
+    }
+
+    seconds_ = seconds;
+    if (minutes > 0 && (int)minutes < 60)
+    {
+        minutes_ = minutes;
+    }
+
+    if (hours > 0 && (int)hours < 24)
+    {
+        hours_ = hours;
+    }
+}
