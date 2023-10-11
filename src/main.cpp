@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <ctime>
 
 #include "widget/widget.h"
 #include "widget/window/window.h"
@@ -35,6 +36,7 @@ int main ()
     
     Master_window main_window (window_size.x - 50, window_size.y - 50, pos, "master");
     Button menu_button (pos + Vector (0, 30), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
+    
     Clock clock_button (pos, 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
     main_window.add_menu_button (&menu_button);
     widget_manager.add_widget (&main_window);
@@ -48,6 +50,13 @@ int main ()
 
     sf::Clock clock;
     float delta_clock = 0;
+
+    time_t time_;
+    struct tm *timeinfo;
+    time (&time_);
+    timeinfo = localtime (&time_);
+
+    clock_button.change_time (timeinfo->tm_sec, timeinfo->tm_min, timeinfo->tm_hour);
 
     while (window.isOpen ())
     {
