@@ -126,6 +126,7 @@ enum Keyboard_key
 class Widget 
 {
 public:
+    virtual ~Widget () = default;
     virtual void render (sf::RenderTarget &target) = 0;
     virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) = 0;
     virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos) = 0;
