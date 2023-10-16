@@ -1,10 +1,12 @@
 #ifndef MASTER_WINDOW_H
 #define MASTER_WINDOW_H
 
+class Tool_palette;
 #include "../../../list.h"
 #include "../menu/menu.h"
 #include "../canvas/canvas.h"
 #include "../window.h"
+#include "../tools/palette/palette.h"
 
 static int INIT_WINDOWS_CAPACITY = 10;
 
@@ -32,6 +34,7 @@ public:
     bool on_time (float delta_sec) override;
 
     friend bool brush_button_act (void *m_window, void *arg);
+    friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 };
 
 #endif /* MASTER_WINDOW_H */
