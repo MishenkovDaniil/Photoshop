@@ -1,6 +1,8 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+class Tool;
+class Tool_palette;
 #include "../../widget.h"
 #include "../../button/button.h"
 #include "../tools/tools.h"
@@ -23,11 +25,13 @@ class Canvas : public Widget
     // Vector lh_pos_;
     Draw_tool draw_tool = {};
 
-    sf::RenderTexture canvas_texture;
     // sf::RenderTexture buffer_texture; ?? need to be window size for preview 
     sf::IntRect draw_rect_;
     Tool_palette *palette_;
     Transform transform_;
+
+public:
+    sf::RenderTexture canvas_texture;
 
 public: 
     Canvas (int width, int height, const Color color, const Vector lh_pos, Tool_palette *palette = nullptr);
@@ -44,12 +48,17 @@ public:
 
     bool contains (int x, int y);
     
+    Color get_fg_color ();
+    Color get_bg_color ();
+
     friend bool brush_button_act            (void *m_window,  void *arg);
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);
     friend bool change_canvas_rect_space    (void *window,  void *arg);
+    friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 
     friend Window;
+    friend Tool;
 };
 
 #endif /* CANVAS_H */

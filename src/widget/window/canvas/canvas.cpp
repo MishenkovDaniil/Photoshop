@@ -49,98 +49,58 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
 
 bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    // if (!palette_)
-    //     return false;
-    
-    // Tool *tool = palette_->get_cur_tool ();
-    // if (!tool)
-    //     return false;
-    
-    // return tool->apply_begin (canvas_texture, pos);
-
     Vector pos_ = transform_.apply_transform (pos);
+    if (!contains (pos_.get_x (), pos_.get_y ()))
+        return false;
+    // if (width_ > 1000)
+        // return false;
+    if (!palette_)
+        return false;
+    
+    Tool *tool = palette_->get_cur_tool ();
+    if (!tool)
+        return false;
+    
+    Button_state state;
+    state.pressed = true;
+    state.released = false;
 
-    if (draw_tool.is_pressed)
-    {
-        switch (draw_tool.type)
-        {
-            case Brush:
-            {
-                return on_brush (mouse_key, pos_); //case (brush)  if (mouse_key == ?) tool->apply_begin (this->buffer_texture, pos);
-                                                  //              if (some key ) in key_event
-                                                  //case (circle) if (mouse_key == ?) tool->apply_begin (this->buffer_texture, pos);
-                                                  //              if (some key ) in key_event
-                                                  //case (mouse_key == ?) tool->apply_begin (this->buffer_texture, pos);
-                                                  //              if (some key ) in key_event
-            }
-            default:
-            {
-                return false;
-            }
-        }
-    }
-
-    return false;
+    tool->on_main_button (state, pos_, *this);
+    return true;
 }
 
 bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
-    // if (!palette_)
-    //     return false;
-    
-    // Tool *tool = palette_->get_cur_tool ();
-    // if (!tool)
-    //     return false;
-    
-    // return tool->apply_end (canvas_texture, pos);
     Vector pos_ = transform_.apply_transform (pos);
 
-    if (draw_tool.is_pressed)
-    {
-        switch (draw_tool.type)
-        {
-            case Brush:
-            {
-                return on_brush (mouse_key, pos_);//case (mouse_key == ?) brush->apply_end (this->buffer_texture, pos);
-            }
-            default:
-            {
-                return false;
-            }
-        }
-    }
+    if (!palette_)
+        return false;
+    
+    Tool *tool = palette_->get_cur_tool ();
+    if (!tool)
+        return false;
+    
+    Button_state state;
+    state.pressed = false;
+    state.released = true;
 
-    return false;
+    tool->on_confirm (pos_, *this);
+    return true;
 }
 
 bool Canvas::on_mouse_moved    (Vector &new_pos)
 {
-    // if (!palette_)
-    //     return false;
-    
-    // Tool *tool = palette_->get_cur_tool ();
-    // if (!tool)
-    //     return false;
-    
-    // return tool->apply_continue (canvas_texture, new_pos);
+    Vector pos_ = transform_.apply_transform (new_pos);
 
-    if (draw_tool.is_pressed)
-    {
-        switch (draw_tool.type)
-        {
-            case Brush:
-            {
-                // return on_brush (mouse_key, pos);s
-                //return brush->apply_continue (this->buffer_texture, new_pos);
-            }
-            default:
-            {
-                return false;
-            }
-        }
-    }
-
-    return false;
+    if (!palette_)
+        return false;
+    
+    Tool *tool = palette_->get_cur_tool ();
+    if (!tool)
+        return false;
+    
+    tool->on_move (pos_, *this);
+    return true;
 }   
 
 bool Canvas::on_keyboard_pressed  (Keyboard_key key)
@@ -163,6 +123,24 @@ bool Canvas::contains (int x, int y)
 {
     return ((x >= 0 && y >= 0) && 
             (x <= width_ && y <= height_));
+}
+
+Color Canvas::get_fg_color ()
+{
+    if (palette_)
+    {
+        return palette_->get_fg_color ();
+    }
+    return Color (0, 0, 0, 0);
+}
+
+Color Canvas::get_bg_color ()
+{
+    if (palette_)
+    {
+        return palette_->get_bg_color ();
+    }
+    return Color (0, 0, 0, 0);
 }
 
 bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
