@@ -73,22 +73,26 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
             return run ();
         }
     }
-    
-    is_pressed_ = false;
-    
+
+    if (is_pressed_)
+    {
+        is_pressed_ = false;
+        return true;
+    }
+
     return false;
 } 
 
 bool Button::on_mouse_moved    (Vector &new_pos)
 { 
     Vector pos_ = transform_.apply_transform (new_pos);
-
+    static int call_num = 1;
+    
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
         Vector change (0, pos_.get_y () - press_pos_.get_y ());
 
         transform_.offset_ += change;
-        press_pos_ += change;
         return true;
     }
 
