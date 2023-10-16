@@ -16,17 +16,18 @@ static const int MENU_INIT_CAPACITY = 10;
 
 class Menu : public Widget 
 {
-    // Vector lh_pos_;
+protected:
     int width_ = 0;
     int cur_width_ = 0;
+    int height_ = 0;
 
     List buttons = {};
-    const int height_ = MENU_HEIGHT;
+    // const int height_ = MENU_HEIGHT;
     Transform transform_;
     
 public:
-    Menu (Vector lh_pos, int width);
-    ~Menu ();
+    Menu (Vector lh_pos, int width, int height = MENU_HEIGHT);
+    virtual ~Menu ();
 
     Transform &get_transform () {return transform_;};
 
