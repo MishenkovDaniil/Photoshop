@@ -9,6 +9,10 @@ enum Button_type
 
 #include <SFML/Graphics.hpp>
 class Window;
+class Menu;
+class Tool_palette;
+class Button_palette;
+
 #include "../widget.h"
 #include "../window/window.h"
 #include "../../graphic_structures/color/color.h"
@@ -29,18 +33,18 @@ static int PRESS_BUTTON = 0b001;
 class Button :public Widget
 {
 protected:
-    // Vector lh_corner_;    /// z coord is not used
-    // Point rl_corner_ = Point (0, 0);    /// 
     int width_ = 0;
     int height_ = 0;
 
     bool is_pressed_ = false;
     Vector press_pos_;
     Color fill_color_;
+
     Button_run_fn run_fn_ = nullptr;
     void *controlled_widget_ = nullptr;
-    int run_mask_ = 0;
     void *arg_ = nullptr;
+    
+    int run_mask_ = 0;
 
     Transform transform_;
 
@@ -48,7 +52,6 @@ public:
     Button () {}; //TODO: make button_create for this constructor case
     Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
             transform_ (Transform (lh_corner)),
-            // lh_corner_ (lh_corner),
             width_ (width),
             height_ (height),
             run_fn_ (func),
@@ -82,6 +85,8 @@ public:
     bool on_time (float delta_sec)                            override;
 
     friend Scrollbar;
+    friend Menu;
+    friend Button_palette;
 };
 
 // class Texture_button : public Button
