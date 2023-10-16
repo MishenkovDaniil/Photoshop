@@ -9,10 +9,8 @@
 
 bool Button::contains (double x, double y) const
 {
-    return (lh_corner_.get_x () <= x && 
-            lh_corner_.get_y () <= y &&
-            x <= (lh_corner_.get_x () + width_) && 
-            y <= (lh_corner_.get_y () + height_));
+    return (0 <= x && 0 <= y &&
+            x <= width_ && y <= height_);
 }
 
 bool Button::run ()
@@ -23,30 +21,42 @@ bool Button::run ()
         return false;
     }
 
-    return run_fn_ (controlled_window_, arg_);
+    return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (sf::RenderTarget &target)
+void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
+    Vector lh_corner = unite.offset_;
+
     sf::RectangleShape rect (Vector (width_, height_));
     rect.setFillColor (fill_color_);
 /*TODO: 
 //make constant for thickness and add possibility to change it (in constructor for example)*/
     rect.setOutlineThickness (1); 
-    rect.setPosition (lh_corner_.get_x (), lh_corner_.get_y ());
+    rect.setPosition (lh_corner.get_x (), lh_corner.get_y ());
 
     target.draw (rect);
+
+    transform_stack.pop ();
 }   
 
-bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    if (contains (pos.get_x (), pos.get_y ()))
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    Vector pos_ = unite.apply_transform (pos);
+
+    if (contains (pos_.get_x (), pos_.get_y ()))
     {
         if (run_mask_ & PRESS_BUTTON)
         {
             return run ();
         }
-        press_pos_ = pos;
+        press_pos_ = pos_;
         is_pressed_ = true;
         return true;
     }
@@ -54,9 +64,13 @@ bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     return false;
 } 
 
-bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 { 
-    if (contains (pos.get_x (), pos.get_y ()))
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    Vector pos_ = unite.apply_transform (pos);
+
+    if (contains (pos_.get_x (), pos_.get_y ()))
     {
         if (run_mask_ & RELEASE_BUTTON)
         {
@@ -69,12 +83,19 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     return false;
 } 
 
-bool Button::on_mouse_moved    (Vector &new_pos)
+bool Button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 { 
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    Vector pos_ = unite.apply_transform (new_pos);
+
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
-        lh_corner_ += Vector (0, new_pos.get_y () - press_pos_.get_y ());
-        press_pos_ += Vector (0, new_pos.get_y () - press_pos_.get_y ());
+        printf ("move_button\n");
+        Vector change (0, pos_.get_y () - press_pos_.get_y ());
+
+        transform_.offset_ += change;
+        press_pos_ += change;
         return true;
     }
 

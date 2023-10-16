@@ -21,10 +21,10 @@ public:
 
     void change_time (float seconds, float minutes = -1, float hours = -1);
 
-    void render (sf::RenderTarget &target)                    override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_moved    (Vector &new_pos)                  override;
+    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)                    override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
     bool on_time (float delta_sec)                            override;

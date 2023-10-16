@@ -2,7 +2,8 @@
 
 
 Menu::Menu (Vector lh_pos, int width) :
-    lh_pos_ (lh_pos),
+    transform_ (Transform (lh_pos)),
+    // lh_pos_ (lh_pos),
     width_ (width)
 {
     list_ctor (&buttons, MENU_INIT_CAPACITY);
@@ -26,13 +27,19 @@ void Menu::add_button (Button *button)
     list_insert (&buttons, 0, button);
 }
 
-void Menu::render (sf::RenderTarget &target) 
+void Menu::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) 
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
+    Vector lh_pos = unite.offset_;
+
     sf::RectangleShape rect (Vector (width_, height_));
     rect.setFillColor    (Color (200, 200, 200));
     rect.setOutlineColor (Color (50, 50, 50));
     rect.setOutlineThickness (-1);
-    rect.setPosition (lh_pos_ + Vector (0, -1));
+    rect.setPosition (lh_pos + Vector (0, -1));
     target.draw (rect);
 
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
@@ -47,12 +54,18 @@ void Menu::render (sf::RenderTarget &target)
         }
         assert (button);
 
-        button->render (target);
+        button->render (target, transform_stack);
     }
+
+    transform_stack.pop ();
 }
 
-bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
     {
         Button *button = (Button *)list_get (&buttons, button_idx + 1);
@@ -65,17 +78,24 @@ bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (button);
 
-        if (button->on_mouse_pressed (mouse_key, pos))
+        if (button->on_mouse_pressed (mouse_key, pos, transform_stack))
         {
+            transform_stack.pop ();
             return true;
         }
     }
 
+    transform_stack.pop ();
+
     return false;
 } 
 
-bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+    
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
     {
         Button *button = (Button *)list_get (&buttons, button_idx + 1);
@@ -88,16 +108,19 @@ bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (button);
 
-        if (button->on_mouse_released (mouse_key, pos))
+        if (button->on_mouse_released (mouse_key, pos, transform_stack))
         {
+            transform_stack.pop ();
             return true;
         }
     }
 
+    transform_stack.pop ();
+
     return false;
 } 
 
-bool Menu::on_mouse_moved    (Vector &new_pos) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
+bool Menu::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
                                                 // connect hovering with 'on_time ()'
 {
     //TODO...

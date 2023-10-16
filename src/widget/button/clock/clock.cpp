@@ -12,9 +12,11 @@ Clock::Clock (Vector lh_corner, int width, int height, Button_run_fn func, Windo
 
 Clock::~Clock () {};
 
-void Clock::render (sf::RenderTarget &target)
+void Clock::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
 {
-    Button::render (target);
+    Button::render (target, transform_stack);
+    
+    Vector lh_pos = transform_stack.top ().unite (transform_).offset_;
 
     sprintf (hrs, "%d", (int)hours_);
     sprintf (min, "%d", (int)minutes_);
@@ -30,23 +32,23 @@ void Clock::render (sf::RenderTarget &target)
     text.setCharacterSize (CLOCK_CHARACTER_SIZE);
 
     double text_width = text.findCharacterPos(8).x - text.findCharacterPos (0).x;
-    text.setPosition (lh_corner_.get_x () + (width_ - text_width) / 2, lh_corner_.get_y () + height_ / 2 - CLOCK_CHARACTER_SIZE / 2);
+    text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + height_ / 2 - CLOCK_CHARACTER_SIZE / 2);
     
     // target.draw (button);
     target.draw (text);
 }   
 
-bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
     return false;
 } 
 
-bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
     return false;
 } 
 
-bool Clock::on_mouse_moved    (Vector &new_pos)
+bool Clock::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
     return false;
 }   

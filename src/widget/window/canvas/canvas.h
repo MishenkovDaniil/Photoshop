@@ -3,9 +3,11 @@
 
 #include "../../widget.h"
 #include "../../button/button.h"
+#include "../tools/tools.h"
+#include "../tools/palette/palette.h"
 
 class Master_window;
-struct Draw_tool 
+struct Draw_tool
 {
     Button_type type = Unknown_button;
     Color color = Color (255, 0, 255, 255);
@@ -18,20 +20,23 @@ class Canvas : public Widget
     int height_ = 0;
 
     Color color_;
-    Vector lh_pos_;
+    // Vector lh_pos_;
     Draw_tool draw_tool = {};
 
     sf::RenderTexture canvas_texture;
+    // sf::RenderTexture buffer_texture; ?? need to be window size for preview 
     sf::IntRect draw_rect_;
+    Tool_palette *palette_;
+    Transform transform_;
 
 public: 
-    Canvas (int width, int height, const Color color, const Vector lh_pos);
+    Canvas (int width, int height, const Color color, const Vector lh_pos, Tool_palette *palette = nullptr);
     ~Canvas ();
 
-    void render                 (sf::RenderTarget &target)          override;
-    bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos)  override;
-    bool on_mouse_released      (Mouse_key mouse_key, Vector &pos)  override;
-    bool on_mouse_moved         (Vector &new_pos)                   override;    /// x, y - absolute values 
+    void render                 (sf::RenderTarget &target, M_vector<Transform> &transform_stack)          override;
+    bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)  override;
+    bool on_mouse_released      (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)  override;
+    bool on_mouse_moved         (Vector &new_pos, M_vector<Transform> &transform_stack)                   override;    /// x, y - absolute values 
     bool on_keyboard_pressed    (Keyboard_key key)                  override;
     bool on_keyboard_released   (Keyboard_key key)                  override;
     bool on_time                (float delta_sec)                   override;
@@ -39,10 +44,10 @@ public:
 
     bool contains (int x, int y);
     
-    friend bool brush_button_act            (Master_window *m_window,  void *arg);
-    friend bool change_canvas_rect_up_down  (Window *window,  void *arg);
-    friend bool change_canvas_rect_mid      (Window *window,  void *arg);
-    friend bool change_canvas_rect_space    (Window *window,  void *arg);
+    friend bool brush_button_act            (void *m_window,  void *arg);
+    friend bool change_canvas_rect_up_down  (void *window,  void *arg);
+    friend bool change_canvas_rect_mid      (void *window,  void *arg);
+    friend bool change_canvas_rect_space    (void *window,  void *arg);
 
     friend Window;
 };

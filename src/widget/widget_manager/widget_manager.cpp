@@ -3,7 +3,8 @@
 
 #include "widget_manager.h"
 
-Widget_manager::Widget_manager (int list_capacity) 
+Widget_manager::Widget_manager (int list_capacity) :
+    transform_stack_ (M_vector (Transform (Vector (0, 0))))
 {
     list_ctor (&widgets, list_capacity);
 }
@@ -20,8 +21,9 @@ void Widget_manager::add_widget (Widget *widget)
     list_insert (&widgets, 0, widget);
 }
 
-void Widget_manager::render (sf::RenderTarget &target) 
+void Widget_manager::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) //parameter stack is not used!!!
 {
+    printf ("render stack size = %d\n", transform_stack_.get_size ());
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
@@ -34,12 +36,14 @@ void Widget_manager::render (sf::RenderTarget &target)
         }
         assert (widget);
 
-        widget->render (target);
+        widget->render (target, transform_stack_);
     }
 }
 
-bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
+    printf ("Widget_manager::on_mouse_pressed stack size = %d\n", transform_stack_.get_size ());
+
     bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -53,7 +57,7 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (widget);
 
-        is_pressed_on_child = widget->on_mouse_pressed (mouse_key, pos);
+        is_pressed_on_child = widget->on_mouse_pressed (mouse_key, pos, transform_stack_);
         if (is_pressed_on_child)
             return true;
     }
@@ -61,8 +65,10 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
+    printf ("on_mouse_released stack size = %d\n", transform_stack_.get_size ());
+
     bool is_released_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -76,7 +82,7 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (widget);
 
-        is_released_on_child = widget->on_mouse_released (mouse_key, pos);
+        is_released_on_child = widget->on_mouse_released (mouse_key, pos, transform_stack_);
         if (is_released_on_child)
             return true;
     }
@@ -84,8 +90,10 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Widget_manager::on_mouse_moved (Vector &new_pos)
+bool Widget_manager::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
+    printf ("on_mouse_moved stack size = %d\n", transform_stack_.get_size ());
+
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -99,7 +107,7 @@ bool Widget_manager::on_mouse_moved (Vector &new_pos)
         }
         assert (widget);
 
-        is_moved = widget->on_mouse_moved (new_pos);
+        is_moved = widget->on_mouse_moved (new_pos, transform_stack_);
         if (is_moved)
             return true;
     }

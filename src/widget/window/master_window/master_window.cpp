@@ -3,7 +3,7 @@
 Master_window::Master_window (int width, int height, Vector lh_pos, const char *w_name, int list_capacity) :
     Window (width, height, lh_pos, w_name, false)
 {   
-    menu_ = new Menu(lh_pos_ + Vector (0, HEADER_HEIGHT), width);
+    menu_ = new Menu(Vector (0, HEADER_HEIGHT), width);
     assert (menu_);
     list_ctor (&windows, 10);
 }
@@ -26,10 +26,16 @@ void Master_window::add_window (Window *window)
     list_insert (&windows, 0, window);
 }
 
-void Master_window::render (sf::RenderTarget &target) 
+void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) 
 {
-    Window::render (target);
-    menu_->render (target);
+    Window::render (target, transform_stack);
+    
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
+    menu_->render (target, transform_stack);
+    transform_stack.pop ();
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -43,12 +49,16 @@ void Master_window::render (sf::RenderTarget &target)
         }
         assert (window);
 
-        window->render (target);
+        window->render (target, transform_stack);
     }
 }
 
-bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
+bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_idx + 1);
@@ -61,21 +71,38 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos);
+        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos, transform_stack);
         if (is_released_on_child)
+        {
+            transform_stack.pop ();
             return true;
+        }
+    }
+    
+    transform_stack.pop ();
+
+    if (Window::on_mouse_pressed (mouse_key, pos, transform_stack))
+        return true;
+
+    transform_stack.push (unite);
+    
+    if (menu_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
     }
 
-    if (Window::on_mouse_pressed (mouse_key, pos))
-        return true;
-    if (menu_->on_mouse_pressed (mouse_key, pos))
-        return true;
+    transform_stack.pop ();
 
     return false;   
 }
 
-bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos) 
+bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_idx + 1);
@@ -88,27 +115,39 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_released (mouse_key, pos);
+        bool is_released_on_child = window->on_mouse_released (mouse_key, pos, transform_stack);
         if (is_released_on_child)
         {
+            transform_stack.pop ();
             return true;
         }
     }
 
-    if (Window::on_mouse_released (mouse_key, pos))
+    transform_stack.pop ();
+
+    if (Window::on_mouse_released (mouse_key, pos, transform_stack))
     {
         return true;
     }
-    if (menu_->on_mouse_released (mouse_key, pos))
+
+    transform_stack.push (unite);
+
+    if (menu_->on_mouse_released (mouse_key, pos, transform_stack))
     {
+        transform_stack.pop ();
         return true;
     }
+
+    transform_stack.pop ();
 
     return false;   
 }
 
-bool Master_window::on_mouse_moved (Vector &new_pos) 
+bool Master_window::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack) 
 {
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -122,15 +161,28 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_moved (new_pos);
+        bool is_released_on_child = window->on_mouse_moved (new_pos, transform_stack);
         if (is_released_on_child)
+        {
+            transform_stack.pop ();
             return true;
+        }
     }
 
-    if (Window::on_mouse_moved (new_pos))
+    transform_stack.pop ();
+
+    if (Window::on_mouse_moved (new_pos, transform_stack))
         return true;
-    if (menu_->on_mouse_moved (new_pos))
+
+    transform_stack.push (unite);
+
+    if (menu_->on_mouse_moved (new_pos, transform_stack))
+    {
+        transform_stack.pop ();
         return true;
+    }
+
+    transform_stack.pop ();
 
     return false;
 }   

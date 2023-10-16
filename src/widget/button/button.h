@@ -18,7 +18,7 @@ class Window;
 static const int START_CAPACITY = 10;
 static const Color Black = Color (0, 0, 0, 255);
 
-typedef bool (*Button_run_fn) (Window *window, void *arg);
+typedef bool (*Button_run_fn) (void *widget, void *arg);
 
 // TODO::
 // think of rm button frame and frame is needed make rectangle and set button on it
@@ -29,7 +29,7 @@ static int PRESS_BUTTON = 0b001;
 class Button :public Widget
 {
 protected:
-    Vector lh_corner_;    /// z coord is not used
+    // Vector lh_corner_;    /// z coord is not used
     // Point rl_corner_ = Point (0, 0);    /// 
     int width_ = 0;
     int height_ = 0;
@@ -38,24 +38,29 @@ protected:
     Vector press_pos_;
     Color fill_color_;
     Button_run_fn run_fn_ = nullptr;
-    Window *controlled_window_ = nullptr;
+    void *controlled_widget_ = nullptr;
     int run_mask_ = 0;
     void *arg_ = nullptr;
 
+    Transform transform_;
+
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
-            lh_corner_ (lh_corner),
+    Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
+            transform_ (Transform (lh_corner)),
+            // lh_corner_ (lh_corner),
             width_ (width),
             height_ (height),
             run_fn_ (func),
             fill_color_ (fill_color),
-            controlled_window_ (controlled_window),
+            controlled_widget_ (controlled_widget),
             run_mask_ (run_mask),
             arg_ (arg), 
             press_pos_ (Vector ()) {};
     
     virtual ~Button () {};
+
+    Transform &get_transform () {return transform_;};
 
     bool contains (double x, double y) const;
     Button_run_fn get_func          ()const {return run_fn_;};
@@ -63,14 +68,15 @@ public:
     bool          get_status        ()const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
     int           get_width         ()const {return width_;};
     int           get_height        ()const {return height_;};
-    void set_arg (void *arg)                {arg_ = arg;};
 
+    void          set_arg           (void *arg) {arg_ = arg;};
+    
     // virtual void update (bool is_pressed) = 0;
-    virtual bool run ();
-    void render (sf::RenderTarget &target)               override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_moved    (Vector &new_pos)                  override;
+    virtual bool run ();//not virtual  maybe
+    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)                    override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
     bool on_time (float delta_sec)                            override;
