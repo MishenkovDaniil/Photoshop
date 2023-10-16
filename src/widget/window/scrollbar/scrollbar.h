@@ -27,7 +27,6 @@ class Scrollbar : public Button
     int obj_height_ = 0;
     int obj_allowed_height_ = 0;
     bool mid_pressed_ = false;
-    Transform transform;
 
 public: 
     Scrollbar (Vector lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
