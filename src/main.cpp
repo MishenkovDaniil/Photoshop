@@ -42,6 +42,7 @@ int main ()
     // menu.add_button (&menu_button);
     // menu.add_button (&menu_button_2);
     
+    Tool_palette palette;
     Master_window main_window (window_size.x - 50, window_size.y - 50, pos, "master");
     Button menu_button (Vector (0, 0), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
     
@@ -66,10 +67,25 @@ int main ()
 
     clock_button.change_time (timeinfo->tm_sec, timeinfo->tm_min, timeinfo->tm_hour);
 
-    // Button_palette ();
+    Button_palette button_palette (Vector (1000, 100), 200, 200, &palette);
+    Color red (255, 0, 0, 255);
+    Color blue (0, 0, 255, 255);
+    Color green (0, 255, 0, 255);
+    
+    class Brush brush_tool;
+
+    Button red_button (Vector (0, 100), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&red, red, PRESS_BUTTON);
+    Button blue_button (Vector (0, 120), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&blue, blue, PRESS_BUTTON);
+    Button green_button (Vector (0, 140), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&green, green, PRESS_BUTTON);
+    Button brush_button (Vector (100, 100), 30, 30, tool_run_fn, (void *)&main_window, (void *)&brush_tool, Color (0, 255, 0), PRESS_BUTTON);
+    
+    button_palette.add_tool_button (&red_button);
+    button_palette.add_tool_button (&blue_button);
+    button_palette.add_tool_button (&green_button);
+    button_palette.add_tool_button (&brush_button);
+    widget_manager.add_widget (&button_palette);
     //Button (pos + Vector (0, 30), 50, 20, (Button_run_fn)tool_button_act, (void *)tool_palette, (void *)tool, Color (255, 0, 0, 255))
     //this button in run func just changes current tool in tool_palette to tool; ()it's one for all tool buttons;
-    // Tool_palette ();
 
     while (window.isOpen ())
     {
