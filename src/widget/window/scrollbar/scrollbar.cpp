@@ -8,7 +8,6 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          window, 
                          nullptr, 
                          Color (150, 150, 150)),
-    // lh_pos_ (rh_pos - Vector (SCROLLBAR_WIDTH, 0)),
     scrollbar_height_ (height),
     obj_height_ (obj_height),
     obj_allowed_height_ (obj_allowed_height)
@@ -92,26 +91,24 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos)
     if (   up_->on_mouse_moved (new_pos_)) return true;
     if ( down_->on_mouse_moved (new_pos_)) return true;
 
-    Vector mid_lh_pos = mid_->transform_.offset_;
+    Vector mid_offset = mid_->transform_.offset_;
 
-    double old_mid_y = mid_lh_pos.get_y ();
-                                                    /////
     double new_y = new_pos_.get_y();
-    double old_y = mid_->press_pos_.get_y () + mid_lh_pos.get_y ();
+    double old_y = mid_->press_pos_.get_y () + mid_offset.get_y ();
     double delta = std::abs (new_y - old_y);
 
-    if (new_y < old_y && delta > mid_lh_pos.get_y()) 
+    if (new_y < old_y && delta > mid_offset.get_y()) 
     {
-        new_pos_ += Vector (0, delta - mid_lh_pos.get_y());
+        new_pos_ += Vector (0, delta - mid_offset.get_y());
     }
-    else if (new_y > old_y && delta > (height_ - mid_lh_pos.get_y () - mid_->height_))// && delta > (height_ - mid_lh_pos.get_y () - mid_->height_))
+    else if (new_y > old_y && delta > (height_ - mid_offset.get_y () - mid_->height_))
     {
-        new_pos_ += Vector (0, -delta + height_ - mid_lh_pos.get_y () - mid_->height_);
+        new_pos_ += Vector (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
     }
 
     if (mid_->on_mouse_moved (new_pos_)) 
     {
-        double arg = (double)(mid_->transform_.offset_.get_y () - old_mid_y) / (((double)(height_ - mid_->height_))); 
+        double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
         mid_->set_arg ((void *)&arg);
         mid_->run ();
         return true;
