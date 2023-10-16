@@ -95,21 +95,21 @@ int main ()
                 {
                     Vector pos (event.mouseButton.x, event.mouseButton.y);
 
-                    status = widget_manager.on_mouse_pressed ((Mouse_key)event.mouseButton.button, pos, stck);
+                    status = widget_manager.on_mouse_pressed ((Mouse_key)event.mouseButton.button, pos);
                     break;
                 }
                 case sf::Event::MouseButtonReleased:
                 {
                     Vector pos (event.mouseButton.x, event.mouseButton.y);
 
-                    status = widget_manager.on_mouse_released ((Mouse_key)event.mouseButton.button, pos, stck);
+                    status = widget_manager.on_mouse_released ((Mouse_key)event.mouseButton.button, pos);
                     break;
                 }
                 case sf::Event::MouseMoved:
                 {
                     Vector pos (event.mouseMove.x, event.mouseMove.y);
 
-                    status = widget_manager.on_mouse_moved (pos, stck);
+                    status = widget_manager.on_mouse_moved (pos);
                     break;
                 }
                 default:
