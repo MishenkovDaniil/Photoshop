@@ -24,6 +24,7 @@ class Vector
 
 public:
     Vector (double x = 0, double y = 0, double z = 0) : x_ (x), y_ (y), z_ (z) {};
+    Vector (const Vector &other) : x_ (other.x_), y_ (other.y_), z_ (other.z_) {};
     Vector (const Point &start, const Point &end) : x_ (end.x_ - start.x_),
                                                     y_ (end.y_ - start.y_), 
                                                     z_ (end.z_ - start.z_) {};
