@@ -16,7 +16,8 @@ void Clock::render (sf::RenderTarget &target, M_vector<Transform> &transform_sta
 {
     Button::render (target, transform_stack);
     
-    Vector lh_pos = transform_stack.top ().unite (transform_).offset_;
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Vector lh_pos = top.unite (transform_).offset_;
 
     sprintf (hrs, "%d", (int)hours_);
     sprintf (min, "%d", (int)minutes_);
