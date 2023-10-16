@@ -60,19 +60,19 @@ void Header::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Header::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Header::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     ///TODO
     return false;
 }
 
-bool Header::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Header::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     ///TODO
     return false;
 }
 
-bool Header::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Header::on_mouse_moved    (Vector &new_pos)
 {
     ///TODO
     return false;

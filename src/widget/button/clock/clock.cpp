@@ -38,17 +38,17 @@ void Clock::render (sf::RenderTarget &target, M_vector<Transform> &transform_sta
     target.draw (text);
 }   
 
-bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     return false;
 } 
 
-bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     return false;
 } 
 
-bool Clock::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_moved    (Vector &new_pos)
 {
     return false;
 }   

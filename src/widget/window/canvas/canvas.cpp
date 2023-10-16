@@ -47,7 +47,7 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     // if (!palette_)
     //     return false;
@@ -58,9 +58,7 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     
     // return tool->apply_begin (canvas_texture, pos);
 
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    Vector pos_ = unite.apply_transform (pos);
+    Vector pos_ = transform_.apply_transform (pos);
 
     if (draw_tool.is_pressed)
     {
@@ -85,7 +83,7 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 }
 
-bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     // if (!palette_)
     //     return false;
@@ -95,9 +93,7 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     //     return false;
     
     // return tool->apply_end (canvas_texture, pos);
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    Vector pos_ = unite.apply_transform (pos);
+    Vector pos_ = transform_.apply_transform (pos);
 
     if (draw_tool.is_pressed)
     {
@@ -117,7 +113,7 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 }
 
-bool Canvas::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_moved    (Vector &new_pos)
 {
     // if (!palette_)
     //     return false;
@@ -171,14 +167,13 @@ bool Canvas::contains (int x, int y)
 
 bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
 {
-    printf ("brush_start\n");
     Vector brush_pos;
     static sf::Vertex vertex[2];
     static int idx = 0;
     
     if ((!contains (pos.get_x (), pos.get_y ())) && !idx)
         return false;
-    printf ("contains\n");
+
     if (mouse_key == M_Left)
     {
         brush_pos = Vector (draw_rect_.left, draw_rect_.top) + pos;
@@ -188,7 +183,7 @@ bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
         if (idx)
         {
             (vertex[0].position == vertex[1].position) ? canvas_texture.draw(&vertex[0], 1, sf::Points) :
-                                                         canvas_texture.draw (vertex,   2, sf::Lines);
+                                                         canvas_texture.draw (vertex,    2, sf::Lines);
             canvas_texture.display ();
         }
 

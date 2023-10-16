@@ -63,74 +63,38 @@ void Scrollbar::render (sf::RenderTarget &target, M_vector<Transform> &transform
     return;
 }
 
-bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (pos);
 
-    if (   up_->on_mouse_pressed (mouse_key, pos, transform_stack))
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-    if ( down_->on_mouse_pressed (mouse_key, pos, transform_stack))
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-    if (  mid_->on_mouse_pressed (mouse_key, pos, transform_stack))
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-
-    transform_stack.pop ();
+    if (   up_->on_mouse_pressed (mouse_key, pos_)) return true;
+    if ( down_->on_mouse_pressed (mouse_key, pos_)) return true;
+    if (  mid_->on_mouse_pressed (mouse_key, pos_)) return true;
 
     return false;
 }
 
-bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (pos);
 
-    if (   up_->on_mouse_released (mouse_key, pos, transform_stack)) 
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-    if ( down_->on_mouse_released (mouse_key, pos, transform_stack))
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-    if (  mid_->on_mouse_released (mouse_key, pos, transform_stack))
-    {   
-        transform_stack.pop ();
-        return true;
-    }
-
-    transform_stack.pop ();
+    if (   up_->on_mouse_released (mouse_key, pos_)) return true;
+    if ( down_->on_mouse_released (mouse_key, pos_)) return true;
+    if (  mid_->on_mouse_released (mouse_key, pos_)) return true;
 
     return false;
 }
 
-bool Scrollbar::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) 
+bool Scrollbar::on_mouse_moved    (Vector &new_pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-
-    if (   up_->on_mouse_moved (new_pos, transform_stack)) 
+    Vector new_pos_ = transform_.apply_transform (new_pos);
+    
+    if (   up_->on_mouse_moved (new_pos)) 
     {   
-        transform_stack.pop ();
         return true;
     }
-    if ( down_->on_mouse_moved (new_pos, transform_stack))
+    if ( down_->on_mouse_moved (new_pos))
     {   
-        transform_stack.pop ();
         return true;
     }
 
@@ -151,16 +115,13 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transfo
         new_pos += Vector (0, -new_y + old_y + mid_lh_pos.get_y () + height_ - (mid_lh_pos.get_y () + mid_->height_));
     }
 
-    if (mid_->on_mouse_moved (new_pos, transform_stack)) 
+    if (mid_->on_mouse_moved (new_pos)) 
     {
         double arg = (double)(mid_lh_pos.get_y () - old_mid_y) / (((double)(height_ - mid_->height_))); 
         mid_->set_arg ((void *)&arg);
         mid_->run ();
-        transform_stack.pop ();
         return true;
     }
-
-    transform_stack.pop ();
 
     return false;
 }   

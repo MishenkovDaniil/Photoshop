@@ -51,118 +51,94 @@ void Window::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     rect.setOutlineThickness (-1);
     rect.setPosition (lh_pos);
 
-    // transform_stack.push (canvas_->transform_);
     canvas_->render (target, transform_stack);
-    // transform_stack.pop ();
 
     if (scrollbar_) 
     {
-        // transform_stack.push (scrollbar_->transform_);
         scrollbar_->render (target, transform_stack);
-        // transform_stack.pop ();
     }
     
-    // transform_stack.push (header_->transform_);
     header_->render (target, transform_stack);
-    // transform_stack.pop ();
     
     target.draw (rect);
 
     transform_stack.pop ();
 }
 
-bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
-{
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-    
+bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+{   
+    Vector pos_ = transform_.apply_transform (pos);
+
     bool status = false;
 
     if (scrollbar_) 
     {
-        status = scrollbar_->on_mouse_pressed (mouse_key, pos, transform_stack);
+        status = scrollbar_->on_mouse_pressed (mouse_key, pos_);
         if (status) 
         {
-            transform_stack.pop ();
             return true;
         }
     }
     
-    status = canvas_->on_mouse_pressed (mouse_key, pos, transform_stack);
+    status = canvas_->on_mouse_pressed (mouse_key, pos_);
     if (status) 
     {
-        transform_stack.pop ();
         return true;
     }
     
-    status = header_->on_mouse_pressed (mouse_key, pos, transform_stack);
-
-    transform_stack.pop ();
+    status = header_->on_mouse_pressed (mouse_key, pos_);
 
     return status;
 } 
 
-bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (pos);
 
     bool status = false;
 
     if (scrollbar_) 
     {
-        status = scrollbar_->on_mouse_released (mouse_key, pos, transform_stack);
+        status = scrollbar_->on_mouse_released (mouse_key, pos_);
         if (status) 
         {
-            transform_stack.pop ();
             return true;
         }
     }
 
-    status = header_->on_mouse_released (mouse_key, pos, transform_stack);
+    status = header_->on_mouse_released (mouse_key, pos_);
     if (status) 
     {
-        transform_stack.pop ();
         return true;
     }
     
-    status = canvas_->on_mouse_released (mouse_key, pos, transform_stack);
-    
-    transform_stack.pop ();
+    status = canvas_->on_mouse_released (mouse_key, pos_);
 
     return status;
 } 
 
-bool Window::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Window::on_mouse_moved    (Vector &new_pos)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (new_pos);
 
     bool status = false;
 
     if (scrollbar_) 
     {
-        status = scrollbar_->on_mouse_moved (new_pos, transform_stack);
+        status = scrollbar_->on_mouse_moved (pos_);
         if (status) 
         {
-            transform_stack.pop ();
             return true;
         }
     }
     
-    status = header_->on_mouse_moved (new_pos, transform_stack);
+    status = header_->on_mouse_moved (pos_);
     if (status) 
     {
-        transform_stack.pop ();
         return true;
     }
 
-    status = canvas_->on_mouse_moved (new_pos, transform_stack);
-
-    transform_stack.pop ();
+    status = canvas_->on_mouse_moved (pos_);
 
     return status;
 }   

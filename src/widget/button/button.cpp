@@ -20,7 +20,7 @@ bool Button::run ()
         fprintf (stderr, "Error: nullptr function pointer in Button.\n");
         return false;
     }
-
+    
     return run_fn_ (controlled_widget_, arg_);
 }
 
@@ -44,11 +44,9 @@ void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }   
 
-bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    Vector pos_ = unite.apply_transform (pos);
+    Vector pos_ = transform_.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -64,11 +62,9 @@ bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 } 
 
-bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 { 
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    Vector pos_ = unite.apply_transform (pos);
+    Vector pos_ = transform_.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -83,15 +79,12 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 } 
 
-bool Button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_moved    (Vector &new_pos)
 { 
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    Vector pos_ = unite.apply_transform (new_pos);
+    Vector pos_ = transform_.apply_transform (new_pos);
 
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
-        printf ("move_button\n");
         Vector change (0, pos_.get_y () - press_pos_.get_y ());
 
         transform_.offset_ += change;

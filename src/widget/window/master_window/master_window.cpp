@@ -53,11 +53,9 @@ void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &trans
     }
 }
 
-bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (pos);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -71,37 +69,27 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vecto
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos, transform_stack);
+        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos);
         if (is_released_on_child)
         {
-            transform_stack.pop ();
             return true;
         }
     }
     
-    transform_stack.pop ();
-
-    if (Window::on_mouse_pressed (mouse_key, pos, transform_stack))
+    if (Window::on_mouse_pressed (mouse_key, pos))
         return true;
 
-    transform_stack.push (unite);
-    
-    if (menu_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    if (menu_->on_mouse_pressed (mouse_key, pos_))
     {
-        transform_stack.pop ();
         return true;
     }
-
-    transform_stack.pop ();
 
     return false;   
 }
 
-bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (pos);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -115,39 +103,29 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vecto
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_released (mouse_key, pos, transform_stack);
+        bool is_released_on_child = window->on_mouse_released (mouse_key, pos);
         if (is_released_on_child)
         {
-            transform_stack.pop ();
             return true;
         }
     }
 
-    transform_stack.pop ();
-
-    if (Window::on_mouse_released (mouse_key, pos, transform_stack))
+    if (Window::on_mouse_released (mouse_key, pos))
     {
         return true;
     }
 
-    transform_stack.push (unite);
-
-    if (menu_->on_mouse_released (mouse_key, pos, transform_stack))
+    if (menu_->on_mouse_released (mouse_key, pos_))
     {
-        transform_stack.pop ();
         return true;
     }
-
-    transform_stack.pop ();
 
     return false;   
 }
 
-bool Master_window::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_moved (Vector &new_pos) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    Vector pos_ = transform_.apply_transform (new_pos);
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -161,28 +139,20 @@ bool Master_window::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transf
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_moved (new_pos, transform_stack);
+        bool is_released_on_child = window->on_mouse_moved (new_pos);
         if (is_released_on_child)
         {
-            transform_stack.pop ();
             return true;
         }
     }
 
-    transform_stack.pop ();
-
-    if (Window::on_mouse_moved (new_pos, transform_stack))
+    if (Window::on_mouse_moved (new_pos))
         return true;
 
-    transform_stack.push (unite);
-
-    if (menu_->on_mouse_moved (new_pos, transform_stack))
+    if (menu_->on_mouse_moved (pos_))
     {
-        transform_stack.pop ();
         return true;
     }
-
-    transform_stack.pop ();
 
     return false;
 }   
