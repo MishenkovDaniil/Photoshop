@@ -8,11 +8,11 @@ enum Button_type
 };
 
 #include <SFML/Graphics.hpp>
+
 class Window;
 class Menu;
 class Tool_palette;
 class Button_palette;
-
 #include "../widget.h"
 #include "../window/window.h"
 #include "../../graphic_structures/color/color.h"
@@ -50,16 +50,8 @@ protected:
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON) :
-            transform_ (Transform (lh_corner)),
-            width_ (width),
-            height_ (height),
-            run_fn_ (func),
-            fill_color_ (fill_color),
-            controlled_widget_ (controlled_widget),
-            run_mask_ (run_mask),
-            arg_ (arg), 
-            press_pos_ (Vector ()) {};
+    Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget,
+            void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON);
     
     virtual ~Button () {};
 
@@ -74,8 +66,7 @@ public:
 
     void          set_arg           (void *arg) {arg_ = arg;};
     
-    // virtual void update (bool is_pressed) = 0;
-    virtual bool run ();//not virtual  maybe
+    bool run ();
     void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)                    override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
@@ -89,27 +80,26 @@ public:
     friend Button_palette;
 };
 
-// class Texture_button : public Button
-// {
-// protected:
-//     sf::Texture *cur_texture_ = nullptr;
-//     sf::Texture &pressed_texture_;
-//     sf::Texture &released_texture_;
-//     sf::Sprite *sprite = nullptr;
+class Texture_button : public Button
+{
+protected:
+    sf::Texture *cur_texture_ = nullptr;
+    sf::Texture &pressed_texture_;
+    sf::Texture &released_texture_;
+    sf::Sprite *sprite_ = nullptr;
 
-// public:
-//     Texture_button (Point lh_corner, Point rl_corner, sf::Texture &pressed, sf::Texture &released) : 
-//                     Button (lh_corner, rl_corner),
-//                     pressed_texture_ (pressed),
-//                     released_texture_ (released) 
-//                     {cur_texture_ = &released_texture_;
-//                     sprite = new sf::Sprite;};
-//     ~Texture_button () override {delete sprite;};
+public:
+    Texture_button (Vector lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+                    Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
+    ~Texture_button () override;
 
-//     void draw (sf::RenderWindow &window, int screen_w, int screen_h)const override;
-//     void update (bool is_pressed) override final;
-//     bool run (Point &object, sf::Keyboard::Key key) override = 0;
-// };
+    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
+    bool on_mouse_moved    (Vector &new_pos)                  override;
+    bool on_keyboard_pressed  (Keyboard_key key)              override;
+    bool on_keyboard_released (Keyboard_key key)              override;
+};
 
 // class String_button : public Button
 // {
@@ -138,28 +128,6 @@ public:
 //     void draw (sf::RenderWindow &window, int screen_w, int screen_h)const override;
 //     void update (bool is_pressed) override final;
 //     bool run (Point &object, sf::Keyboard::Key key) override = 0;
-// };
-
-// class Button_manager 
-// {
-//     Button **buttons_p = nullptr;
-//     int size_ = 0;
-//     int capacity_ = 0;
-
-//     sf::RenderWindow *window_ = nullptr;
-//     int screen_h_ = 0;
-//     int screen_w_ = 0;
-
-// public: 
-//     Button_manager (sf::RenderWindow &window, int screen_w, int screen_h);
-//     ~Button_manager ();
-
-//     void add (Button *button);
-//     void draw ();
-//     bool run (Point object = Point (0, 0, 0), sf::Keyboard::Key key = sf::Keyboard::Key::Unknown);
-//     Button *contains (double x, double y);
-// // private:
-//     // bool resize ();
 // };
 
 #endif /* BUTTON_H */

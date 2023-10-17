@@ -7,6 +7,17 @@
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
+Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, Color fill_color, int run_mask) :
+            transform_ (Transform (lh_corner)),
+            width_ (width),
+            height_ (height),
+            run_fn_ (func),
+            fill_color_ (fill_color),
+            controlled_widget_ (controlled_widget),
+            run_mask_ (run_mask),
+            arg_ (arg), 
+            press_pos_ (Vector ()) {};
+
 bool Button::contains (double x, double y) const
 {
     return (0 <= x && 0 <= y &&
@@ -28,7 +39,6 @@ void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
 {
     Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
     Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
 
     Vector lh_corner = unite.offset_;
 
@@ -40,8 +50,6 @@ void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     rect.setPosition (lh_corner.get_x (), lh_corner.get_y ());
 
     target.draw (rect);
-
-    transform_stack.pop ();
 }   
 
 bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
@@ -118,89 +126,69 @@ bool Button::on_time (float delta_sec)
 }   
 
 
+Texture_button::Texture_button (Vector lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+                                Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON) : 
+    Button (lh_corner, width, height, func, controlled_widget, arg, Color (), run_mask),
+    pressed_texture_ (pressed),
+    released_texture_ (released) 
+{
+    cur_texture_ = &released_texture_;
+    sprite_ = new sf::Sprite;
+}
 
-// Button_manager::Button_manager (sf::RenderWindow &window, int screen_w, int screen_h) : 
-// window_ (&window),
-// screen_w_ (screen_w),
-// screen_h_ (screen_h)
-// {
-//     buttons_p = new Button *[START_CAPACITY];
-//     assert (buttons_p);
+Texture_button::~Texture_button ()
+{
+    if (sprite_)
+        delete sprite_;
+}
 
-//     capacity_ = START_CAPACITY;
-// }
+void Texture_button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+{
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
 
-// void Button_manager::draw ()
-// {
-//     assert (buttons_p);
+    Vector lh_corner = unite.offset_;
 
-//     for (int idx = 0; idx < size_; ++idx)
-//     {
-//         (*(buttons_p + idx))->draw (*window_, screen_w_, screen_h_);
-//     }    
-// }
+    sprite_->setTexture (*cur_texture_);
+    sprite_->setPosition (lh_corner.get_x (), lh_corner.get_y ());
 
-// void Button_manager::add (Button *button)
-// {
-//     assert (buttons_p);
+    target.draw (*sprite_);
+}
 
-//     if (((double)(size_ + 1) /(double)capacity_) > LOAD_FACTOR)
-//     {
-//         // this->resize ();
-//         ;
-//     }
+bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+{
+    bool status = Button::on_mouse_pressed (mouse_key, pos);
+    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    return status;
+}
 
-//     *(buttons_p + size_++) = button;
-// }
+bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+{
+    bool status = Button::on_mouse_released (mouse_key, pos);
+    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    return status;
+}
 
-// Button *Button_manager::contains (double x, double y)
-// {
-//     for (int idx = 0; idx < size_; ++idx)
-//     {
-//         if ((*(buttons_p + idx))->contains (x, y))
-//         {
-//             return *(buttons_p + idx);
-//         }
-//     }
+bool Texture_button::on_mouse_moved    (Vector &new_pos)
+{
+    bool status = Button::on_mouse_moved (new_pos);
+    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    return status;
+}   
 
-//     return nullptr;
-// }
+bool Texture_button::on_keyboard_pressed  (Keyboard_key key)
+{
+    bool status = Button::on_keyboard_pressed (key);
+    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    return status;
+}   
 
-// bool Button_manager::run (Point object, sf::Keyboard::Key key)
-// {
-//     assert (buttons_p);
-
-//     for (int idx = 0; idx < size_; ++idx)
-//     {
-//         (*(buttons_p + idx))->run (object, key);
-//     }
-//     return true;
-// }
-
-// Button_manager::~Button_manager ()
-// {
-//     //should we delete every button or would it do button destroyer??
-//     delete[] buttons_p;
-// }
-
-
-// void Texture_button::draw (sf::RenderWindow &window, int screen_w, int screen_h)const
-// {
-//     sprite->setTexture (*cur_texture_);
-//     sprite->setPosition (lh_corner_.x_, lh_corner_.y_);
-
-//     window.draw (*sprite);
-// }
-
-// void Texture_button::update (bool is_pressed)
-// {
-//     if (is_pressed == true)
-//         cur_texture_ = &pressed_texture_;
-//     else 
-//         cur_texture_ = &released_texture_;
-
-//     is_pressed_ = is_pressed;
-// }
+bool Texture_button::on_keyboard_released (Keyboard_key key)
+{
+    bool status = Button::on_keyboard_released (key);
+    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    return status;
+}   
 
 
 // void String_button::draw (sf::RenderWindow &window, int screen_w, int screen_h)const
