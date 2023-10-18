@@ -13,7 +13,6 @@ Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool n
     transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height)
-    // lh_pos_ (lh_pos)
 {
     header_ = new Header (Vector (0, 0), width, w_name);
     canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (0, HEADER_HEIGHT), palette);
@@ -69,84 +68,38 @@ bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {   
     Vector pos_ = transform_.apply_transform (pos);
 
-    bool status = false;
-
-    if (scrollbar_) 
-    {
-        status = scrollbar_->on_mouse_pressed (mouse_key, pos_);
-        if (status) 
-        {
-            return true;
-        }
-    }
+    if (scrollbar_ && scrollbar_->on_mouse_pressed (mouse_key, pos_)) return true;
+    if (header_->on_mouse_pressed (mouse_key, pos_)) return true;
     
-    status = canvas_->on_mouse_pressed (mouse_key, pos_);
-    if (status) 
-    {
-        return true;
-    }
-    
-    status = header_->on_mouse_pressed (mouse_key, pos_);
-
-    return status;
+    return canvas_->on_mouse_pressed (mouse_key, pos_);
 } 
 
 bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
 
-    bool status = false;
-
-    if (scrollbar_) 
-    {
-        status = scrollbar_->on_mouse_released (mouse_key, pos_);
-        if (status) 
-        {
-            return true;
-        }
-    }
-
-    status = header_->on_mouse_released (mouse_key, pos_);
-    if (status) 
-    {
-        return true;
-    }
+    if (scrollbar_ && scrollbar_->on_mouse_released (mouse_key, pos_)) return true;
+    if (header_->on_mouse_released (mouse_key, pos_)) return true;
     
-    status = canvas_->on_mouse_released (mouse_key, pos_);
-
-    return status;
+    return canvas_->on_mouse_released (mouse_key, pos_);
 } 
 
 bool Window::on_mouse_moved    (Vector &new_pos)
 {
     Vector pos_ = transform_.apply_transform (new_pos);
 
-    bool status = false;
+    if (scrollbar_ && scrollbar_->on_mouse_moved (pos_)) return true;
+    if (header_->on_mouse_moved (pos_))                  return true;
 
-    if (scrollbar_) 
-    {
-        status = scrollbar_->on_mouse_moved (pos_);
-        if (status) 
-        {
-            return true;
-        }
-    }
-    
-    status = header_->on_mouse_moved (pos_);
-    if (status) 
-    {
-        return true;
-    }
-
-    status = canvas_->on_mouse_moved (pos_);
-
-    return status;
+    return canvas_->on_mouse_moved (pos_);;
 }   
 
 bool Window::on_keyboard_pressed  (Keyboard_key key)
 {
-    //TODO
-    return false;
+    if (scrollbar_ && scrollbar_->on_keyboard_pressed (key)) return true;
+    if (header_->on_keyboard_pressed (key)) return true;
+
+    return canvas_->on_keyboard_pressed (key);
 } 
 
 bool Window::on_keyboard_released (Keyboard_key key)

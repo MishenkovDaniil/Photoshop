@@ -15,6 +15,7 @@ class Scrollbar;
 
 /// TODO : FRAME
 
+
 class Window : public Widget
 {
 protected:
@@ -45,6 +46,7 @@ public:
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);
     friend bool change_canvas_rect_space    (void *window,  void *arg);
+    friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 
     friend Scrollbar;
 };
