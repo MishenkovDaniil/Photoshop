@@ -127,7 +127,7 @@ bool Button::on_time (float delta_sec)
 
 
 Texture_button::Texture_button (Vector lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
-                                Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON) : 
+                                Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
     Button (lh_corner, width, height, func, controlled_widget, arg, Color (), run_mask),
     pressed_texture_ (pressed),
     released_texture_ (released) 
