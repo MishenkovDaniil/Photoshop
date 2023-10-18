@@ -67,7 +67,7 @@ void Brush::on_confirm             (Vector &pos, Canvas &canvas)
     is_pressed = false;
 }
 
-void Brush::on_cancel              (Vector &pos, Canvas &canvas)
+void Brush::on_cancel              (Canvas &canvas)
 {
 
     sf::CircleShape circle (10);
@@ -159,12 +159,13 @@ void Line::on_confirm             (Vector &pos, Canvas &canvas)
     return;   
 }
 
-void Line::on_cancel              (Vector &pos, Canvas &canvas)
+void Line::on_cancel              (Canvas &canvas)
 {
     if (vertex_idx)
     {
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
+        vertex_idx = 0;
     }
     
     return;   

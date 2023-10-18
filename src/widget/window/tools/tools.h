@@ -29,7 +29,7 @@ public:
 
     virtual void on_move                (Vector &pos, Canvas &canvas) = 0;
     virtual void on_confirm             (Vector &pos, Canvas &canvas) = 0;
-    virtual void on_cancel              (Vector &pos, Canvas &canvas) = 0;
+    virtual void on_cancel              (Canvas &canvas) = 0;
     
     Widget *get_widget () {return widget_;};
 
@@ -60,7 +60,7 @@ public:
 
     void on_move                (Vector &pos, Canvas &canvas) override;
     void on_confirm             (Vector &pos, Canvas &canvas) override;
-    void on_cancel              (Vector &pos, Canvas &canvas) override;
+    void on_cancel              (Canvas &canvas) override;
 };
 
 class Line : public Tool 
@@ -80,7 +80,7 @@ public:
 
     void on_move                (Vector &pos, Canvas &canvas) override;
     void on_confirm             (Vector &pos, Canvas &canvas) override;
-    void on_cancel              (Vector &pos, Canvas &canvas) override;
+    void on_cancel              (Canvas &canvas) override;
 };
 
 // class Polygon : public Tool
