@@ -4,7 +4,6 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos, T
     transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height),
-    // lh_pos_ (lh_pos), 
     color_ (color),
     palette_ (palette) 
 {
@@ -43,6 +42,19 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     canvas_sprite.setTextureRect (draw_rect_);
      
     target.draw (canvas_sprite);
+    
+    if (palette_)
+    {
+        Tool *tool = palette_->get_cur_tool ();
+        if (tool)
+        {
+            Widget *widget = tool->get_widget ();
+            if (widget)
+            {
+                widget->render (target, transform_stack);
+            }
+        }
+    }
 
     transform_stack.pop ();
 }
@@ -52,8 +64,10 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     Vector pos_ = transform_.apply_transform (pos);
     if (!contains (pos_.get_x (), pos_.get_y ()))
         return false;
-    // if (width_ > 1000)
-        // return false;
+    
+    Vector texture_offset (draw_rect_.left, draw_rect_.top);
+    pos_ += texture_offset;
+
     if (!palette_)
         return false;
     
@@ -72,6 +86,8 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
+    Vector texture_offset (draw_rect_.left, draw_rect_.top);
+    pos_ += texture_offset;
 
     if (!palette_)
         return false;
@@ -91,6 +107,8 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 bool Canvas::on_mouse_moved    (Vector &new_pos)
 {
     Vector pos_ = transform_.apply_transform (new_pos);
+    Vector texture_offset (draw_rect_.left, draw_rect_.top);
+    pos_+= texture_offset;
 
     if (!palette_)
         return false;

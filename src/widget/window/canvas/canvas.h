@@ -50,6 +50,7 @@ public:
     
     Color get_fg_color ();
     Color get_bg_color ();
+    Vector get_size () {return Vector (width_, height_);};
 
     friend bool brush_button_act            (void *m_window,  void *arg);
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
