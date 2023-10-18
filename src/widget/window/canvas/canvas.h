@@ -26,11 +26,11 @@ class Canvas : public Widget
     Draw_tool draw_tool = {};
 
     // sf::RenderTexture buffer_texture; ?? need to be window size for preview 
-    sf::IntRect draw_rect_;
     Tool_palette *palette_;
     Transform transform_;
 
 public:
+    sf::IntRect draw_rect_;
     sf::RenderTexture canvas_texture;
 
 public: 

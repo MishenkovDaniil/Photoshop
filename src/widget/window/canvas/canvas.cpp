@@ -35,7 +35,7 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
 
-    Vector lh_pos = transform_stack.top ().offset_;
+    Vector lh_pos = unite.offset_;
 
     sf::Sprite canvas_sprite (canvas_texture.getTexture ());
     canvas_sprite.setPosition (lh_pos);
@@ -65,9 +65,6 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     if (!contains (pos_.get_x (), pos_.get_y ()))
         return false;
     
-    Vector texture_offset (draw_rect_.left, draw_rect_.top);
-    pos_ += texture_offset;
-
     if (!palette_)
         return false;
     
@@ -86,8 +83,6 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
-    Vector texture_offset (draw_rect_.left, draw_rect_.top);
-    pos_ += texture_offset;
 
     if (!palette_)
         return false;
@@ -107,8 +102,6 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 bool Canvas::on_mouse_moved    (Vector &new_pos)
 {
     Vector pos_ = transform_.apply_transform (new_pos);
-    Vector texture_offset (draw_rect_.left, draw_rect_.top);
-    pos_+= texture_offset;
 
     if (!palette_)
         return false;
