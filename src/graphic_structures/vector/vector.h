@@ -37,6 +37,7 @@ public:
     Vector operator -= (const Vector &vec);
     Vector operator -  (const Vector &vec)const;
     Vector operator -  ()const;
+    Vector operator =  (const Vector &vec);
     Vector operator && (const double mult)const;  // покоординатное умножение
     Vector operator !  () const;                  // нормализация вектора
     double operator || (const Vector &vec)const ; // скалярное умножение

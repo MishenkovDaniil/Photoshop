@@ -19,6 +19,15 @@ Vector Vector::operator * (const Vector &vec) const
     return Vector (y_ * vec.z_ - z_ * vec.y_, x_ * vec.z_ - z_ * vec.x_, x_ * vec.y_ - y_ * vec.x_);
 }
 
+Vector Vector::operator =  (const Vector &right)
+{
+    x_ = right.x_;
+    y_ = right.y_;
+    z_ = right.z_;
+
+    return *this;
+}
+
 Vector Vector::operator += (const Vector &vec)
 {
     x_ += vec.x_;
