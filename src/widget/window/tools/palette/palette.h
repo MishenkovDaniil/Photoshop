@@ -34,25 +34,4 @@ public:
     friend bool tool_run_fn (void *widget, void *args);
 };
 
-//button args (Tool, palette) -->pressed-->palette.change_tool (tool);
-//canvas    canvas-->if (palette.cur_tool)-->apply...
-
-// class Palette_view : public Widget
-// {
-//     Tool_palette &tool_palette_;
-
-// public: 
-//     Palette_view (Tool_palette &tool_palette) : tool_palette_ (tool_palette) {};
-//     ~Palette_view () {};
-
-//     void render (sf::RenderTarget &target) = 0;
-//     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) = 0;
-//     bool on_mouse_released (Mouse_key mouse_key, Vector &pos) = 0;
-//     bool on_mouse_moved    (Vector &new_pos) = 0;    /// x, y - absolute values 
-//     bool on_keyboard_pressed  (Keyboard_key key) = 0;
-//     bool on_keyboard_released (Keyboard_key key) = 0;
-//     bool on_time (float delta_sec) = 0;
-// };
-
-
 #endif /* TOOL_PALETTE_H */
