@@ -42,10 +42,10 @@ int main ()
 
     Tool_palette palette;
     Master_window main_window (window_size.x - 50, window_size.y - 50, pos, "master");
-    Button menu_button (Vector (0, 0), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
+    // Button menu_button (Vector (0, 0), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
     
     Clock clock_button (pos, 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
-    main_window.add_menu_button (&menu_button);
+    // main_window.add_menu_button (&menu_button);
     widget_manager.add_widget (&main_window);
     widget_manager.add_widget (&clock_button);
 
@@ -71,7 +71,8 @@ int main ()
     Color green (0, 255, 0, 255);
     
     class Brush brush_tool; 
-    class Line line_tool; 
+    Line line_tool; 
+    Circle_shape circle_tool; 
     sf::Texture brush_pressed_texture;
     sf::Texture line_pressed_texture;
     sf::Texture brush_released_texture;
@@ -86,12 +87,14 @@ int main ()
     Button green_button (Vector (80, 160), 40, 40, color_button_run_fn, (void *)&main_window, (void *)&green, green, PRESS_BUTTON);
     Texture_button brush_button (Vector (0, 0), 50, 50, brush_pressed_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&brush_tool, PRESS_BUTTON);
     Texture_button tool_button (Vector (50, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&line_tool, PRESS_BUTTON);
+    Texture_button circle_button (Vector (100, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
     
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
     button_palette.add_tool_button (&green_button);
     button_palette.add_tool_button (&brush_button);
     button_palette.add_tool_button (&tool_button);
+    button_palette.add_tool_button (&circle_button);
     widget_manager.add_widget (&button_palette);
     //Button (pos + Vector (0, 30), 50, 20, (Button_run_fn)tool_button_act, (void *)tool_palette, (void *)tool, Color (255, 0, 0, 255))
     //this button in run func just changes current tool in tool_palette to tool; ()it's one for all tool buttons;
@@ -106,10 +109,14 @@ int main ()
             {
                 case sf::Event::KeyPressed:
                 {
-                    if (event.key.code != sf::Keyboard::Escape)
+                    if (event.key.code == sf::Keyboard::Escape)
                     {
-                        break;   
+                        status = widget_manager.on_keyboard_pressed (Escape); // tool must return  bool
+                        if (status)
+                            break;
                     }
+                    else 
+                        break;
                 }
                 case sf::Event::Closed:
                 {
