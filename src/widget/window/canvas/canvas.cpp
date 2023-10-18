@@ -153,33 +153,3 @@ Color Canvas::get_bg_color ()
     }
     return Color (0, 0, 0, 0);
 }
-
-bool Canvas::on_brush (Mouse_key mouse_key, Vector &pos)
-{
-    Vector brush_pos;
-    static sf::Vertex vertex[2];
-    static int idx = 0;
-    
-    if ((!contains (pos.get_x (), pos.get_y ())) && !idx)
-        return false;
-
-    if (mouse_key == M_Left)
-    {
-        brush_pos = Vector (draw_rect_.left, draw_rect_.top) + pos;
-        
-        vertex[idx] = sf::Vertex (brush_pos, draw_tool.color);
-
-        if (idx)
-        {
-            (vertex[0].position == vertex[1].position) ? canvas_texture.draw(&vertex[0], 1, sf::Points) :
-                                                         canvas_texture.draw (vertex,    2, sf::Lines);
-            canvas_texture.display ();
-        }
-
-        idx = !idx;
-
-        return true;
-    }
-    
-    return false;
-}

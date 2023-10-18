@@ -40,11 +40,6 @@ int main ()
 
     Widget_manager widget_manager; 
 
-    // Menu menu (pos, 800);
-    // Button menu_button_2(pos + Vector (50, 30), 100, 20, nullptr, Color (0, 255, 0, 255));
-    // menu.add_button (&menu_button);
-    // menu.add_button (&menu_button_2);
-    
     Tool_palette palette;
     Master_window main_window (window_size.x - 50, window_size.y - 50, pos, "master");
     Button menu_button (Vector (0, 0), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
@@ -170,37 +165,4 @@ int main ()
     }
 
     return 0;
-}
-
-bool brush_button_act (void *m_window_, void *arg)
-{
-    assert (m_window_);
-    static bool run = false;
-
-    run = !run;
-    
-    Master_window *m_window = (Master_window *)m_window_;
-
-    if (run)
-    {
-        for (int i = 0; i < m_window->windows.size; ++i)
-        {
-            Window *window = (Window *)list_get (&(m_window->windows), i + 1);
-
-            window->canvas_->draw_tool.type = Brush;
-            window->canvas_->draw_tool.is_pressed = true;
-            window->canvas_->draw_tool.color = Color (255, 0, 255);
-        }
-    }
-    else 
-    {
-        for (int i = 0; i < m_window->windows.size; ++i)
-        {
-            Window *window = (Window *)list_get (&(m_window->windows), i + 1);
-
-            window->canvas_->draw_tool.is_pressed = false;
-            window->canvas_->draw_tool.type = Unknown_button;
-        }
-    }
-    return true;
 }

@@ -9,12 +9,6 @@ class Tool_palette;
 #include "../tools/palette/palette.h"
 
 class Master_window;
-struct Draw_tool
-{
-    Button_type type = Unknown_button;
-    Color color = Color (255, 0, 255, 255);
-    bool is_pressed = false;
-};
 
 class Canvas : public Widget
 {
@@ -22,10 +16,7 @@ class Canvas : public Widget
     int height_ = 0;
 
     Color color_;
-    // Vector lh_pos_;
-    Draw_tool draw_tool = {};
 
-    // sf::RenderTexture buffer_texture; ?? need to be window size for preview 
     Tool_palette *palette_;
     Transform transform_;
 
