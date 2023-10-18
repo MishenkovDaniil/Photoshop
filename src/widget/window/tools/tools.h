@@ -17,6 +17,8 @@ struct Button_state
 
 class Tool 
 {    
+protected:
+    Widget *widget_ = nullptr;
 public:
     virtual ~Tool () = default;
     virtual void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) = 0;
@@ -29,7 +31,7 @@ public:
     virtual void on_confirm             (Vector &pos, Canvas &canvas) = 0;
     virtual void on_cancel              (Vector &pos, Canvas &canvas) = 0;
     
-    // virtual Widget *get_widget () = 0;
+    Widget *get_widget () {return widget_;};
 
 
     // // virtual bool apply_begin    (sf::RenderTexture &texture, Vector &pos) = 0;
@@ -60,6 +62,28 @@ public:
     void on_confirm             (Vector &pos, Canvas &canvas) override;
     void on_cancel              (Vector &pos, Canvas &canvas) override;
 };
+
+class Line : public Tool 
+{
+    sf::Vertex vertex[2];
+    int vertex_idx = 0;
+
+public:
+    Line ();
+    ~Line ();
+
+    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_modifier_1          (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_modifier_2          (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_modifier_3          (Button_state &state, Vector &pos, Canvas &canvas) override;
+
+    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_confirm             (Vector &pos, Canvas &canvas) override;
+    void on_cancel              (Vector &pos, Canvas &canvas) override;
+};
+
+// class Polygon : public Tool
 
 // class Circle_shape_tool : public Tool
 // {
