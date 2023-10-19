@@ -9,6 +9,11 @@
 #include "../window.h"
 
 //sf::RTX --> canvas 
+
+static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
+static const double    MIN_CIRCLE_THICKNESS     = 1.0;
+static const double DEFAULT_BRUSH_THICKNESS     = 10.0;
+
 struct Button_state 
 {
     bool pressed = false;
@@ -89,6 +94,7 @@ public:
 class Circle_shape : public Tool
 {
     Vector center_;
+    Vector last_center_;
     sf::CircleShape circle_ = sf::CircleShape ();
 
 public:

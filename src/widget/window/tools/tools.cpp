@@ -9,10 +9,11 @@ Brush::~Brush ()
 
 void Brush::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
 {
+    //TODO make circle class member (maybe)
     if (state.pressed)
     {
         pos += Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
-        sf::CircleShape circle (10);
+        sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
 
         circle.setFillColor (canvas.get_fg_color ());
@@ -52,7 +53,7 @@ void Brush::on_move                (Vector &pos, Canvas &canvas)
 
     pos += Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
 
-    sf::CircleShape circle (10);
+    sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
     circle.setFillColor (canvas.get_fg_color ());   //fg_color
     
@@ -89,7 +90,7 @@ void Line::on_main_button         (Button_state &state, Vector &pos, Canvas &can
     if (state.pressed)
     {
         Vector canvas_size = canvas.get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Color (0, 0, 0, 0));
+        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
         vertex[0] = sf::Vertex (pos, canvas.get_fg_color ());
@@ -127,7 +128,7 @@ void Line::on_move                (Vector &pos, Canvas &canvas)
         return;
     M_render_texture *draw_texture = (M_render_texture *)widget_;
     assert (draw_texture);
-    draw_texture->clear (Color (0, 0, 0, 0));
+    draw_texture->clear (Transparent);
     
     vertex[1] = sf::Vertex (pos, canvas.get_fg_color ());
     (vertex[0].position == vertex[1].position) ? draw_texture->texture_.draw(&vertex[0], 1, sf::Points) :
@@ -179,15 +180,15 @@ void Circle_shape::on_main_button         (Button_state &state, Vector &pos, Can
 {
     if (state.pressed)
     {
-        center_ = pos;
+        center_ = last_center_ = pos;
         
         Vector canvas_size = canvas.get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Color (0, 0, 0, 0));
+        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
         
         circle_.setPosition (center_);
-        circle_.setFillColor (Color (0, 0, 0, 0));
-        circle_.setOutlineThickness (2);
+        circle_.setFillColor (Transparent);
+        circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
         circle_.setOutlineColor (canvas.get_fg_color ());
 
         state_.pressed = true;
@@ -221,22 +222,52 @@ void Circle_shape::on_move                (Vector &pos, Canvas &canvas)
     
     M_render_texture *draw_texture = (M_render_texture *)widget_;
     assert (draw_texture);
-    draw_texture->clear (Color (0, 0, 0, 0));
+    draw_texture->clear (Transparent);
 
-    Vector cur_center = center_;
+    last_center_ = center_;
     Vector pos_offset = pos - center_;
-    circle_.setRadius ((sqrt(((double)(pos_offset || pos_offset)) / 2.0)) / 2);
 
-    if (pos_offset.get_x () < 0)
+    int min_idx = 0;
+    double min = 0;
+    double max = 0;
+    if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
     {
-        cur_center  += Vector (pos_offset.get_x (), 0);
+        min = std::abs (pos_offset.get_x ());
+        max = std::abs (pos_offset.get_y ());
     }
-    if (pos_offset.get_y () < 0)
+    else 
     {
-        cur_center  += Vector (0, pos_offset.get_y ());
+        min = std::abs (pos_offset.get_y ());
+        max = std::abs (pos_offset.get_x ());
+        min_idx = 1;
     }
 
-    circle_.setPosition (cur_center);
+    circle_.setRadius (min / 2.0);    
+    
+    if (min)
+    {
+        if (min_idx == 0)
+        {
+            circle_.setScale (1, max / min);
+        }
+        else 
+        {
+            circle_.setScale (max / min, 1);
+        }
+    }
+
+    if (pos_offset.get_x () < 0.0)
+    {
+        last_center_  += Vector (pos_offset.get_x (), 0);
+    }
+    if (pos_offset.get_y () < 0.0)
+    {
+        last_center_  += Vector (0, pos_offset.get_y ());
+    }
+
+    circle_.setOutlineThickness (std::min (DEFAULT_CIRCLE_THICKNESS, MIN_CIRCLE_THICKNESS + min / max));
+
+    circle_.setPosition (last_center_);
 
     draw_texture->texture_.draw (circle_);
     draw_texture->texture_.display ();
@@ -247,7 +278,7 @@ void Circle_shape::on_confirm             (Vector &pos, Canvas &canvas)
     if (!state_.pressed)
         return;
 
-    circle_.setPosition (center_ + Vector (canvas.draw_rect_.left, canvas.draw_rect_.top));
+    circle_.setPosition (last_center_ + Vector (canvas.draw_rect_.left, canvas.draw_rect_.top));
     canvas.canvas_texture.draw (circle_);
     canvas.canvas_texture.display ();
 
@@ -266,29 +297,3 @@ void Circle_shape::on_cancel              (Canvas &canvas)
         state_.pressed = false;
     }
 }
-
-
-
-// bool Rect_shape_tool::apply_begin (sf::RenderTexture texture, Vector &pos)
-// {
-//     lh_pos = pos;
-// }
-
-// bool Rect_shape_tool::apply_continue (sf::RenderTexture texture, Vector &pos)
-// {
-//     width = abs (pos.x - lh_pos.x);
-//     height = abs (pos.y - lh_pos.y);
-    
-//     sf::rectshape rect(Vector (width, height));
-//     buffer_texture.draw (rect);
-// }
-
-// bool Rect_shape_tool::apply_end      (sf::RenderTexture texture, Vector &pos)
-// {
-//     apply_continue (texture, pos);
-// }
-
-// bool Rect_shape_tool::apply_cancel      (sf::RenderTexture texture, Vector &pos)
-// {
-//     buffer.clear (0, 0,0 ,0);
-// }
