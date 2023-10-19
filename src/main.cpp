@@ -66,9 +66,6 @@ int main ()
     clock_button.change_time (timeinfo->tm_sec, timeinfo->tm_min, timeinfo->tm_hour);
 
     Button_palette button_palette (Vector (1000, 100), 200, 200, &palette);
-    Color red (255, 0, 0, 255);
-    Color blue (0, 0, 255, 255);
-    Color green (0, 255, 0, 255);
     
     class Brush brush_tool; 
     Line line_tool; 
@@ -82,9 +79,16 @@ int main ()
     brush_released_texture.loadFromFile (brush_img);
     line_released_texture.loadFromFile (line_img);
 
-    Button red_button (Vector (0, 160), 40, 40, color_button_run_fn, (void *)&main_window, (void *)&red, red, PRESS_BUTTON);
-    Button blue_button (Vector (40, 160), 40, 40, color_button_run_fn, (void *)&main_window, (void *)&blue, blue, PRESS_BUTTON);
-    Button green_button (Vector (80, 160), 40, 40, color_button_run_fn, (void *)&main_window, (void *)&green, green, PRESS_BUTTON);
+    Button red_button (Vector (0, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Red, Red, PRESS_BUTTON);
+    Button blue_button (Vector (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Blue, Blue, PRESS_BUTTON);
+    Button green_button (Vector (40, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Green, Green, PRESS_BUTTON);
+    Button white_button (Vector (60, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&White, White, PRESS_BUTTON);
+    Button black_button (Vector (80, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Black, Black, PRESS_BUTTON);
+    Button cyan_button (Vector (0, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Cyan, Cyan, PRESS_BUTTON);
+    Button purple_button (Vector (20, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Purple, Purple, PRESS_BUTTON);
+    Button yellow_button (Vector (40, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Yellow, Yellow, PRESS_BUTTON);
+    Button brown_button (Vector (60, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Brown, Brown, PRESS_BUTTON);
+    Button maroon_button (Vector (80, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Maroon, Maroon, PRESS_BUTTON);
     Texture_button brush_button (Vector (0, 0), 50, 50, brush_pressed_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&brush_tool, PRESS_BUTTON);
     Texture_button tool_button (Vector (50, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&line_tool, PRESS_BUTTON);
     Texture_button circle_button (Vector (100, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
@@ -92,6 +96,13 @@ int main ()
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
     button_palette.add_tool_button (&green_button);
+    button_palette.add_tool_button (&white_button);
+    button_palette.add_tool_button (&black_button);
+    button_palette.add_tool_button (&cyan_button);
+    button_palette.add_tool_button (&purple_button);
+    button_palette.add_tool_button (&yellow_button);
+    button_palette.add_tool_button (&brown_button);
+    button_palette.add_tool_button (&maroon_button);
     button_palette.add_tool_button (&brush_button);
     button_palette.add_tool_button (&tool_button);
     button_palette.add_tool_button (&circle_button);
