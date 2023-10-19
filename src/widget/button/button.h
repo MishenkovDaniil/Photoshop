@@ -20,7 +20,6 @@ class Button_palette;
 #include "../../graphic_structures/vector/vector.h"
 
 static const int START_CAPACITY = 10;
-static const Color Black = Color (0, 0, 0, 255);
 
 typedef bool (*Button_run_fn) (void *widget, void *arg);
 
