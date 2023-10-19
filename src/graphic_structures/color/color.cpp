@@ -41,3 +41,14 @@ Color Color::operator += (const Color &color)
                                                         
     return Color (r_, g_, b_, a_);
 }
+
+
+Color Color::operator = (const sf::Color &other)
+{
+       r_ = other.r;
+       g_ = other.g;
+       b_ = other.b;
+       a_ = other.a;
+
+       return *this;
+}

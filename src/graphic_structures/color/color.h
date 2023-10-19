@@ -18,6 +18,7 @@ public:
     Color operator *  (double mult) const;
     Color operator +  (const Color &color) const;
     Color operator += (const Color &color);
+    Color operator = (const sf::Color &color);
     operator sf::Color()const {return sf::Color (r_, g_, b_, a_);};
 };
 
