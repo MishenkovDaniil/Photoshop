@@ -32,7 +32,7 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          change_canvas_rect_mid,
                          window,
                          nullptr, 
-                         Color (0, 0, 0),
+                         Black,
                          MOVE_BUTTON);
 
     assert (up_ && down_ && mid_ && "failed to allocate scrollbar");
@@ -185,8 +185,9 @@ bool change_canvas_rect_mid (void *window_, void *arg)
     int top = window->canvas_->draw_rect_.top;
     
     top += val * (double)(texture_height - real_height);
-    top = std::min (top, texture_height - real_height);
 
+    top = std::min (top, texture_height - real_height);
+    if (top < 0) top = 0;
     window->canvas_->draw_rect_.top = top; 
 
     return true;
