@@ -341,35 +341,35 @@ void Fill::on_main_button         (Button_state &state, Vector &pos, Canvas &can
 {
     if (state.pressed)
     {
-        prev_canvas_img_ = canvas.canvas_texture.getTexture ().copyToImage ();
-        size_ = Vector (prev_canvas_img_.getSize ().x, prev_canvas_img_.getSize ().y);
-        fill_color_ = canvas.get_fg_color ();
-        cur_color_  = prev_canvas_img_.getPixel (pos.get_x (), pos.get_y ());
+        Vector real_pos = pos + Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
 
-        pixel_arr_ = (uint8_t *)calloc (4 * (int)size_.get_x () * (int)size_.get_y (), sizeof (uint8_t));
+        Vector canvas_size = canvas.get_size ();
+        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
+        assert (widget_);
+
+        prev_canvas_img_ = canvas.canvas_texture.getTexture ().copyToImage ();
+        size_ = Vector (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
+        fill_color_ = canvas.get_fg_color ();
+        cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
+
+        pixel_arr_ = (uint8_t *)calloc (4 * size_.get_x () * size_.get_y (), sizeof (uint8_t));
         assert (pixel_arr_);
 
-        // for (size_t i = 0; i < size_.get_x (); ++i)
-        // {
-        //     pixel_arr_[i] = (Color *)calloc (size_.get_y (), sizeof (Color));
-        //     assert (pixel_arr_[i]);
-        // }
+        fill_pixels (pos, canvas);
 
-        fill_pixels (pos);
+        sf::Image new_canvas_img_;
+        new_canvas_img_.create (size_.get_x (), size_.get_y (), pixel_arr_);
 
-        new_canvas_img_.create ((int)size_.get_x (), (int)size_.get_y (), pixel_arr_);
-        sf::Texture texture;
-        texture.create (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
-        texture.loadFromImage (new_canvas_img_);
-        sf::Sprite sprite;
-        sprite.setTexture (texture);
+        draw_texture_.create (size_.get_x (), size_.get_y ());
+        draw_texture_.loadFromImage (new_canvas_img_);
 
-        canvas.canvas_texture.draw (sprite);
+        draw_sprite_.setTexture (draw_texture_);
+        draw_sprite_.setPosition (0, 0);
+        
+        ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
+        ((M_render_texture *)widget_)->texture_.display ();
 
-        // for (size_t i = 0; i < size_.get_x (); ++i)
-        // {
-        //     free (pixel_arr_[i]);
-        // }
+        state_.pressed = true;
         free (pixel_arr_);
     }
 
@@ -402,35 +402,63 @@ void Fill::on_move                (Vector &pos, Canvas &canvas)
 
 void Fill::on_confirm             (Vector &pos, Canvas &canvas)
 {
+    if (state_.pressed)
+    {
+        draw_sprite_.setPosition (canvas.draw_rect_.left, canvas.draw_rect_.top);
+        
+        canvas.canvas_texture.draw (draw_sprite_);
+        canvas.canvas_texture.display ();
 
+        state_.pressed = false;
+
+        delete (M_render_texture *)widget_;
+        widget_ = nullptr;
+    }
 }
 
 void Fill::on_cancel              (Canvas &canvas)
 {
-    //
+    if (state_.pressed)
+    {
+        state_.pressed = false;
+        
+        delete (M_render_texture *)widget_;
+        widget_ = nullptr;
+    }
 }
 
-void Fill::fill_pixels (Vector &pos)
+void Fill::fill_pixels (Vector &pos, Canvas &canvas)
 {
     assert (pixel_arr_);
-    M_vector<Vector> pixels (Vector (0), 100);
+    M_vector<Vector> pixels (Vector (0)); // think about init capacity
 
+    Vector offset (canvas.draw_rect_.left, canvas.draw_rect_.top);
     pixels.push (pos);
 
     while (pixels.get_size ())
     {
         Vector cur_pixel = pixels.top ();
+        Vector real_cur_pixel = cur_pixel + offset;
+
         pixels.pop ();
 
-        Vector left    = (cur_pixel.get_x() - 1 >= 0) ? Vector (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vector (-1);
-        Vector right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) ? Vector (cur_pixel.get_x() + 1, cur_pixel.get_y ()) :  Vector (-1);
-        Vector top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () + 1) :  Vector (-1);
-        Vector low     = (cur_pixel.get_y () - 1 >= 0) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () - 1) :  Vector (-1);
+        Vector left    = (cur_pixel.get_x() - 1 >= 0)                   ? Vector (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vector (-1);
+        Vector right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? Vector (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Vector (-1);
+        Vector top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () + 1) : Vector (-1);
+        Vector low     = (cur_pixel.get_y () - 1 >= 0)                  ? Vector (cur_pixel.get_x(), cur_pixel.get_y () - 1) : Vector (-1);
         
-        sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) ? prev_canvas_img_.getPixel (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Transparent;
-        sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) ? prev_canvas_img_.getPixel (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Transparent;
-        sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? prev_canvas_img_.getPixel (cur_pixel.get_x(),     cur_pixel.get_y () + 1) : Transparent;
-        sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) ?prev_canvas_img_.getPixel (cur_pixel.get_x(),     cur_pixel.get_y () - 1) : Transparent;
+        sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
+                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
+                                   : Transparent;
+        sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
+                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
+                                   : Transparent;
+        sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
+                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
+                                   : Transparent;
+        sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
+                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
+                                   : Transparent;
 
         if ((int)left.get_x () >= 0 && (((Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
         {

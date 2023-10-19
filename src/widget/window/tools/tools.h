@@ -117,11 +117,14 @@ public:
 class Fill : public Tool
 {
     uint8_t *pixel_arr_ = 0;
-    sf::Image prev_canvas_img_;
-    sf::Image new_canvas_img_;
     Vector size_;
+
     Color fill_color_;
     Color cur_color_;
+
+    sf::Image prev_canvas_img_;
+    sf::Texture draw_texture_;
+    sf::Sprite draw_sprite_;
 
 public:
     Fill ();
@@ -138,7 +141,7 @@ public:
     void on_cancel              (Canvas &canvas) override;
 
 private:
-    void fill_pixels (Vector &pos);
+    void fill_pixels (Vector &pos, Canvas &canvas);
 };
 
 #endif /* TOOLS_H */
