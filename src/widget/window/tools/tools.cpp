@@ -31,17 +31,17 @@ void Brush::on_secondary_button    (Button_state &state, Vector &pos, Canvas &ca
     return;
 }
 
-void Brush::on_modifier_1          (Button_state &state, Vector &pos, Canvas &canvas)
+void Brush::on_modifier_1          (Vector &pos, Canvas &canvas)
 {
     return;
 }
 
-void Brush::on_modifier_2          (Button_state &state, Vector &pos, Canvas &canvas)
+void Brush::on_modifier_2          (Vector &pos, Canvas &canvas)
 {
     return;
 }
 
-void Brush::on_modifier_3          (Button_state &state, Vector &pos, Canvas &canvas)
+void Brush::on_modifier_3          (Vector &pos, Canvas &canvas)
 {
     return;
 }
@@ -107,17 +107,17 @@ void Line::on_secondary_button    (Button_state &state, Vector &pos, Canvas &can
     return;   
 }
 
-void Line::on_modifier_1          (Button_state &state, Vector &pos, Canvas &canvas)
+void Line::on_modifier_1          (Vector &pos, Canvas &canvas)
 {
     return;   
 }
 
-void Line::on_modifier_2          (Button_state &state, Vector &pos, Canvas &canvas)
+void Line::on_modifier_2          (Vector &pos, Canvas &canvas)
 {
     return;   
 }
 
-void Line::on_modifier_3          (Button_state &state, Vector &pos, Canvas &canvas)
+void Line::on_modifier_3          (Vector &pos, Canvas &canvas)
 {
     return;   
 }
@@ -200,17 +200,53 @@ void Circle_shape::on_secondary_button    (Button_state &state, Vector &pos, Can
     return;
 }
 
-void Circle_shape::on_modifier_1          (Button_state &state, Vector &pos, Canvas &canvas)
+void Circle_shape::on_modifier_1          (Vector &pos, Canvas &canvas)
+{
+    if (!state_.pressed)
+        return;
+    
+    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    assert (draw_texture);
+    draw_texture->clear (Transparent);
+
+    last_center_ = center_;
+    Vector pos_offset = pos - center_;
+
+    double min = 0;
+    if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
+    {
+        min = std::abs (pos_offset.get_x ());
+    }
+    else 
+    {
+        min = std::abs (pos_offset.get_y ());
+    }
+
+    circle_.setRadius (min / 2.0);    
+
+    if (pos_offset.get_x () < 0.0)
+    {
+        last_center_  -= Vector (min, 0);
+    }
+    if (pos_offset.get_y () < 0.0)
+    {
+        last_center_  -= Vector (0, min);
+    }
+
+    circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
+
+    circle_.setPosition (last_center_);
+
+    draw_texture->texture_.draw (circle_);
+    draw_texture->texture_.display ();
+}
+
+void Circle_shape::on_modifier_2          (Vector &pos, Canvas &canvas)
 {
     return;
 }
 
-void Circle_shape::on_modifier_2          (Button_state &state, Vector &pos, Canvas &canvas)
-{
-    return;
-}
-
-void Circle_shape::on_modifier_3          (Button_state &state, Vector &pos, Canvas &canvas)
+void Circle_shape::on_modifier_3          (Vector &pos, Canvas &canvas)
 {
     return;
 }
