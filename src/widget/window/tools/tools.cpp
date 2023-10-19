@@ -333,3 +333,134 @@ void Circle_shape::on_cancel              (Canvas &canvas)
         state_.pressed = false;
     }
 }
+
+Fill::Fill () {};
+Fill::~Fill () {};
+
+void Fill::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+{
+    if (state.pressed)
+    {
+        prev_canvas_img_ = canvas.canvas_texture.getTexture ().copyToImage ();
+        size_ = Vector (prev_canvas_img_.getSize ().x, prev_canvas_img_.getSize ().y);
+        fill_color_ = canvas.get_fg_color ();
+        cur_color_  = prev_canvas_img_.getPixel (pos.get_x (), pos.get_y ());
+
+        pixel_arr_ = (uint8_t *)calloc (4 * (int)size_.get_x () * (int)size_.get_y (), sizeof (uint8_t));
+        assert (pixel_arr_);
+
+        // for (size_t i = 0; i < size_.get_x (); ++i)
+        // {
+        //     pixel_arr_[i] = (Color *)calloc (size_.get_y (), sizeof (Color));
+        //     assert (pixel_arr_[i]);
+        // }
+
+        fill_pixels (pos);
+
+        new_canvas_img_.create ((int)size_.get_x (), (int)size_.get_y (), pixel_arr_);
+        sf::Texture texture;
+        texture.create (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
+        texture.loadFromImage (new_canvas_img_);
+        sf::Sprite sprite;
+        sprite.setTexture (texture);
+
+        canvas.canvas_texture.draw (sprite);
+
+        // for (size_t i = 0; i < size_.get_x (); ++i)
+        // {
+        //     free (pixel_arr_[i]);
+        // }
+        free (pixel_arr_);
+    }
+
+}
+
+void Fill::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_modifier_1          (Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_modifier_2          (Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_modifier_3          (Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_move                (Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_confirm             (Vector &pos, Canvas &canvas)
+{
+
+}
+
+void Fill::on_cancel              (Canvas &canvas)
+{
+    //
+}
+
+void Fill::fill_pixels (Vector &pos)
+{
+    assert (pixel_arr_);
+    M_vector<Vector> pixels (Vector (0), 100);
+
+    pixels.push (pos);
+
+    while (pixels.get_size ())
+    {
+        Vector cur_pixel = pixels.top ();
+        pixels.pop ();
+
+        Vector left    = (cur_pixel.get_x() - 1 >= 0) ? Vector (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vector (-1);
+        Vector right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) ? Vector (cur_pixel.get_x() + 1, cur_pixel.get_y ()) :  Vector (-1);
+        Vector top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () + 1) :  Vector (-1);
+        Vector low     = (cur_pixel.get_y () - 1 >= 0) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () - 1) :  Vector (-1);
+        
+        sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) ? prev_canvas_img_.getPixel (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Transparent;
+        sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) ? prev_canvas_img_.getPixel (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Transparent;
+        sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? prev_canvas_img_.getPixel (cur_pixel.get_x(),     cur_pixel.get_y () + 1) : Transparent;
+        sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) ?prev_canvas_img_.getPixel (cur_pixel.get_x(),     cur_pixel.get_y () - 1) : Transparent;
+
+        if ((int)left.get_x () >= 0 && (((Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
+        {
+            if (cur_color_ == left_color)
+            {
+                pixels.push (left);
+            }
+        }
+        if ((int)right.get_x () >= 0 && (((Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
+        {
+            if (cur_color_ == right_color)
+            {
+                pixels.push (right);
+            }
+        }
+        if ((int)low.get_x () >= 0 && (((Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
+        {
+            if (cur_color_ == low_color)
+            {
+                pixels.push (low);
+            }
+        }
+        if ((int)top.get_x () >= 0 && (((Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
+        {
+            if (cur_color_ == top_color)
+            {
+                pixels.push (top);
+            }
+        }
+        
+        ((Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
+    }
+}

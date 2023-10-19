@@ -114,4 +114,31 @@ public:
 
 // class Rect_shape_tool : public Tool 
 
+class Fill : public Tool
+{
+    uint8_t *pixel_arr_ = 0;
+    sf::Image prev_canvas_img_;
+    sf::Image new_canvas_img_;
+    Vector size_;
+    Color fill_color_;
+    Color cur_color_;
+
+public:
+    Fill ();
+    ~Fill ();
+
+    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_modifier_1          (Vector &pos, Canvas &canvas) override;
+    void on_modifier_2          (Vector &pos, Canvas &canvas) override;
+    void on_modifier_3          (Vector &pos, Canvas &canvas) override;
+
+    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_confirm             (Vector &pos, Canvas &canvas) override;
+    void on_cancel              (Canvas &canvas) override;
+
+private:
+    void fill_pixels (Vector &pos);
+};
+
 #endif /* TOOLS_H */
