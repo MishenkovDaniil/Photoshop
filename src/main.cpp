@@ -70,6 +70,7 @@ int main ()
     class Brush brush_tool; 
     Line line_tool; 
     Circle_shape circle_tool; 
+    Fill fill_tool; 
     sf::Texture brush_pressed_texture;
     sf::Texture line_pressed_texture;
     sf::Texture brush_released_texture;
@@ -92,6 +93,7 @@ int main ()
     Texture_button brush_button (Vector (0, 0), 50, 50, brush_pressed_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&brush_tool, PRESS_BUTTON);
     Texture_button tool_button (Vector (50, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&line_tool, PRESS_BUTTON);
     Texture_button circle_button (Vector (100, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
+    Texture_button fill_button (Vector (150, 0), 50, 50, brush_released_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&fill_tool, PRESS_BUTTON);
     
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
@@ -106,6 +108,7 @@ int main ()
     button_palette.add_tool_button (&brush_button);
     button_palette.add_tool_button (&tool_button);
     button_palette.add_tool_button (&circle_button);
+    button_palette.add_tool_button (&fill_button);
     widget_manager.add_widget (&button_palette);
     //Button (pos + Vector (0, 30), 50, 20, (Button_run_fn)tool_button_act, (void *)tool_palette, (void *)tool, Color (255, 0, 0, 255))
     //this button in run func just changes current tool in tool_palette to tool; ()it's one for all tool buttons;
