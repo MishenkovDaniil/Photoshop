@@ -16,6 +16,8 @@
 
 static const char *brush_img = "resources/imgs/brush.png";
 static const char *line_img = "resources/imgs/line.png";
+static const char *circle_img = "resources/imgs/circle.png";
+static const char *fill_img = "resources/imgs/fill.png";
 
 static const int FULLSCREEN_WIDTH = 1920;
 static const int FULLSCREEN_HEIGHT = 1080;
@@ -73,12 +75,20 @@ int main ()
     Fill fill_tool; 
     sf::Texture brush_pressed_texture;
     sf::Texture line_pressed_texture;
+    sf::Texture fill_pressed_texture;
+    sf::Texture circle_pressed_texture;
     sf::Texture brush_released_texture;
     sf::Texture line_released_texture;
+    sf::Texture fill_released_texture;
+    sf::Texture circle_released_texture;
     brush_pressed_texture.loadFromFile (brush_img);
     line_pressed_texture.loadFromFile (line_img);
+    fill_pressed_texture.loadFromFile (fill_img);
+    circle_pressed_texture.loadFromFile (circle_img);
     brush_released_texture.loadFromFile (brush_img);
     line_released_texture.loadFromFile (line_img);
+    fill_released_texture.loadFromFile (fill_img);
+    circle_released_texture.loadFromFile (circle_img);
 
     Button red_button (Vector (0, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Red, Red, PRESS_BUTTON);
     Button blue_button (Vector (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Blue, Blue, PRESS_BUTTON);
@@ -92,8 +102,8 @@ int main ()
     Button maroon_button (Vector (80, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Maroon, Maroon, PRESS_BUTTON);
     Texture_button brush_button (Vector (0, 0), 50, 50, brush_pressed_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&brush_tool, PRESS_BUTTON);
     Texture_button tool_button (Vector (50, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&line_tool, PRESS_BUTTON);
-    Texture_button circle_button (Vector (100, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
-    Texture_button fill_button (Vector (150, 0), 50, 50, brush_released_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&fill_tool, PRESS_BUTTON);
+    Texture_button circle_button (Vector (100, 0), 50, 50, circle_pressed_texture, circle_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
+    Texture_button fill_button (Vector (150, 0), 50, 50, fill_released_texture, fill_released_texture, tool_run_fn, (void *)&main_window, (void *)&fill_tool, PRESS_BUTTON);
     
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
