@@ -4,10 +4,12 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+class Filter;
+
 #include "../../widget.h"
 #include "../canvas/canvas.h"
 #include "../window.h"
-
+#include "../filter/filter.h"
 //sf::RTX --> canvas 
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
@@ -143,6 +145,27 @@ public:
 
 private:
     void fill_pixels (Vector &pos, Canvas &canvas);
+};
+
+
+class Filter_tool : public Tool 
+{
+    Filter *filter_ = nullptr;
+
+public:
+    Filter_tool (Filter *filter) : filter_(filter) {};
+    ~Filter_tool () = default;
+    
+    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_modifier_1          (Vector &pos, Canvas &canvas) override;
+    void on_modifier_2          (Vector &pos, Canvas &canvas) override;
+    void on_modifier_3          (Vector &pos, Canvas &canvas) override;
+
+    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_confirm             (Vector &pos, Canvas &canvas) override;
+    void on_cancel              (Canvas &canvas) override;
+    
 };
 
 #endif /* TOOLS_H */

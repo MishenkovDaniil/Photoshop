@@ -498,3 +498,46 @@ void Fill::fill_pixels (Vector &pos, Canvas &canvas)
         ((Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
     }
 }
+
+
+void Filter_tool::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) 
+{
+    Filter_mask mask (canvas.canvas_texture.getSize ().x, canvas.canvas_texture.getSize ().y);
+    mask.fill (true);
+    filter_->apply_filter (canvas, &mask);
+}
+
+void Filter_tool::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_modifier_1          (Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_modifier_2          (Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_modifier_3          (Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_move                (Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_confirm             (Vector &pos, Canvas &canvas) 
+{
+    return;
+}
+
+void Filter_tool::on_cancel              (Canvas &canvas) 
+{
+    return;
+}
