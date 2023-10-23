@@ -189,7 +189,7 @@ Color Canvas::get_bg_color ()
 
 void Canvas::set_draw_rect_offset (int left, int top)
 {
-    if (!(left > 0 && top > 0))
+    if (left < 0 || top < 0)
     {
         fprintf (stderr, "Error: %s func has invalid offset parameters.\nHint: left = %d, top = %d.\n", __func__, left, top);
         return;
