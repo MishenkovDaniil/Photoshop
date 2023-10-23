@@ -12,7 +12,9 @@ void Brush::on_main_button         (Button_state &state, Vector &pos, Canvas &ca
     //TODO make circle class member (maybe)
     if (state.pressed)
     {
-        pos += Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
+        sf::IntRect &rect = canvas.get_draw_rect ();
+        pos += Vector (rect.left, rect.top);
+
         sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
 
@@ -51,7 +53,8 @@ void Brush::on_move                (Vector &pos, Canvas &canvas)
     if (!is_pressed)
         return;
 
-    pos += Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
+    sf::IntRect &rect = canvas.get_draw_rect ();
+    pos += Vector (rect.left, rect.top);
 
     sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
@@ -143,7 +146,8 @@ void Line::on_confirm             (Vector &pos, Canvas &canvas)
     if (!state_.pressed)
         return;
 
-    Vector draw_rect_offset (canvas.draw_rect_.left, canvas.draw_rect_.top);
+    sf::IntRect &rect = canvas.get_draw_rect ();
+    Vector draw_rect_offset (rect.left, rect.top);
 
     vertex[1] = sf::Vertex (pos + draw_rect_offset, canvas.get_fg_color ());
     vertex[0].position += sf::Vector2f (draw_rect_offset.get_x (), draw_rect_offset.get_y ());
@@ -314,7 +318,8 @@ void Circle_shape::on_confirm             (Vector &pos, Canvas &canvas)
     if (!state_.pressed)
         return;
 
-    circle_.setPosition (last_center_ + Vector (canvas.draw_rect_.left, canvas.draw_rect_.top));
+    sf::IntRect &rect = canvas.get_draw_rect ();
+    circle_.setPosition (last_center_ + Vector (rect.left, rect.top));
     canvas.canvas_texture.draw (circle_);
     canvas.canvas_texture.display ();
 
@@ -341,7 +346,8 @@ void Fill::on_main_button         (Button_state &state, Vector &pos, Canvas &can
 {
     if (state.pressed)
     {
-        Vector real_pos = pos + Vector (canvas.draw_rect_.left, canvas.draw_rect_.top);
+        rect_ = canvas.get_draw_rect ();
+        Vector real_pos = pos + Vector (rect_.left, rect_.top);
 
         Vector canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
@@ -404,7 +410,7 @@ void Fill::on_confirm             (Vector &pos, Canvas &canvas)
 {
     if (state_.pressed)
     {
-        draw_sprite_.setPosition (canvas.draw_rect_.left, canvas.draw_rect_.top);
+        draw_sprite_.setPosition (rect_.left, rect_.top);
         
         canvas.canvas_texture.draw (draw_sprite_);
         canvas.canvas_texture.display ();
@@ -432,7 +438,7 @@ void Fill::fill_pixels (Vector &pos, Canvas &canvas)
     assert (pixel_arr_);
     M_vector<Vector> pixels (Vector (0)); // think about init capacity
 
-    Vector offset (canvas.draw_rect_.left, canvas.draw_rect_.top);
+    Vector offset (rect_.left, rect_.top);
     pixels.push (pos);
 
     while (pixels.get_size ())

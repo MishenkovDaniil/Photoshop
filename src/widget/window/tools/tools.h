@@ -125,6 +125,7 @@ class Fill : public Tool
     sf::Image prev_canvas_img_;
     sf::Texture draw_texture_;
     sf::Sprite draw_sprite_;
+    sf::IntRect rect_;
 
 public:
     Fill ();
