@@ -4,7 +4,6 @@
 
 Header::Header (Vector lh_pos, int width, const char *string, Color background) : 
     transform_ (Transform (lh_pos)),
-    // lh_pos_ (lh_pos),
     width_ (width),
     background_color (background)
 {
@@ -34,7 +33,6 @@ void Header::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
 
-
     Vector lh_pos = transform_stack.top ().offset_;
 
     sf::RectangleShape header (sf::Vector2f (width_, height_));
@@ -53,7 +51,7 @@ void Header::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
 
     double text_width = text.findCharacterPos(str_len - 1).x - text.findCharacterPos (0).x;
     text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + height_ / 2 - CHARACTER_SIZE / 2);
-    
+
     target.draw (header);
     target.draw (text);
 
