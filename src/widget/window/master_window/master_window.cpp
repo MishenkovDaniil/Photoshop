@@ -47,8 +47,8 @@ void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &trans
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return;
         }
         assert (window);
@@ -66,14 +66,13 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        printf ("window_idx = %d, window_list_pos = %d\n", window_idx, window_list_pos);
         Window *window = (Window *)list_get (&windows, window_list_pos);
 
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
@@ -122,8 +121,8 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
@@ -173,8 +172,8 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
@@ -211,8 +210,8 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
@@ -239,8 +238,8 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
@@ -260,15 +259,15 @@ bool Master_window::on_time (float delta_sec)
     bool status = false;
     
     size_t window_list_pos = last_;
-    
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
-                             "Hint: nil button idx in windows list = %d.\n"
-                             "Hint: windows list size = %d.\n", window_idx + 1, windows.size);
+                             "Hint: nil button idx in windows list = %lu.\n"
+                             "Hint: windows list size = %d.\n", window_list_pos, windows.size);
             return false;
         }
         assert (window);
