@@ -13,6 +13,8 @@ class Window;
 class Menu;
 class Tool_palette;
 class Button_palette;
+
+#include "../constants.h"
 #include "../widget.h"
 #include "../window/window.h"
 #include "../../graphic_structures/color/color.h"
@@ -20,6 +22,7 @@ class Button_palette;
 #include "../../graphic_structures/vector/vector.h"
 
 static const int START_CAPACITY = 10;
+static const int BUTTON_TEXT_SIZE = 10;
 
 typedef bool (*Button_run_fn) (void *widget, void *arg);
 
@@ -28,6 +31,7 @@ typedef bool (*Button_run_fn) (void *widget, void *arg);
 static int MOVE_BUTTON = 0b010;
 static int RELEASE_BUTTON = 0b100;
 static int PRESS_BUTTON = 0b001;
+
 
 class Button :public Widget
 {
@@ -100,33 +104,31 @@ public:
     bool on_keyboard_released (Keyboard_key key)              override;
 };
 
-// class String_button : public Button
-// {
-// protected:
-//     Color *cur_color_ = nullptr;
-//     Color &pressed_color_;
-//     Color &released_color_;
+class String_button : public Button
+{
+protected:
+    const Color *cur_color_ = nullptr;
+    const Color &pressed_color_;
+    const Color &released_color_;
     
-//     char *string_ = nullptr;
-//     int str_size = 0;
+    char *string_ = nullptr;
+    int str_size_ = 0;
     
-// public:
-//     String_button (Point lh_corner, Point rl_corner, Color &pressed_color, Color &released_color, const char *string = nullptr) :
-//                    Button (lh_corner, rl_corner),
-//                    pressed_color_ (pressed_color),
-//                    released_color_ (released_color)
-//                    { cur_color_ = &released_color_;
-//                     if (!string) return; 
-//                     str_size = std::strlen(string);
-//                     string_ = new char[str_size + 1];
-//                     assert (string_);
-//                     std::strcpy (string_, string); 
-//                    };
-//     ~String_button () {if (string_) delete[] string_;};
+public:
+    String_button (Vector lh_corner, int width, int height, const char *string, 
+                   const Color &pressed_color, const Color &released_color, Button_run_fn func, 
+                   void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
+    ~String_button ();
 
-//     void draw (sf::RenderWindow &window, int screen_w, int screen_h)const override;
-//     void update (bool is_pressed) override final;
-//     bool run (Point &object, sf::Keyboard::Key key) override = 0;
-// };
+    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
+    bool on_mouse_moved    (Vector &new_pos)                  override;
+    bool on_keyboard_pressed  (Keyboard_key key)              override;
+    bool on_keyboard_released (Keyboard_key key)              override;
+
+    // void update (bool is_pressed);
+    // bool run (Point &object, sf::Keyboard::Key key) override = 0;
+};
 
 #endif /* BUTTON_H */

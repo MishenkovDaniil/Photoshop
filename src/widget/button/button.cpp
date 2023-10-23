@@ -174,7 +174,7 @@ bool Texture_button::on_mouse_moved    (Vector &new_pos)
     bool status = Button::on_mouse_moved (new_pos);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
-}   
+} 
 
 bool Texture_button::on_keyboard_pressed  (Keyboard_key key)
 {
@@ -189,6 +189,94 @@ bool Texture_button::on_keyboard_released (Keyboard_key key)
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 }   
+
+
+String_button::String_button (Vector lh_corner, int width, int height, const char *string, const Color &pressed_color, const Color &released_color, Button_run_fn func, void *controlled_widget,
+               void *arg, int run_mask) :
+    Button (lh_corner, width, height, func, controlled_widget, arg, Transparent, run_mask),
+    pressed_color_  (pressed_color), 
+    released_color_ (released_color)
+{
+    cur_color_ = &released_color_;
+
+    assert (string);
+
+    str_size_ = std::strlen(string);
+
+    string_ = new char[str_size_ + 1];
+    assert (string_);
+    std::strcpy (string_, string); 
+}
+
+String_button::~String_button () 
+{
+    if (string_) delete[] string_;
+}
+
+void String_button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+{
+Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
+    Vector lh_pos = transform_stack.top ().offset_;
+
+    sf::RectangleShape button (sf::Vector2f (width_, height_));
+                       button.setFillColor (*cur_color_);
+                       button.setOutlineThickness (1);
+                       button.setPosition (lh_pos.get_x (), lh_pos.get_y ());
+    sf::Text text;
+    sf::Font font;
+    font.loadFromFile (DEFAULT_FONT_FILE);
+    text.setString (string_);
+    text.setFont (font);
+    text.setFillColor (TEXT_COLOR);
+    text.setCharacterSize (BUTTON_TEXT_SIZE);
+
+    double text_width = text.findCharacterPos(str_size_ - 1).x - text.findCharacterPos (0).x;
+    text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + height_ / 2 - BUTTON_TEXT_SIZE / 2);
+    
+    target.draw (button);
+    target.draw (text);
+
+    transform_stack.pop ();
+}
+
+bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+{
+    bool status = Button::on_mouse_pressed (mouse_key, pos);
+    cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+    return status;
+}
+
+bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+{
+    bool status = Button::on_mouse_released (mouse_key, pos);
+    cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+    return status;
+}
+
+bool String_button::on_mouse_moved    (Vector &new_pos)                 
+{
+    bool status = Button::on_mouse_moved (new_pos);
+    cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+    return status;
+}
+
+bool String_button::on_keyboard_pressed  (Keyboard_key key)             
+{
+    bool status = Button::on_keyboard_pressed (key);
+    cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+    return status;
+}
+
+bool String_button::on_keyboard_released (Keyboard_key key)             
+{
+    bool status = Button::on_keyboard_released (key);
+    cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+    return status;
+}
+
 
 
 // void String_button::draw (sf::RenderWindow &window, int screen_w, int screen_h)const
