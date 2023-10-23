@@ -23,7 +23,7 @@ void Master_window::add_window (Window *window)
 {
     assert (window && "incorrect window pointer in add_window()");
 
-    list_insert (&windows, 0, window);
+    last_ = list_insert (&windows, last_, window);
 }
 
 void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) 
@@ -37,9 +37,13 @@ void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &trans
     menu_->render (target, transform_stack);
     transform_stack.pop ();
 
+    size_t window_list_pos = first_;
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
+        window_list_pos = windows.elems[window_list_pos].next;
+
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -56,10 +60,15 @@ void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &trans
 bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
 {
     Vector pos_ = transform_.apply_transform (pos);
+    
+    size_t window_list_pos = last_;
+    // size_t active_window = 0;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        printf ("window_idx = %d, window_list_pos = %d\n", window_idx, window_list_pos);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
+
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -69,11 +78,25 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos);
-        if (is_released_on_child)
+        if (window->contains (pos)) //to pos_
         {
-            return true;
+            bool is_released_on_child = window->on_mouse_pressed (mouse_key, pos);
+            if (is_released_on_child)
+            {
+                // active_window = window_list_pos;
+                if (last_ != window_list_pos)
+                {
+                    if (first_ == window_list_pos) 
+                    {
+                        first_ = windows.elems[window_list_pos].next;
+                    }
+                    list_remove (&windows, window_list_pos);
+                    last_ = list_insert (&windows, last_, window);
+                }
+                return true;
+            }
         }
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
     
     if (Window::on_mouse_pressed (mouse_key, pos))
@@ -91,9 +114,11 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
 
+    size_t window_list_pos = last_;
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -103,11 +128,24 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (window);
 
-        bool is_released_on_child = window->on_mouse_released (mouse_key, pos);
-        if (is_released_on_child)
+        if (window->contains (pos)) //to pos_
         {
-            return true;
+            bool is_released_on_child = window->on_mouse_released (mouse_key, pos);
+            if (is_released_on_child)
+            {
+                if (last_ != window_list_pos)
+                {
+                    if (first_ == window_list_pos) 
+                    {
+                        first_ = windows.elems[window_list_pos].next;
+                    }
+                    list_remove (&windows, window_list_pos);
+                    last_ = list_insert (&windows, last_, window);
+                }
+                return true;
+            }
         }
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     if (Window::on_mouse_released (mouse_key, pos))
@@ -127,9 +165,11 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
 {
     Vector pos_ = transform_.apply_transform (new_pos);
 
+    size_t window_list_pos = last_;
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -144,6 +184,8 @@ bool Master_window::on_mouse_moved (Vector &new_pos)
         {
             return true;
         }
+
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     if (Window::on_mouse_moved (new_pos))
@@ -161,9 +203,11 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
 {
     bool status = false;
 
+    size_t window_list_pos = last_;
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -174,6 +218,7 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
         assert (window);
 
         status |= window->on_keyboard_pressed (key);
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     status |= Window::on_keyboard_pressed (key);
@@ -186,9 +231,11 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
 {
     bool status = false;
 
+    size_t window_list_pos = last_;
+
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -199,6 +246,7 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
         assert (window);
 
         status |= window->on_keyboard_released (key);
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     status |= Window::on_keyboard_released (key);
@@ -211,9 +259,11 @@ bool Master_window::on_time (float delta_sec)
 {
     bool status = false;
     
+    size_t window_list_pos = last_;
+    
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_idx + 1);
+        Window *window = (Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -224,6 +274,7 @@ bool Master_window::on_time (float delta_sec)
         assert (window);
 
         status |= window->on_time (delta_sec);
+        window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     status |= Window::on_time (delta_sec);

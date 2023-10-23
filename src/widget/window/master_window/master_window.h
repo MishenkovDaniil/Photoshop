@@ -14,7 +14,9 @@ class Master_window : public Window
 {
     List windows = {};
     Menu *menu_ = nullptr;
-    
+    size_t first_ = 1;
+    size_t last_ = 0;
+
 public:
     Master_window (int width, int height, Vector lh_pos, const char *w_name, int list_capacity = INIT_WINDOWS_CAPACITY);
     ~Master_window ();
