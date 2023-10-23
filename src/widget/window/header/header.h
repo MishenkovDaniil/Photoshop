@@ -6,11 +6,10 @@
 
 #include "../../widget.h"
 #include "../window.h"
+#include "../../constants.h"
 
 static const int HEADER_HEIGHT       = 30;
 static const int CHARACTER_SIZE      = 20;
-static const Color TEXT_COLOR        = Black;
-static const char *DEFAULT_FONT_FILE = "resources/font.ttf";
 
 class Header : public Widget
 {
