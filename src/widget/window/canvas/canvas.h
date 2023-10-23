@@ -19,9 +19,9 @@ class Canvas : public Widget
 
     Tool_palette *palette_;
     Transform transform_;
+    sf::IntRect draw_rect_;
 
 public:
-    sf::IntRect draw_rect_;
     sf::RenderTexture canvas_texture;
 
 public: 
@@ -35,13 +35,15 @@ public:
     bool on_keyboard_pressed    (Keyboard_key key)                  override;
     bool on_keyboard_released   (Keyboard_key key)                  override;
     bool on_time                (float delta_sec)                   override;
-    bool on_brush ( Mouse_key mouse_key, Vector &pos);
 
     bool contains (int x, int y);
     
     Color get_fg_color ();
     Color get_bg_color ();
     Vector get_size () {return Vector (width_, height_);};
+    sf::IntRect &get_draw_rect () {return draw_rect_;};
+    void set_draw_rect_offset (int left, int top);
+    void set_draw_rect_size   (int width, int height);
 
     friend bool brush_button_act            (void *m_window,  void *arg);
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);

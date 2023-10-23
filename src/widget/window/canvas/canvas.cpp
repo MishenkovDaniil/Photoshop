@@ -69,15 +69,17 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
-    if (!tool)
-        return false;
-    
-    Button_state state;
-    state.pressed = true;
-    state.released = false;
+    if (tool)
+    {
+        Button_state state;
+        state.pressed = true;
+        state.released = false;
 
-    tool->on_main_button (state, pos_, *this);
-    return true;
+        tool->on_main_button (state, pos_, *this);
+        return true;
+    }
+
+    return false;
 }
 
 bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
@@ -88,15 +90,17 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
-    if (!tool)
-        return false;
-    
-    Button_state state;
-    state.pressed = false;
-    state.released = true;
+    if (tool)
+    {
+        Button_state state;
+        state.pressed = false;
+        state.released = true;
 
-    tool->on_confirm (pos_, *this);
-    return true;
+        tool->on_confirm (pos_, *this);
+        return true;
+    }
+
+    return false;
 }
 
 bool Canvas::on_mouse_moved    (Vector &new_pos)
@@ -107,15 +111,44 @@ bool Canvas::on_mouse_moved    (Vector &new_pos)
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
-    if (!tool)
-        return false;
+    if (tool)
+    {
+        tool->on_move (pos_, *this);
+        // tool->on_modifier_1 (pos_, *this);
+        return true;
+    }
     
-    tool->on_move (pos_, *this);
-    return true;
+    return false;
 }   
 
 bool Canvas::on_keyboard_pressed  (Keyboard_key key)
 {
+    if (!palette_)
+        return false;
+    
+    Tool *tool = palette_->get_cur_tool ();
+    
+    if (tool && key == Escape) 
+    {
+        switch (key)
+        {
+            case Escape:
+            {
+                tool->on_cancel (*this);
+                return true;
+            }
+            case RShift:
+            case LShift:
+            {
+                // tool-> (*this);????
+            }
+            default:
+            {
+                break;
+            }
+        }
+    }
+
     return false;
 }
 
@@ -152,4 +185,28 @@ Color Canvas::get_bg_color ()
         return palette_->get_bg_color ();
     }
     return Color (0, 0, 0, 0);
+}
+
+void Canvas::set_draw_rect_offset (int left, int top)
+{
+    if (!(left > 0 && top > 0))
+    {
+        fprintf (stderr, "Error: %s func has invalid offset parameters.\nHint: left = %d, top = %d.\n", __func__, left, top);
+        return;
+    }
+
+    draw_rect_.left  = left;
+    draw_rect_.top = top;
+}
+
+void Canvas::set_draw_rect_size (int width, int height)
+{
+    if (!(width > 0 && height > 0))
+    {
+        fprintf (stderr, "Error: %s func has invalid size parameters.\nHint: width = %d, height = %d.\n", __func__, width, height);
+        return;
+    }
+
+    draw_rect_.width  = width;
+    draw_rect_.height = height;
 }
