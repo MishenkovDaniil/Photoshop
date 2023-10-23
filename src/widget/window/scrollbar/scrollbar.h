@@ -13,14 +13,15 @@ static const int SCROLLBAR_WIDTH = 20;
 static const int SCROLLBAR_BUTTON_H = 10;
 static const double UP_BUTTON_CHANGE = 0.1;
 static const double SPACE_BUTTON_CHANGE = 0.2;
+static const int UP_DOWN_CANVAS_CHANGE = 10;
 
 class Scrollbar : public Button
 {
-    // Vector lh_pos_;
+    M_vector<Button *> buttons = M_vector<Button *> ((Button *)nullptr);
     Button *up_    = nullptr;
     Button *down_  = nullptr;
     Button *mid_   = nullptr;
-    // Button *space_ = nullptr;
+
 
     int scrollbar_height_ = 0;
     double shift = 0;
@@ -32,13 +33,13 @@ public:
     Scrollbar (Vector lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
     ~Scrollbar ();
 
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos) override;
-    bool on_mouse_moved    (Vector &new_pos) override;    /// x, y - absolute values 
-    bool on_keyboard_pressed  (Keyboard_key key) override;
-    bool on_keyboard_released (Keyboard_key key) override;
-    bool on_time (float delta_sec) override;
+    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)    override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)                       override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos)                       override;
+    bool on_mouse_moved    (Vector &new_pos)                                        override;    
+    bool on_keyboard_pressed  (Keyboard_key key)                                    override;
+    bool on_keyboard_released (Keyboard_key key)                                    override;
+    bool on_time (float delta_sec)                                                  override;
 
     friend Window;
 };

@@ -34,6 +34,10 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          nullptr, 
                          Black,
                          MOVE_BUTTON);
+    
+    buttons.add (up_);
+    buttons.add (down_);
+    buttons.add (mid_);
 
     assert (up_ && down_ && mid_ && "failed to allocate scrollbar");
 }
@@ -54,9 +58,10 @@ void Scrollbar::render (sf::RenderTarget &target, M_vector<Transform> &transform
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
     
-     down_->render  (target, transform_stack);
-      mid_->render  (target, transform_stack);
-       up_->render  (target, transform_stack);
+    for (size_t i = 0; i < buttons.get_size (); ++i)
+    {
+        buttons[i]->render (target, transform_stack);
+    } 
 
     transform_stack.pop ();
     return;
@@ -66,9 +71,10 @@ bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
 
-    if (   up_->on_mouse_pressed (mouse_key, pos_)) return true;
-    if ( down_->on_mouse_pressed (mouse_key, pos_)) return true;
-    if (  mid_->on_mouse_pressed (mouse_key, pos_)) return true;
+    for (size_t i = 0; i < buttons.get_size (); ++i)
+    {
+        if (buttons[i]->on_mouse_pressed (mouse_key, pos_)) return true;
+    }
 
     return false;
 }
@@ -77,9 +83,10 @@ bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     Vector pos_ = transform_.apply_transform (pos);
 
-    if (   up_->on_mouse_released (mouse_key, pos_)) return true;   //in list of buttons
-    if ( down_->on_mouse_released (mouse_key, pos_)) return true;
-    if (  mid_->on_mouse_released (mouse_key, pos_)) return true;
+    for (size_t i = 0; i < buttons.get_size (); ++i)
+    {
+        if (buttons[i]->on_mouse_released (mouse_key, pos_)) return true;
+    }
 
     return false;
 }
@@ -195,7 +202,7 @@ bool change_canvas_rect_mid (void *window_, void *arg)
     
     top += val * (double)(texture_height - real_height);
     top = std::min (top, texture_height - real_height);
-    
+
     if (top < 0) top = 0;
 
     window->canvas_->set_draw_rect_offset (rect.left, top);
