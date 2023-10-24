@@ -111,38 +111,44 @@ Color luma_to_rgb (Luma_color &luma_color)
        double b = 0;
 
        int int_h = round (h_ - 0.5);
-       
+
        switch (int_h)
        {
               case 0:
               {
                      r = luma_color.chroma_;
                      g = x;
+                     break;
               }  
               case 1:
               {
                      r = x;
                      g = luma_color.chroma_;
+                     break;
               }  
               case 2:
               {
                      g = luma_color.chroma_;
                      b = x;
+                     break;
               }  
               case 3:
               {
                      g = x;
                      b = luma_color.chroma_;
+                     break;
               }  
               case 4:
               {
                      r = x;
                      b = luma_color.chroma_;
+                     break;
               }  
               default:
               {
                      r = luma_color.chroma_;
                      b = x;  
+                     break;
               }
        }
 
