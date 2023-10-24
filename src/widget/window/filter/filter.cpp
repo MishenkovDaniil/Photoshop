@@ -69,11 +69,13 @@ void Light_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
         if (mask->get_pixel(idx % width, idx / width))
         {
             sf::Color prev_color = texture_img.getPixel (idx % width, idx / width);
-            prev_color.r = std::max (std::min ((int)prev_color.r + delta_light_, 0xff), 0);
-            prev_color.g = std::max (std::min ((int)prev_color.g + delta_light_, 0xff), 0);
-            prev_color.b = std::max (std::min ((int)prev_color.b + delta_light_, 0xff), 0);
             
-            ((Color *)pixels)[idx] = prev_color;
+            Color new_color (prev_color.r, prev_color.g, prev_color.b);
+            Luma_color luma_color = rgb_to_luma (new_color);
+            luma_color.luma_ = std::max (0.0, std::min (luma_color.luma_ + (double)((double)delta_light_ / 100.0), 1.0));
+            new_color = luma_to_rgb (luma_color);
+    
+            ((Color *)pixels)[idx] = new_color;
         }
     }
 
