@@ -14,7 +14,7 @@ Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool n
     width_ (width),
     height_ (height)
 {
-    header_ = new Header (Vector (0, 0), width, w_name);
+    header_ = new Header (Vector (0, 0), width, w_name, this);
     canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (0, HEADER_HEIGHT), palette);
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
 
@@ -40,8 +40,7 @@ void Window::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
-
-
+    // printf ("window transform = %lf %lf\n", transform_.offset_.get_x (), transform_.offset_.get_y ());
     Vector lh_pos = transform_stack.top ().offset_;
 
     sf::RectangleShape rect (Vector (width_, height_));
@@ -64,34 +63,84 @@ void Window::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {   
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_pressed (mouse_key, pos_)) return true;
-    if (header_->on_mouse_pressed (mouse_key, pos_)) return true;
+    if (scrollbar_ && scrollbar_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    if (header_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
     
-    return canvas_->on_mouse_pressed (mouse_key, pos_);
+    if (canvas_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    transform_stack.pop ();
+    return false;
 } 
 
-bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_released (mouse_key, pos_)) return true;
-    if (header_->on_mouse_released (mouse_key, pos_)) return true;
-    
-    return canvas_->on_mouse_released (mouse_key, pos_);
+    if (scrollbar_ && scrollbar_->on_mouse_released (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    if (header_->on_mouse_released (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    if (canvas_->on_mouse_released (mouse_key, pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+
+    transform_stack.pop ();
+    return false;
 } 
 
-bool Window::on_mouse_moved    (Vector &new_pos)
+bool Window::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (new_pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_moved (pos_)) return true;
-    if (header_->on_mouse_moved (pos_))                  return true;
+    if (scrollbar_ && scrollbar_->on_mouse_moved (new_pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    
+    if (header_->on_mouse_moved (new_pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
 
-    return canvas_->on_mouse_moved (pos_);;
+    if (canvas_->on_mouse_moved (new_pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
+
+    transform_stack.pop ();
+    return false;
 }   
 
 bool Window::on_keyboard_pressed  (Keyboard_key key)
@@ -122,3 +171,18 @@ bool Window::on_time (float delta_sec)
     
     return on_time_status;
 }
+
+
+bool Window::contains (Vector &pos)
+{   
+    Vector pos_ = transform_.apply_transform (pos);
+    
+    double x = pos_.get_x ();
+    double y = pos_.get_y ();
+
+    if ((x >= 0 && y >= 0) && 
+        (x <= width_ && y <= height_))
+        return true;
+
+    return false;  
+} 

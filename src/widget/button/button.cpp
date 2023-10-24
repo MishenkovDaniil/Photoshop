@@ -52,9 +52,12 @@ void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     target.draw (rect);
 }   
 
-bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -70,9 +73,12 @@ bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     return false;
 } 
 
-bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 { 
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -91,9 +97,12 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     return false;
 } 
 
-bool Button::on_mouse_moved    (Vector &new_pos)
+bool Button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 { 
-    Vector pos_ = transform_.apply_transform (new_pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (new_pos);
     static int call_num = 1;
     
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
@@ -155,23 +164,23 @@ void Texture_button::render (sf::RenderTarget &target, M_vector<Transform> &tran
     target.draw (*sprite_);
 }
 
-bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    bool status = Button::on_mouse_pressed (mouse_key, pos);
+    bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 }
 
-bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    bool status = Button::on_mouse_released (mouse_key, pos);
+    bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 }
 
-bool Texture_button::on_mouse_moved    (Vector &new_pos)
+bool Texture_button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
-    bool status = Button::on_mouse_moved (new_pos);
+    bool status = Button::on_mouse_moved (new_pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 } 
@@ -242,23 +251,23 @@ Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Trans
     transform_stack.pop ();
 }
 
-bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    bool status = Button::on_mouse_pressed (mouse_key, pos);
+    bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }
 
-bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    bool status = Button::on_mouse_released (mouse_key, pos);
+    bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }
 
-bool String_button::on_mouse_moved    (Vector &new_pos)                 
+bool String_button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                 
 {
-    bool status = Button::on_mouse_moved (new_pos);
+    bool status = Button::on_mouse_moved (new_pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }

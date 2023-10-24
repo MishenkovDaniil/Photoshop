@@ -60,9 +60,12 @@ void Menu::render (sf::RenderTarget &target, M_vector<Transform> &transform_stac
     transform_stack.pop ();
 }
 
-bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
     bool status = false;
 
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
@@ -77,18 +80,23 @@ bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (button);
 
-        if (button->on_mouse_pressed (mouse_key, pos_))
+        if (button->on_mouse_pressed (mouse_key, pos, transform_stack))
         {
             status = true;
         }
     }
 
+    transform_stack.pop ();
+
     return status;
 } 
 
-bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
+
     bool status = false;
     
     for (int button_idx = 0; button_idx < buttons.size; ++button_idx)
@@ -103,16 +111,18 @@ bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (button);
 
-        if (button->on_mouse_released (mouse_key, pos_))
+        if (button->on_mouse_released (mouse_key, pos, transform_stack))
         {
             status = true;
         }
     }
 
+    transform_stack.pop ();
+
     return status;
 } 
 
-bool Menu::on_mouse_moved    (Vector &new_pos) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
+bool Menu::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
                                                 // connect hovering with 'on_time ()'
 {
     //TODO...

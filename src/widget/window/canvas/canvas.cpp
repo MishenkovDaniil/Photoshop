@@ -59,9 +59,12 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (pos);
     if (!contains (pos_.get_x (), pos_.get_y ()))
         return false;
     
@@ -82,9 +85,12 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (pos);
 
     if (!palette_)
         return false;
@@ -103,9 +109,12 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Canvas::on_mouse_moved    (Vector &new_pos)
+bool Canvas::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
-    Vector pos_ = transform_.apply_transform (new_pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+
+    Vector pos_ = unite.apply_transform (new_pos);
 
     if (!palette_)
         return false;

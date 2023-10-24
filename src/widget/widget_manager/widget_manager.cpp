@@ -39,7 +39,7 @@ void Widget_manager::render (sf::RenderTarget &target, M_vector<Transform> &tran
     }
 }
 
-bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
     bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -54,7 +54,8 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
         }
         assert (widget);
 
-        is_pressed_on_child = widget->on_mouse_pressed (mouse_key, pos);
+        is_pressed_on_child = widget->on_mouse_pressed (mouse_key, pos, transform_stack_);
+        
         if (is_pressed_on_child)
             return true;
     }
@@ -62,7 +63,7 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
 {
     bool is_released_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -77,7 +78,7 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (widget);
 
-        is_released_on_child = widget->on_mouse_released (mouse_key, pos);
+        is_released_on_child = widget->on_mouse_released (mouse_key, pos, transform_stack_);
         if (is_released_on_child)
             return true;
     }
@@ -85,7 +86,7 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
     return false;
 }
 
-bool Widget_manager::on_mouse_moved (Vector &new_pos)
+bool Widget_manager::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -100,7 +101,7 @@ bool Widget_manager::on_mouse_moved (Vector &new_pos)
         }
         assert (widget);
 
-        is_moved = widget->on_mouse_moved (new_pos);
+        is_moved = widget->on_mouse_moved (new_pos, transform_stack_);
         if (is_moved)
             return true;
     }

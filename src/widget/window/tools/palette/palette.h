@@ -18,7 +18,7 @@ class Tool_palette
     
 public:
     Tool_palette ();
-    Tool_palette (int size, ...);
+    Tool_palette (int size, ...); //TODO
     ~Tool_palette ();
 
     Tool *get_cur_tool () const {return cur_tool_;};

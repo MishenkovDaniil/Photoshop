@@ -25,18 +25,15 @@ class Scrollbar : public Button
 
     int scrollbar_height_ = 0;
     double shift = 0;
-    int obj_height_ = 0;
-    int obj_allowed_height_ = 0;
-    bool mid_pressed_ = false;
 
 public: 
     Scrollbar (Vector lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
     ~Scrollbar ();
 
     void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)    override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)                       override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos)                       override;
-    bool on_mouse_moved    (Vector &new_pos)                                        override;    
+    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)                    override;
+    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)                    override;
+    bool on_mouse_moved       (Vector &new_pos, M_vector<Transform> &transform_stack)                                     override;    
     bool on_keyboard_pressed  (Keyboard_key key)                                    override;
     bool on_keyboard_released (Keyboard_key key)                                    override;
     bool on_time (float delta_sec)                                                  override;

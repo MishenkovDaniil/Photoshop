@@ -19,7 +19,7 @@ Button_palette::~Button_palette ()
         }
         assert (tool_button);
 
-        delete (Pair *)tool_button->arg_;
+        delete (Pair *)(tool_button->arg_);
     }
 }
 
@@ -36,9 +36,10 @@ void Button_palette::add_tool_button (Button *tool_button)
 
 bool color_button_run_fn (void *widget, void *args) 
 {
+    assert (widget && args);
+    
     static bool is_init = false;
     Master_window *m_window = (Master_window *)widget;
-
 
     Pair *args_ = (Pair *)args;
     Tool_palette *palette = (Tool_palette *)args_->arg_1;

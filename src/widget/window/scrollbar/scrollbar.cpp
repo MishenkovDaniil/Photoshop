@@ -8,9 +8,7 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          window, 
                          nullptr, 
                          Color (150, 150, 150)),
-    scrollbar_height_ (height),
-    obj_height_ (obj_height),
-    obj_allowed_height_ (obj_allowed_height)
+    scrollbar_height_ (height)
 {
     up_    = new Button (Vector (0, -SCROLLBAR_BUTTON_H), 
                          SCROLLBAR_WIDTH - 2, 
@@ -67,36 +65,65 @@ void Scrollbar::render (sf::RenderTarget &target, M_vector<Transform> &transform
     return;
 }
 
-bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) 
+bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
-        if (buttons[i]->on_mouse_pressed (mouse_key, pos_)) return true;
+        if (buttons[i]->on_mouse_pressed (mouse_key, pos, transform_stack)) 
+        {
+            transform_stack.pop ();
+            return true;
+        }
     }
+
+    transform_stack.pop ();
 
     return false;
 }
 
-bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos) 
+bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
 {
-    Vector pos_ = transform_.apply_transform (pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
-        if (buttons[i]->on_mouse_released (mouse_key, pos_)) return true;
+        if (buttons[i]->on_mouse_released (mouse_key, pos, transform_stack))
+        {
+            transform_stack.pop ();
+            return true;
+        }
     }
+
+    transform_stack.pop ();
 
     return false;
 }
 
-bool Scrollbar::on_mouse_moved    (Vector &new_pos) 
+bool Scrollbar::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) 
 {
-    Vector new_pos_ = transform_.apply_transform (new_pos);
+    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
+    Transform unite = transform_.unite (top);
+    transform_stack.push (unite);
 
-    if (   up_->on_mouse_moved (new_pos_)) return true;
-    if ( down_->on_mouse_moved (new_pos_)) return true;
+    Vector new_pos_ = unite.apply_transform (new_pos);
+    Vector mid_pos = new_pos;
+
+    if (   up_->on_mouse_moved (new_pos, transform_stack)) 
+    {
+        transform_stack.pop ();
+        return true;
+    }
+    if ( down_->on_mouse_moved (new_pos, transform_stack))
+    {
+        transform_stack.pop ();
+        return true;
+    }
 
     Vector mid_offset = mid_->transform_.offset_;
 
@@ -106,21 +133,23 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos)
 
     if (new_y < old_y && delta > mid_offset.get_y()) 
     {
-        new_pos_ += Vector (0, delta - mid_offset.get_y());
+        mid_pos += Vector (0, delta - mid_offset.get_y());
     }
     else if (new_y > old_y && delta > (height_ - mid_offset.get_y () - mid_->height_))
     {
-        new_pos_ += Vector (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
+        mid_pos += Vector (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
     }
     
-    if (mid_->on_mouse_moved (new_pos_)) 
+    if (mid_->on_mouse_moved (mid_pos, transform_stack)) 
     {
         double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
 
         mid_->set_arg ((void *)&arg);
         mid_->run ();
+        transform_stack.pop ();
         return true;
     }
+    transform_stack.pop ();
 
     return false;
 }   

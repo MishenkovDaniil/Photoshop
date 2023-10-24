@@ -143,6 +143,9 @@ public:
         return Transform (new_offset, Vector (scale_.get_x () * prev.scale_.get_x (), scale_.get_y ()  * prev.scale_.get_y ()));
     };
     Vector apply_transform (Vector &vector) {return Vector (vector.get_x () - offset_.get_x (), vector.get_y () - offset_.get_y ());};
+    Vector cancel_transform (Vector &vector) {return Vector (vector.get_x () + offset_.get_x (), vector.get_y () + offset_.get_y ());};
+    // void change_offset (Vector new_offset) {offset_ = new_offset;};
+    // Vector &get_offset (Vector new_offset) {return offset_;};
 };
 
 
@@ -151,9 +154,9 @@ class Widget
 public:
     virtual ~Widget () = default;
     virtual void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) = 0;
-    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos) = 0;
-    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos) = 0;
-    virtual bool on_mouse_moved    (Vector &new_pos) = 0;    /// x, y - absolute values 
+    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) = 0;
+    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) = 0;
+    virtual bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) = 0;    /// x, y - absolute values 
     virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
     virtual bool on_keyboard_released (Keyboard_key key) = 0;
     virtual bool on_time (float delta_sec) = 0;
