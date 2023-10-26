@@ -56,30 +56,30 @@ void Light_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
     assert (mask);
 
     sf::Texture texture = canvas.canvas_texture.getTexture ();
-    unsigned int width  = texture.getSize ().x;
-    unsigned int height = texture.getSize ().y;
+    unsigned int width  = canvas.get_size ().get_x ();
+    unsigned int height = canvas.get_size ().get_y ();
     
     sf::Image texture_img = texture.copyToImage ();
 
     sf::Uint8 *pixels = (sf::Uint8 *)calloc (width * height * 4, sizeof (sf::Uint8));
     assert (pixels);
+    
+    sf::IntRect rect = canvas.get_draw_rect ();
 
     for (int idx = 0; idx < width * height; ++idx)
     {
         if (mask->get_pixel(idx % width, idx / width))
         {
-            sf::Color prev_color = texture_img.getPixel (idx % width, idx / width);
-            
+            sf::Color prev_color = texture_img.getPixel (rect.left + idx % width, rect.top + idx / width);
             Color new_color (prev_color.r, prev_color.g, prev_color.b);
             Luma_color luma_color = rgb_to_luma (new_color);
-            luma_color.luma_ = std::max (0.0, std::min (luma_color.luma_ + (double)((double)delta_light_ / 100.0), 1.0));
+            luma_color.luma_ = std::max (0.0, std::min (luma_color.luma_ + (double)((double)delta_light_ / 1000.0), 1.0));
             new_color = luma_to_rgb (luma_color);
-    
             ((Color *)pixels)[idx] = new_color;
         }
     }
 
-    texture.update (pixels);
+    texture.update (pixels, width, height, rect.left, rect.top);
     sf::Sprite sprite;
     sprite.setTexture (texture);
 
