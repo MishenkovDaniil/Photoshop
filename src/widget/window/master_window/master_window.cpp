@@ -139,15 +139,6 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vecto
             bool is_released_on_child = window->on_mouse_released (mouse_key, pos, transform_stack);
             if (is_released_on_child)
             {
-                if (last_ != window_list_pos)
-                {
-                    if (first_ == window_list_pos) 
-                    {
-                        first_ = windows.elems[window_list_pos].next;
-                    }
-                    list_remove (&windows, window_list_pos);
-                    last_ = list_insert (&windows, last_, window);
-                }
                 return true;
             }
         }
