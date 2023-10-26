@@ -12,17 +12,27 @@
 Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
     transform_ (Transform (lh_pos)),
     width_ (width),
-    height_ (height)
+    height_ (height),
+    contained_widgets (nullptr, 3)
 {
     header_ = new Header (Vector (0, 0), width, w_name, this);
     canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (0, HEADER_HEIGHT), palette);
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
 
+
     if (need_scrollbar)
     {
         scrollbar_ = new Scrollbar (Vector (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->height_, height - HEADER_HEIGHT, this);
         assert (scrollbar_ && "failed to allocate window scrollbar \n");
+
+        Widget *scrollbar = scrollbar_;
+        contained_widgets.add (scrollbar);
     }
+
+    Widget *header = header_;
+    Widget *canvas = canvas_;
+    contained_widgets.add (header);
+    contained_widgets.add (canvas);
 }
 
 Window::~Window ()
@@ -69,22 +79,17 @@ bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_pressed (mouse_key, pos, transform_stack))
+    size_t widgets_num = contained_widgets.get_size ();
+
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
-        transform_stack.pop ();
-        return true;
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_pressed (mouse_key, pos, transform_stack))
+        {
+            transform_stack.pop ();
+            return true;
+        }
     }
-    if (header_->on_mouse_pressed (mouse_key, pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
-    }
-    
-    if (canvas_->on_mouse_pressed (mouse_key, pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
-    }
+
     transform_stack.pop ();
     return false;
 } 
@@ -95,20 +100,15 @@ bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_released (mouse_key, pos, transform_stack))
+    size_t widgets_num = contained_widgets.get_size ();
+
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
-        transform_stack.pop ();
-        return true;
-    }
-    if (header_->on_mouse_released (mouse_key, pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
-    }
-    if (canvas_->on_mouse_released (mouse_key, pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_released (mouse_key, pos, transform_stack))
+        {
+            transform_stack.pop ();
+            return true;
+        }
     }
 
     transform_stack.pop ();
@@ -121,22 +121,15 @@ bool Window::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_
     Transform unite = transform_.unite (top);
     transform_stack.push (unite);
 
-    if (scrollbar_ && scrollbar_->on_mouse_moved (new_pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
-    }
-    
-    if (header_->on_mouse_moved (new_pos, transform_stack))
-    {
-        transform_stack.pop ();
-        return true;
-    }
+    size_t widgets_num = contained_widgets.get_size ();
 
-    if (canvas_->on_mouse_moved (new_pos, transform_stack))
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
-        transform_stack.pop ();
-        return true;
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_moved (new_pos, transform_stack))
+        {
+            transform_stack.pop ();
+            return true;
+        }
     }
 
     transform_stack.pop ();
@@ -145,10 +138,17 @@ bool Window::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_
 
 bool Window::on_keyboard_pressed  (Keyboard_key key)
 {
-    if (scrollbar_ && scrollbar_->on_keyboard_pressed (key)) return true;
-    if (header_->on_keyboard_pressed (key)) return true;
+    size_t widgets_num = contained_widgets.get_size ();
 
-    return canvas_->on_keyboard_pressed (key);
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_pressed (key))
+        {
+            return true;
+        }
+    }
+
+    return false;
 } 
 
 bool Window::on_keyboard_released (Keyboard_key key)

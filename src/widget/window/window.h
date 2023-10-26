@@ -26,6 +26,8 @@ protected:
     Header    *header_      = nullptr;
     Scrollbar *scrollbar_   = nullptr;
 
+    M_vector<Widget *> contained_widgets;
+    
     Transform transform_;
     
 public:
