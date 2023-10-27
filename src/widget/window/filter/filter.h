@@ -4,6 +4,8 @@
 #include "../../widget.h"
 #include "../canvas/canvas.h"
 
+static const double MIN_SATURATION_VAL = 0.05;
+
 enum Filters 
 {
     Unknown_filter,
@@ -39,9 +41,9 @@ public:
 
 class Light_filter : public Filter
 {
-    int delta_light_ = 0;
+    double delta_light_ = 0;   ///in percent
 public:
-    Light_filter (int delta_light) : delta_light_ (delta_light) {};
+    Light_filter (double delta_light) : delta_light_ (delta_light) {};
     ~Light_filter () = default;
 
     void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
@@ -49,9 +51,9 @@ public:
 
 class Saturation_filter : public Filter
 {
-    int delta_saturation_ = 0;
+    double delta_saturation_ = 0; ///in percent
 public:
-    Saturation_filter (int delta_saturation) : delta_saturation_ (delta_saturation) {};
+    Saturation_filter (double delta_saturation) : delta_saturation_ (delta_saturation) {};
     ~Saturation_filter () = default;
 
     void apply_filter (Canvas &canvas, Filter_mask *mask) const override;

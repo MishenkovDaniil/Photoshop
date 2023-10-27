@@ -73,7 +73,7 @@ void Light_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
             sf::Color prev_color = texture_img.getPixel (rect.left + idx % width, rect.top + idx / width);
             Color new_color (prev_color.r, prev_color.g, prev_color.b);
             Luma_color luma_color = rgb_to_luma (new_color);
-            luma_color.luma_ = std::max (0.0, std::min (luma_color.luma_ + (double)((double)delta_light_ / 1000.0), 1.0));
+            luma_color.luma_ = std::max (MIN_LIGHT_VAL, std::min (luma_color.luma_ + (double)(delta_light_ / 100.0), 1.0));
             new_color = luma_to_rgb (luma_color);
             ((Color *)pixels)[idx] = new_color;
         }
@@ -111,7 +111,7 @@ void Saturation_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
             sf::Color prev_color = texture_img.getPixel (rect.left + idx % width, rect.top + idx / width);
             Color new_color (prev_color.r, prev_color.g, prev_color.b);
             Hsl_color hsl_color = rgb_to_hsl (new_color);
-            hsl_color.saturation_ = std::max (0.0, std::min (hsl_color.saturation_ + (double)((double)delta_saturation_ / 100.0), 1.0));
+            hsl_color.saturation_ = std::max (MIN_SATURATION_VAL, std::min (hsl_color.saturation_ + (double)(delta_saturation_ / 100.0), 1.0));
             new_color = hsl_to_rgb (hsl_color);
             ((Color *)pixels)[idx] = new_color;
         }
