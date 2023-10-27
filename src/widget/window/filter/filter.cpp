@@ -89,3 +89,41 @@ void Light_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
     free (pixels);
 }
 
+void Saturation_filter::apply_filter (Canvas &canvas, Filter_mask *mask) const
+{
+    assert (mask);
+
+    sf::Texture texture = canvas.canvas_texture.getTexture ();
+    unsigned int width  = canvas.get_size ().get_x ();
+    unsigned int height = canvas.get_size ().get_y ();
+    
+    sf::Image texture_img = texture.copyToImage ();
+
+    sf::Uint8 *pixels = (sf::Uint8 *)calloc (width * height * 4, sizeof (sf::Uint8));
+    assert (pixels);
+    
+    sf::IntRect rect = canvas.get_draw_rect ();
+
+    for (int idx = 0; idx < width * height; ++idx)
+    {
+        if (mask->get_pixel(idx % width, idx / width))
+        {
+            sf::Color prev_color = texture_img.getPixel (rect.left + idx % width, rect.top + idx / width);
+            Color new_color (prev_color.r, prev_color.g, prev_color.b);
+            Hsl_color hsl_color = rgb_to_hsl (new_color);
+            hsl_color.saturation_ = std::max (0.0, std::min (hsl_color.saturation_ + (double)((double)delta_saturation_ / 100.0), 1.0));
+            new_color = hsl_to_rgb (hsl_color);
+            ((Color *)pixels)[idx] = new_color;
+        }
+    }
+
+    texture.update (pixels, width, height, rect.left, rect.top);
+    sf::Sprite sprite;
+    sprite.setTexture (texture);
+
+    canvas.canvas_texture.draw (sprite);
+    canvas.canvas_texture.display ();
+
+    free (pixels);
+}
+

@@ -47,6 +47,16 @@ public:
     void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
 };
 
+class Saturation_filter : public Filter
+{
+    int delta_saturation_ = 0;
+public:
+    Saturation_filter (int delta_saturation) : delta_saturation_ (delta_saturation) {};
+    ~Saturation_filter () = default;
+
+    void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
+};
+
 class Filter_palette 
 {
     M_vector<Filter *>filters = M_vector<Filter *> (nullptr);
