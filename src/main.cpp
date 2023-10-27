@@ -29,7 +29,6 @@ static const int FULL_SCREEN_HEIGHT = 1080;
 // !!!
 int main ()
 {
-    M_vector<Transform> stck (Transform (Vector (0, 0)));
     sf::RenderWindow window (sf::VideoMode (FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT), "w_manager");//, sf::Style::Fullscreen);
     sf::Vector2u window_size = window.getSize ();
     
@@ -44,10 +43,8 @@ int main ()
 
     Tool_palette palette;
     Master_window main_window (window_size.x, window_size.y, Vector (0, 0), "master");
-    // Button menu_button (Vector (0, 0), 50, 20, (Button_run_fn)brush_button_act, &main_window, nullptr, Color (255, 0, 0, 255));
     
     Clock clock_button (pos, 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
-    // main_window.add_menu_button (&menu_button);
     widget_manager.add_widget (&main_window);
     widget_manager.add_widget (&clock_button);
 
@@ -124,7 +121,6 @@ int main ()
     
     // main_window.add_menu_button (&filter_tool_button);
 
-
     main_window.add_menu_button (&light_incr_tool_button);
     main_window.add_menu_button (&light_decr_tool_button);
     
@@ -176,21 +172,21 @@ int main ()
                 {
                     Vector pos (event.mouseButton.x, event.mouseButton.y);
 
-                    status = widget_manager.on_mouse_pressed ((Mouse_key)event.mouseButton.button, pos, stck);
+                    status = widget_manager.on_mouse_pressed ((Mouse_key)event.mouseButton.button, pos);
                     break;
                 }
                 case sf::Event::MouseButtonReleased:
                 {
                     Vector pos (event.mouseButton.x, event.mouseButton.y);
 
-                    status = widget_manager.on_mouse_released ((Mouse_key)event.mouseButton.button, pos, stck);
+                    status = widget_manager.on_mouse_released ((Mouse_key)event.mouseButton.button, pos);
                     break;
                 }
                 case sf::Event::MouseMoved:
                 {
                     Vector pos (event.mouseMove.x, event.mouseMove.y);
 
-                    status = widget_manager.on_mouse_moved (pos, stck);
+                    status = widget_manager.on_mouse_moved (pos);
                     break;
                 }
                 default:
@@ -209,7 +205,7 @@ int main ()
 
         // if (status)
         {
-            widget_manager.render (render_texture, stck);
+            widget_manager.render (render_texture);
             render_texture.display ();
             window_sprite.setTexture (render_texture.getTexture ());
 
