@@ -22,6 +22,8 @@ static const char *fill_img = "resources/imgs/fill.png";
 
 static const int FULL_SCREEN_WIDTH = 1920;
 static const int FULL_SCREEN_HEIGHT = 1080;
+static const int LIGHT_DELTA_CHANGE = 5;
+static const int SATURATION_DELTA_CHANGE = 5;
 
 //TODO first make contain func/
 // !!!
@@ -71,10 +73,10 @@ int main ()
     Circle_shape circle_tool; 
     Fill fill_tool; 
     
-    Light_filter light_incr (10);
-    Light_filter light_decr (-10);
-    Saturation_filter saturation_incr (10);
-    Saturation_filter saturation_decr (-10);
+    Light_filter light_incr (LIGHT_DELTA_CHANGE);
+    Light_filter light_decr (-LIGHT_DELTA_CHANGE);
+    Saturation_filter saturation_incr (SATURATION_DELTA_CHANGE);
+    Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
 
     Filter_tool light_incr_tool (&light_incr);
     Filter_tool light_decr_tool (&light_decr);
