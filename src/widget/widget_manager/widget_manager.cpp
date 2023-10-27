@@ -21,7 +21,7 @@ void Widget_manager::add_widget (Widget *widget)
     list_insert (&widgets, 0, widget);
 }
 
-void Widget_manager::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) //parameter stack is not used!!!
+void Widget_manager::render (sf::RenderTarget &target)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -39,7 +39,7 @@ void Widget_manager::render (sf::RenderTarget &target, M_vector<Transform> &tran
     }
 }
 
-bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 {
     bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -63,7 +63,7 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vect
     return false;
 }
 
-bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
     bool is_released_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -86,7 +86,7 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vect
     return false;
 }
 
-bool Widget_manager::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Widget_manager::on_mouse_moved (Vector &new_pos)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
