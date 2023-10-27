@@ -20,6 +20,7 @@ class Canvas : public Widget
     Tool_palette *palette_;
     Transform transform_;
     sf::IntRect draw_rect_;
+    bool is_focused = false;
 
 public:
     sf::RenderTexture canvas_texture;
@@ -44,7 +45,7 @@ public:
     sf::IntRect &get_draw_rect () {return draw_rect_;};
     void set_draw_rect_offset (int left, int top);
     void set_draw_rect_size   (int width, int height);
-
+    
     friend bool change_canvas_rect_up_down  (void *window, void *arg);
     friend bool change_canvas_rect_mid      (void *window, void *arg);
     friend bool change_canvas_rect_space    (void *window, void *arg);

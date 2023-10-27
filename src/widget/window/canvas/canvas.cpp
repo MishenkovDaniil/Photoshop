@@ -43,7 +43,7 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
      
     target.draw (canvas_sprite);
     
-    if (palette_)
+    if (palette_ && is_focused)
     {
         Tool *tool = palette_->get_cur_tool ();
         if (tool)
@@ -79,6 +79,8 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
         state.released = false;
 
         tool->on_main_button (state, pos_, *this);
+        is_focused = true;
+
         return true;
     }
 
@@ -92,7 +94,7 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
 
     Vector pos_ = unite.apply_transform (pos);
 
-    if (!palette_)
+    if (!(palette_ && is_focused))
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
@@ -103,6 +105,7 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
         state.released = true;
 
         tool->on_confirm (pos_, *this);
+        is_focused = false;
         return true;
     }
 
@@ -116,7 +119,7 @@ bool Canvas::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_
 
     Vector pos_ = unite.apply_transform (new_pos);
 
-    if (!palette_)
+    if (!(palette_ && is_focused))
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
