@@ -36,8 +36,6 @@ int main ()
     render_texture.create (window_size.x, window_size.y);
 
     Vector pos (50, 50);
-    Color w_color (255, 0, 0);
-    Color frame_color (0, 255, 0);
 
     Widget_manager widget_manager; 
 
@@ -75,9 +73,13 @@ int main ()
     
     Light_filter light_incr (10);
     Light_filter light_decr (-10);
+    Saturation_filter saturation_incr (10);
+    Saturation_filter saturation_decr (-10);
 
     Filter_tool light_incr_tool (&light_incr);
     Filter_tool light_decr_tool (&light_decr);
+    Filter_tool saturation_incr_tool (&saturation_incr);
+    Filter_tool saturation_decr_tool (&saturation_decr);
 
     sf::Texture brush_pressed_texture;
     sf::Texture line_pressed_texture;
@@ -99,6 +101,8 @@ int main ()
 
     Pair light_incr_args = Pair((void *)&palette, &light_incr_tool);
     Pair light_decr_args = Pair((void *)&palette, &light_decr_tool);
+    Pair saturation_incr_args = Pair((void *)&palette, &saturation_incr_tool);
+    Pair saturation_decr_args = Pair((void *)&palette, &saturation_decr_tool);
 
     Button red_button    (Vector (0, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Red, Red, PRESS_BUTTON);
     Button blue_button   (Vector (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Blue, Blue, PRESS_BUTTON);
@@ -118,11 +122,15 @@ int main ()
     
     String_button light_incr_tool_button (Vector (0, 0),  60, 20, "light incr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args, PRESS_BUTTON);
     String_button light_decr_tool_button (Vector (60, 0), 60, 20, "light decr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args, PRESS_BUTTON);
+    String_button saturation_incr_tool_button (Vector (120, 0),  60, 20, "satur incr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args, PRESS_BUTTON);
+    String_button saturation_decr_tool_button (Vector (180, 0), 60, 20, "satur decr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
     
     // main_window.add_menu_button (&filter_tool_button);
 
     main_window.add_menu_button (&light_incr_tool_button);
     main_window.add_menu_button (&light_decr_tool_button);
+    main_window.add_menu_button (&saturation_incr_tool_button);
+    main_window.add_menu_button (&saturation_decr_tool_button);
     
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
