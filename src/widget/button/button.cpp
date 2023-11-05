@@ -127,7 +127,7 @@ bool Button::on_keyboard_released (Keyboard_key key)
     return false;
 }   
 
-bool Button::on_time (float delta_sec)
+bool Button::on_tick (float delta_sec)
 {
     // TODO
     return false;

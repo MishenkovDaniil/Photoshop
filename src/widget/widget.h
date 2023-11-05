@@ -167,7 +167,7 @@ public:
     virtual bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) = 0;    /// x, y - absolute values 
     virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
     virtual bool on_keyboard_released (Keyboard_key key) = 0;
-    virtual bool on_time (float delta_sec) = 0;
+    virtual bool on_tick (float delta_sec) = 0;
     Layout_box &get_layout_box () {return *layout_;};
     void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};
 };

@@ -149,17 +149,17 @@ bool Window::on_keyboard_released (Keyboard_key key)
     return false;
 } 
 
-bool Window::on_time (float delta_sec)
+bool Window::on_tick (float delta_sec)
 {
     bool on_time_status = false;
 
     if (scrollbar_) 
     {
-        on_time_status |= scrollbar_->on_time (delta_sec);
+        on_time_status |= scrollbar_->on_tick (delta_sec);
     }
     
-    on_time_status |= header_->on_time (delta_sec);
-    on_time_status |= canvas_->on_time (delta_sec);
+    on_time_status |= header_->on_tick (delta_sec);
+    on_time_status |= canvas_->on_tick (delta_sec);
     
     return on_time_status;
 }

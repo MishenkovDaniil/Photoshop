@@ -170,7 +170,7 @@ bool Canvas::on_keyboard_released (Keyboard_key key)
     return false;
 }
 
-bool Canvas::on_time (float delta_sec)
+bool Canvas::on_tick (float delta_sec)
 {
     // TODO
     return false;

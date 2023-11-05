@@ -139,7 +139,7 @@ bool Menu::on_keyboard_released (Keyboard_key key)
     return false;
 } 
 
-bool Menu::on_time (float delta_sec)
+bool Menu::on_tick (float delta_sec)
 {
     //TODO...
     return false;

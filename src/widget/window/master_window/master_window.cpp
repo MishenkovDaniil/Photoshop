@@ -234,7 +234,7 @@ bool Master_window::on_keyboard_released (Keyboard_key key)
     return status;   
 }
 
-bool Master_window::on_time (float delta_sec)
+bool Master_window::on_tick (float delta_sec)
 {
     bool status = false;
     
@@ -252,12 +252,12 @@ bool Master_window::on_time (float delta_sec)
         }
         assert (window);
 
-        status |= window->on_time (delta_sec);
+        status |= window->on_tick (delta_sec);
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    status |= Window::on_time (delta_sec);
-    status |= menu_->on_time (delta_sec);
+    status |= Window::on_tick (delta_sec);
+    status |= menu_->on_tick (delta_sec);
     
     return status;
 }

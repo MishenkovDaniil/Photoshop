@@ -116,7 +116,7 @@ bool Header::on_keyboard_released (Keyboard_key key)
     return false;
 }
 
-bool Header::on_time (float delta_sec)
+bool Header::on_tick (float delta_sec)
 {
     ///TODO
     return false;

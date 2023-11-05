@@ -208,7 +208,7 @@ int main ()
         // window_sprite.setOrigin (0, 0);
         // window_sprite.setPosition (0, 0);
         float delta_time = clock.getElapsedTime ().asSeconds();
-        widget_manager.on_time (delta_clock + delta_time);
+        widget_manager.on_tick (delta_clock + delta_time);
 
         delta_clock = clock.getElapsedTime ().asSeconds() - delta_time;
         clock.restart ();

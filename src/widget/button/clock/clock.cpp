@@ -65,7 +65,7 @@ bool Clock::on_keyboard_released (Keyboard_key key)
     return false;
 }   
 
-bool Clock::on_time (float delta_sec)
+bool Clock::on_tick (float delta_sec)
 {
     seconds_ += delta_sec;
     if ((int)seconds_ > 59)

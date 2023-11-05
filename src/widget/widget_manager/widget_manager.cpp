@@ -153,7 +153,7 @@ bool Widget_manager::on_keyboard_released (Keyboard_key key)
     return false;
 }
 
-bool Widget_manager::on_time (float delta_sec)
+bool Widget_manager::on_tick (float delta_sec)
 {
     bool on_time_status = false;
     
@@ -169,7 +169,7 @@ bool Widget_manager::on_time (float delta_sec)
         }
         assert (widget);
 
-        on_time_status |= widget->on_time (delta_sec);
+        on_time_status |= widget->on_tick (delta_sec);
     }
 
     return on_time_status;
