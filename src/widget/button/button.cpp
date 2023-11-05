@@ -8,7 +8,7 @@
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
 Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, Color fill_color, int run_mask) :
-            transform_ (Transform (lh_corner)),
+            // transform_ (Transform (lh_corner)),
             width_ (width),
             height_ (height),
             run_fn_ (func),
@@ -16,7 +16,11 @@ Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, voi
             controlled_widget_ (controlled_widget),
             run_mask_ (run_mask),
             arg_ (arg), 
-            press_pos_ (Vector ()) {};
+            press_pos_ (Vector ()) 
+{
+    layout_ = new Default_layout_box (lh_corner, Vector (width, height));
+    assert (layout_);
+};
 
 bool Button::contains (double x, double y) const
 {
@@ -35,11 +39,10 @@ bool Button::run ()
     return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void Button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
     Vector lh_corner = unite.offset_;
 
     sf::RectangleShape rect (Vector (width_, height_));
@@ -52,11 +55,10 @@ void Button::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     target.draw (rect);
 }   
 
-bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
     Vector pos_ = unite.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
@@ -73,11 +75,10 @@ bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 } 
 
-bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 { 
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
     Vector pos_ = unite.apply_transform (pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
@@ -97,19 +98,17 @@ bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 } 
 
-bool Button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
 { 
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
     Vector pos_ = unite.apply_transform (new_pos);
-    static int call_num = 1;
     
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
         Vector change (0, pos_.get_y () - press_pos_.get_y ());
+        layout_->set_position (layout_->get_position () + change);
 
-        transform_.offset_ += change;
         return true;
     }
 
@@ -151,11 +150,10 @@ Texture_button::~Texture_button ()
         delete sprite_;
 }
 
-void Texture_button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void Texture_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
     Vector lh_corner = unite.offset_;
 
     sprite_->setTexture (*cur_texture_);
@@ -164,21 +162,21 @@ void Texture_button::render (sf::RenderTarget &target, M_vector<Transform> &tran
     target.draw (*sprite_);
 }
 
-bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 }
 
-bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
     return status;
 }
 
-bool Texture_button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Texture_button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
 {
     bool status = Button::on_mouse_moved (new_pos, transform_stack);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
@@ -222,12 +220,9 @@ String_button::~String_button ()
     if (string_) delete[] string_;
 }
 
-void String_button::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void String_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
-Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-
+    transform_stack.push (Transform (layout_->get_position ()));
     Vector lh_pos = transform_stack.top ().offset_;
 
     sf::RectangleShape button (sf::Vector2f (width_, height_));
@@ -251,21 +246,21 @@ Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Trans
     transform_stack.pop ();
 }
 
-bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }
 
-bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }
 
-bool String_button::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                 
+bool String_button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                 
 {
     bool status = Button::on_mouse_moved (new_pos, transform_stack);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;

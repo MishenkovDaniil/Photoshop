@@ -1,6 +1,6 @@
 #include "texture_widget.h"
 
-void M_render_texture::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void M_render_texture::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
     Vector lh_pos = transform_stack.top ().offset_;
 

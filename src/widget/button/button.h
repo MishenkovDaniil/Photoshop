@@ -49,16 +49,16 @@ protected:
     
     int run_mask_ = 0;
 
-    Transform transform_;
+    // Transform transform_;
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
     Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget,
             void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON);
     
-    virtual ~Button () {};
+    virtual ~Button () {delete layout_;};
 
-    Transform &get_transform () {return transform_;};
+    // Transform &get_transform () {return transform_;};
 
     bool contains (double x, double y) const;
     Button_run_fn get_func          ()const {return run_fn_;};
@@ -70,10 +70,10 @@ public:
     void          set_arg           (void *arg) {arg_ = arg;};
     
     bool run ();
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)                    override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                  override;
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                    override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
     bool on_time (float delta_sec)                            override;
@@ -96,10 +96,10 @@ public:
                     Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~Texture_button () override;
 
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                  override;
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack) override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
 };
@@ -120,10 +120,10 @@ public:
                    void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~String_button ();
 
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)                  override;
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack) override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
 

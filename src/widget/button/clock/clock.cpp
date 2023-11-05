@@ -12,12 +12,13 @@ Clock::Clock (Vector lh_corner, int width, int height, Button_run_fn func, Windo
 
 Clock::~Clock () {};
 
-void Clock::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void Clock::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
     Button::render (target, transform_stack);
     
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Vector lh_pos = top.unite (transform_).offset_;
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
+    Vector lh_pos = unite.offset_;
 
     sprintf (hrs, "%d", (int)hours_);
     sprintf (min, "%d", (int)minutes_);
@@ -39,17 +40,17 @@ void Clock::render (sf::RenderTarget &target, M_vector<Transform> &transform_sta
     target.draw (text);
 }   
 
-bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     return false;
 } 
 
-bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
     return false;
 } 
 
-bool Clock::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Clock::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
 {
     return false;
 }   

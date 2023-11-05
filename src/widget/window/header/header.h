@@ -20,7 +20,7 @@ class Header : public Widget
     const char *font_file_ = DEFAULT_FONT_FILE;
 
     Color background_color;
-    Transform transform_;
+    // Transform transform_;
     Window *parent_window_ = nullptr;
     
     bool is_moving_ = false;
@@ -32,10 +32,10 @@ public:
 
     bool contains (int x, int y);
 
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)    override;
-    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)                    override;
-    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)                    override;
-    bool on_mouse_moved       (Vector &new_pos, M_vector<Transform> &transform_stack)                                     override;   
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack)    override;
+    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                    override;
+    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                    override;
+    bool on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)                                     override;   
     bool on_keyboard_pressed  (Keyboard_key key)                                    override;
     bool on_keyboard_released (Keyboard_key key)                                    override;
     bool on_time (float delta_sec)                                                  override;

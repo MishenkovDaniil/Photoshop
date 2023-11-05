@@ -3,8 +3,7 @@
 
 #include "widget_manager.h"
 
-Widget_manager::Widget_manager (int list_capacity) :
-    transform_stack_ (M_vector (Transform (Vector (0, 0))))
+Widget_manager::Widget_manager (int list_capacity)
 {
     list_ctor (&widgets, list_capacity);
 }
@@ -65,7 +64,8 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
 
 bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
 {
-    bool is_released_on_child = false;
+    bool status = false;
+    
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
@@ -78,12 +78,10 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
         }
         assert (widget);
 
-        is_released_on_child = widget->on_mouse_released (mouse_key, pos, transform_stack_);
-        if (is_released_on_child)
-            return true;
+        status |= widget->on_mouse_released (mouse_key, pos, transform_stack_);
     }
 
-    return false;
+    return status;
 }
 
 bool Widget_manager::on_mouse_moved (Vector &new_pos)

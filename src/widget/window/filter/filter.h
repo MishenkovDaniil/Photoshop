@@ -5,6 +5,7 @@
 #include "../canvas/canvas.h"
 
 static const double MIN_SATURATION_VAL = 0.05;
+static const double MIN_LIGHT_VAL = 0.05;
 
 enum Filters 
 {

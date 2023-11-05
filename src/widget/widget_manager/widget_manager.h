@@ -10,7 +10,7 @@ static const int INIT_WIDGETS_CAPACITY = 10;
 class Widget_manager
 {
     List widgets = {};
-    M_vector<Transform> transform_stack_;
+    Transform_stack transform_stack_;
 
 public:
     Widget_manager (int list_capacity = INIT_WIDGETS_CAPACITY);

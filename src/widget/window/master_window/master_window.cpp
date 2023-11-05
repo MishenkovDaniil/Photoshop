@@ -26,14 +26,11 @@ void Master_window::add_window (Window *window)
     last_ = list_insert (&windows, last_, window);
 }
 
-void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) 
+void Master_window::render (sf::RenderTarget &target, Transform_stack &transform_stack) 
 {
     Window::render (target, transform_stack);
     
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-
+    transform_stack.push (Transform (layout_->get_position ()));
     menu_->render (target, transform_stack);
     transform_stack.pop ();
 
@@ -57,13 +54,9 @@ void Master_window::render (sf::RenderTarget &target, M_vector<Transform> &trans
     }
 }
 
-bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-
     size_t window_list_pos = last_;
-    // size_t active_window = 0;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
@@ -102,23 +95,21 @@ bool Master_window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vecto
     if (Window::on_mouse_pressed (mouse_key, pos, transform_stack))
         return true;
 
-    transform_stack.push (unite);
-
+    transform_stack.push (Transform (layout_->get_position ()));
+    
     if (menu_->on_mouse_pressed (mouse_key, pos, transform_stack))
     {
         transform_stack.pop ();
         return true;
     }
-
     transform_stack.pop ();
 
     return false;   
 }
 
-bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
+    bool status = false;
 
     size_t window_list_pos = last_;
 
@@ -134,38 +125,24 @@ bool Master_window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vecto
         }
         assert (window);
 
-        if (window->contains (pos)) //to pos_
-        {
-            bool is_released_on_child = window->on_mouse_released (mouse_key, pos, transform_stack);
-            if (is_released_on_child)
-            {
-                return true;
-            }
-        }
+        status |= window->on_mouse_released (mouse_key, pos, transform_stack);
+        
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    if (Window::on_mouse_released (mouse_key, pos, transform_stack))
-    {
-        return true;
-    }
+    status |= Window::on_mouse_released (mouse_key, pos, transform_stack);
 
-    transform_stack.push (unite);
-
-    if (menu_->on_mouse_released (mouse_key, pos, transform_stack))
-    {
-        return true;
-    }
-
+    transform_stack.push (Transform (layout_->get_position ()));
+    status |= (menu_->on_mouse_released (mouse_key, pos, transform_stack));
     transform_stack.pop ();
 
-
-    return false;   
+    return status;   
 }
 
-bool Master_window::on_mouse_moved (Vector &new_pos, M_vector<Transform> &transform_stack) 
+bool Master_window::on_mouse_moved (Vector &new_pos, Transform_stack &transform_stack) 
 {
-    Vector pos_ = transform_.apply_transform (new_pos);
+    Transform tr (layout_->get_position ());
+    Vector pos_ = tr.apply_transform (new_pos);
 
     size_t window_list_pos = last_;
 

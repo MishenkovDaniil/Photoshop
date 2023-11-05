@@ -10,15 +10,16 @@
 #include "scrollbar/scrollbar.h"
 
 Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
-    transform_ (Transform (lh_pos)),
+    // transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height),
     contained_widgets (nullptr, 3)
 {
+    layout_= new Default_layout_box (lh_pos, Vector (width, height));
+
     header_ = new Header (Vector (0, 0), width, w_name, this);
     canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (0, HEADER_HEIGHT), palette);
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
-
 
     if (need_scrollbar)
     {
@@ -43,14 +44,13 @@ Window::~Window ()
     if (header_)    delete header_;
     if (canvas_)    delete canvas_;
     if (scrollbar_) delete scrollbar_;
+    delete layout_;
 }
 
-void Window::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void Window::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-    // printf ("window transform = %lf %lf\n", transform_.offset_.get_x (), transform_.offset_.get_y ());
+    transform_stack.push (Transform (layout_->get_position ()));
+
     Vector lh_pos = transform_stack.top ().offset_;
 
     sf::RectangleShape rect (Vector (width_, height_));
@@ -73,11 +73,9 @@ void Window::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {   
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    transform_stack.push (Transform (layout_->get_position ()));
 
     size_t widgets_num = contained_widgets.get_size ();
 
@@ -94,32 +92,26 @@ bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 } 
 
-bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    bool status = false;
+    
+    transform_stack.push (Transform (layout_->get_position ()));
 
     size_t widgets_num = contained_widgets.get_size ();
 
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_released (mouse_key, pos, transform_stack))
-        {
-            transform_stack.pop ();
-            return true;
-        }
+        status |= (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_released (mouse_key, pos, transform_stack));
     }
 
     transform_stack.pop ();
-    return false;
+    return status;
 } 
 
-bool Window::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Window::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    transform_stack.push (Transform (layout_->get_position ()));
 
     size_t widgets_num = contained_widgets.get_size ();
 
@@ -175,8 +167,8 @@ bool Window::on_time (float delta_sec)
 
 bool Window::contains (Vector &pos)
 {   
-    Vector pos_ = transform_.apply_transform (pos);
-    
+    Vector pos_ = pos - layout_->get_position ();
+
     double x = pos_.get_x ();
     double y = pos_.get_y ();
 

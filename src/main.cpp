@@ -44,7 +44,7 @@ int main ()
     Tool_palette palette;
     Master_window main_window (window_size.x, window_size.y, Vector (0, 0), "master");
     
-    Clock clock_button (pos, 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
+    Clock clock_button (Vector (0, 0), 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
     widget_manager.add_widget (&main_window);
     widget_manager.add_widget (&clock_button);
 

@@ -2,16 +2,20 @@
 
 
 Menu::Menu (Vector lh_pos, int width, int height) :
-    transform_ (Transform (lh_pos)),
+    // transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height)
 {
+    layout_ = new Default_layout_box (lh_pos, Vector (width, height));
+    assert (layout_);
+
     list_ctor (&buttons, MENU_INIT_CAPACITY);
 }
 
 Menu::~Menu ()
 {
     list_dtor (&buttons);
+    delete layout_;
 }
 
 
@@ -27,13 +31,11 @@ void Menu::add_button (Button *button)
     list_insert (&buttons, 0, button);
 }
 
-void Menu::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) 
+void Menu::render (sf::RenderTarget &target, Transform_stack &transform_stack) 
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    transform_stack.push (Transform (layout_->get_position ()));
 
-    Vector lh_pos = unite.offset_;
+    Vector lh_pos = transform_stack.top ().offset_;
 
     sf::RectangleShape rect (Vector (width_, height_));
     rect.setFillColor    (Color (200, 200, 200));
@@ -60,11 +62,9 @@ void Menu::render (sf::RenderTarget &target, M_vector<Transform> &transform_stac
     transform_stack.pop ();
 }
 
-bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    transform_stack.push (Transform (layout_->get_position ()));
 
     bool status = false;
 
@@ -91,11 +91,9 @@ bool Menu::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transfo
     return status;
 } 
 
-bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
+    transform_stack.push (Transform (layout_->get_position ()));
 
     bool status = false;
     
@@ -122,7 +120,7 @@ bool Menu::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transfo
     return status;
 } 
 
-bool Menu::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
+bool Menu::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) //think about hovering that can be done to more than one button at the moment  (one hovers, one antihovers)
                                                 // connect hovering with 'on_time ()'
 {
     //TODO...

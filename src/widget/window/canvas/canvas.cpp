@@ -1,7 +1,7 @@
 #include "canvas.h"
 
 Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos, Tool_palette *palette) :
-    transform_ (Transform (lh_pos)),
+    // transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height),
     color_ (color),
@@ -12,6 +12,9 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos, T
         fprintf (stderr, "Error: incorrect size of canvas.\n");
         return;
     }
+
+    layout_ = new Default_layout_box (lh_pos, Vector (width, height));
+    assert (layout_);
 
     canvas_texture.create (width, height * 2);
     draw_rect_  = sf::IntRect (0, 0, width, height);
@@ -27,15 +30,13 @@ Canvas::~Canvas ()
 {
     width_  = __INT_MAX__;
     height_ = __INT_MAX__;
+    delete layout_;
 };
 
-void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)
+void Canvas::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
-    transform_stack.push (unite);
-
-    Vector lh_pos = unite.offset_;
+    transform_stack.push (Transform (layout_->get_position ()));
+    Vector lh_pos = transform_stack.top ().offset_;
 
     sf::Sprite canvas_sprite (canvas_texture.getTexture ());
     canvas_sprite.setPosition (lh_pos);
@@ -59,10 +60,10 @@ void Canvas::render (sf::RenderTarget &target, M_vector<Transform> &transform_st
     transform_stack.pop ();
 }
 
-bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
 
     Vector pos_ = unite.apply_transform (pos);
     if (!contains (pos_.get_x (), pos_.get_y ()))
@@ -87,10 +88,10 @@ bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 }
 
-bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
 
     Vector pos_ = unite.apply_transform (pos);
 
@@ -112,10 +113,10 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Trans
     return false;
 }
 
-bool Canvas::on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack)
+bool Canvas::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
 {
-    Transform top = transform_stack.get_size () > 0 ? transform_stack.top () : Transform (Vector (0, 0));
-    Transform unite = transform_.unite (top);
+    Transform tr (layout_->get_position ());
+    Transform unite = tr.unite (transform_stack.top ());
 
     Vector pos_ = unite.apply_transform (new_pos);
 

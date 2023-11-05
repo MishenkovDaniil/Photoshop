@@ -28,18 +28,18 @@ protected:
 
     M_vector<Widget *> contained_widgets;
     
-    Transform transform_;
+    // Transform transform_;
     
 public:
     Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = true, Tool_palette *palette = nullptr);
     virtual ~Window ();
 
-    Transform &get_transform () {return transform_;};
+    // Transform &get_transform () {return transform_;};
 
-    void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack)  override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) override;    /// x, y - absolute values 
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack)  override;
+    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
+    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) override;    /// x, y - absolute values 
     bool on_keyboard_pressed  (Keyboard_key key) override;
     bool on_keyboard_released (Keyboard_key key) override;
     bool on_time (float delta_sec) override;
