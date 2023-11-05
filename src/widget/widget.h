@@ -5,6 +5,7 @@
 #include "../graphic_structures/vector/vector.h"
 #include "../graphic_structures/color/color.h"
 #include "../vector.h"
+#include "layout/layout.h"
 
 static const Color BLACK = Color (0, 0, 0, 255);
 static const Color WHITE = Color (255, 255, 255, 255);
@@ -137,29 +138,38 @@ public:
     // Transform (Vector lh_pos, Vector size)  : offset_ (lh_pos), scale_ (Vector (1, 1)) {}; //scale_ (TRANSFORM_WIDTH / size.get_x (), TRANSFORM_HEIGHT / size.get_y ()) {};
     Transform (const Transform &transform) : offset_ (transform.offset_), scale_ (transform.scale_) {};
 
-    Transform unite(const Transform &prev) const 
-    {
-        Vector new_offset = Vector (offset_.get_x () * prev.scale_.get_x (), offset_.get_y () * prev.scale_.get_y ()) + prev.offset_;
-        return Transform (new_offset, Vector (scale_.get_x () * prev.scale_.get_x (), scale_.get_y ()  * prev.scale_.get_y ()));
-    };
-    Vector apply_transform (Vector &vector) {return Vector (vector.get_x () - offset_.get_x (), vector.get_y () - offset_.get_y ());};
-    Vector cancel_transform (Vector &vector) {return Vector (vector.get_x () + offset_.get_x (), vector.get_y () + offset_.get_y ());};
+    Transform unite(const Transform &prev) const;
+    Vector apply_transform (Vector &vector);
+    Vector cancel_transform (Vector &vector);
     // void change_offset (Vector new_offset) {offset_ = new_offset;};
     // Vector &get_offset (Vector new_offset) {return offset_;};
 };
 
+class Transform_stack 
+{
+    M_vector<Transform> transform_stack = M_vector<Transform> (Transform (-1, -1));
+public:
+    void push (Transform transform);
+    void pop  ();
+    Transform top ();
+    int get_size ();
+};
 
 class Widget 
 {
+protected:
+    Layout_box *layout_ = nullptr;
 public:
     virtual ~Widget () = default;
-    virtual void render (sf::RenderTarget &target, M_vector<Transform> &transform_stack) = 0;
-    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) = 0;
-    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos, M_vector<Transform> &transform_stack) = 0;
-    virtual bool on_mouse_moved    (Vector &new_pos, M_vector<Transform> &transform_stack) = 0;    /// x, y - absolute values 
+    virtual void render (sf::RenderTarget &target, Transform_stack &transform_stack) = 0;
+    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) = 0;
+    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) = 0;
+    virtual bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) = 0;    /// x, y - absolute values 
     virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
     virtual bool on_keyboard_released (Keyboard_key key) = 0;
     virtual bool on_time (float delta_sec) = 0;
+    Layout_box &get_layout_box () {return *layout_;};
+    void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};
 };
 
 #endif /* WIDGET_H */
