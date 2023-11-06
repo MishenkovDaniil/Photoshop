@@ -145,8 +145,17 @@ bool Window::on_keyboard_pressed  (Keyboard_key key)
 
 bool Window::on_keyboard_released (Keyboard_key key)
 {
-    //TODO
-    return false;
+    size_t widgets_num = contained_widgets.get_size ();
+    bool status = false;
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_released (key))
+        {
+            status = true;
+        }
+    }
+
+    return status;
 } 
 
 bool Window::on_tick (float delta_sec)
