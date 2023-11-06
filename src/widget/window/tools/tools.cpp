@@ -387,7 +387,7 @@ void Rect_shape::on_modifier_1          (Canvas &canvas)
         return;
     
     is_on_modifier_1_ = true;
-    
+
     M_render_texture *draw_texture = (M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
