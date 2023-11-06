@@ -7,8 +7,6 @@
 #include "../vector.h"
 #include "layout/layout.h"
 
-static const Color BLACK = Color (0, 0, 0, 255);
-static const Color WHITE = Color (255, 255, 255, 255);
 static const double TRANSFORM_HEIGHT = 100;
 static const double TRANSFORM_WIDTH  = 100;
 
@@ -68,6 +66,7 @@ enum Keyboard_key
     RShift,
     RAlt,
     RSystem,
+    Menuu,
     // Menu,
     LBracket,
     RBracket,
@@ -141,6 +140,7 @@ public:
     Transform unite(const Transform &prev) const;
     Vector apply_transform (Vector &vector);
     Vector cancel_transform (Vector &vector);
+    Vector scale_apply (Vector &vector) const;
     // void change_offset (Vector new_offset) {offset_ = new_offset;};
     // Vector &get_offset (Vector new_offset) {return offset_;};
 };

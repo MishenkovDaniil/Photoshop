@@ -105,8 +105,8 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stac
         state.pressed = false;
         state.released = true;
 
-        tool->on_confirm (pos_, *this);
-        is_focused = false;
+        tool->on_confirm (*this);
+        if (!(tool->get_widget ())) is_focused = false;
         return true;
     }
 
@@ -140,20 +140,35 @@ bool Canvas::on_keyboard_pressed  (Keyboard_key key)
         return false;
     
     Tool *tool = palette_->get_cur_tool ();
-    
-    if (tool && key == Escape) 
+
+    if (tool) 
     {
+        if (tool->get_widget ())
+        {
+            bool status = tool->get_widget ()->on_keyboard_pressed (key);
+            is_focused = status;
+            if (status) 
+                return status;
+        }
+
         switch (key)
         {
             case Escape:
             {
-                tool->on_cancel (*this);
+                tool->on_cancel ();
+                return true;
+            }
+            case Enter:
+            {
+                tool->on_confirm (*this);
                 return true;
             }
             case RShift:
             case LShift:
             {
-                // tool-> (*this);????
+                tool->on_modifier_1 (*this);
+                is_focused = true;
+                return true;
             }
             default:
             {
@@ -167,7 +182,20 @@ bool Canvas::on_keyboard_pressed  (Keyboard_key key)
 
 bool Canvas::on_keyboard_released (Keyboard_key key)
 {
-    return false;
+    if (!palette_)
+    {
+        return false;
+    }
+
+    Tool *tool = palette_->get_cur_tool ();
+    if (!tool)
+    {
+        return false;
+    }
+
+    tool->on_released_key ();
+
+    return true;
 }
 
 bool Canvas::on_tick (float delta_sec)

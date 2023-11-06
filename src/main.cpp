@@ -51,7 +51,7 @@ int main ()
     Window child_window (600, 600, Vector (200, 200), "window_1");
     Window child_window_2 (600, 600, Vector (600, 600), "window_2");
     main_window.add_window (&child_window);
-    main_window.add_window (&child_window_2);
+    // main_window.add_window (&child_window_2);
 
     sf::Sprite window_sprite;
     bool status = true;
@@ -71,7 +71,9 @@ int main ()
     class Brush brush_tool; 
     Line line_tool; 
     Circle_shape circle_tool; 
+    Rect_shape rect_tool; 
     Fill fill_tool; 
+    Text_tool text_tool; 
     
     Light_filter light_incr (LIGHT_DELTA_CHANGE);
     Light_filter light_decr (-LIGHT_DELTA_CHANGE);
@@ -106,26 +108,28 @@ int main ()
     Pair saturation_incr_args = Pair((void *)&palette, &saturation_incr_tool);
     Pair saturation_decr_args = Pair((void *)&palette, &saturation_decr_tool);
 
-    Button red_button    (Vector (0, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Red, Red, PRESS_BUTTON);
-    Button blue_button   (Vector (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Blue, Blue, PRESS_BUTTON);
-    Button green_button  (Vector (40, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Green, Green, PRESS_BUTTON);
-    Button white_button  (Vector (60, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&White, White, PRESS_BUTTON);
-    Button black_button  (Vector (80, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Black, Black, PRESS_BUTTON);
-    Button cyan_button   (Vector (0, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Cyan, Cyan, PRESS_BUTTON);
+    Button red_button    (Vector (0, 160),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&Red,    Red,    PRESS_BUTTON);
+    Button blue_button   (Vector (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Blue,   Blue,   PRESS_BUTTON);
+    Button green_button  (Vector (40, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Green,  Green,  PRESS_BUTTON);
+    Button white_button  (Vector (60, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&White,  White,  PRESS_BUTTON);
+    Button black_button  (Vector (80, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Black,  Black,  PRESS_BUTTON);
+    Button cyan_button   (Vector (0, 180),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&Cyan,   Cyan,   PRESS_BUTTON);
     Button purple_button (Vector (20, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Purple, Purple, PRESS_BUTTON);
     Button yellow_button (Vector (40, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Yellow, Yellow, PRESS_BUTTON);
-    Button brown_button  (Vector (60, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Brown, Brown, PRESS_BUTTON);
+    Button brown_button  (Vector (60, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Brown,  Brown,  PRESS_BUTTON);
     Button maroon_button (Vector (80, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&Maroon, Maroon, PRESS_BUTTON);
     
-    Texture_button brush_button  (Vector (0, 0), 50, 50, brush_pressed_texture, brush_released_texture, tool_run_fn, (void *)&main_window, (void *)&brush_tool, PRESS_BUTTON);
-    Texture_button tool_button   (Vector (50, 0), 50, 50, line_pressed_texture, line_released_texture, tool_run_fn, (void *)&main_window, (void *)&line_tool, PRESS_BUTTON);
+    Texture_button brush_button  (Vector (0, 0),   50, 50, brush_pressed_texture,  brush_released_texture,  tool_run_fn, (void *)&main_window, (void *)&brush_tool,  PRESS_BUTTON);
+    Texture_button tool_button   (Vector (50, 0),  50, 50, line_pressed_texture,   line_released_texture,   tool_run_fn, (void *)&main_window, (void *)&line_tool,   PRESS_BUTTON);
     Texture_button circle_button (Vector (100, 0), 50, 50, circle_pressed_texture, circle_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
-    Texture_button fill_button   (Vector (150, 0), 50, 50, fill_released_texture, fill_released_texture, tool_run_fn, (void *)&main_window, (void *)&fill_tool, PRESS_BUTTON);
+    Texture_button fill_button   (Vector (150, 0), 50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
+    Texture_button rect_button (Vector (0, 50),    50, 50, circle_pressed_texture, circle_released_texture, tool_run_fn, (void *)&main_window, (void *)&rect_tool,   PRESS_BUTTON);
+    Texture_button text_button (Vector (0, 100),   50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
     
-    String_button light_incr_tool_button (Vector (0, 0),  60, 20, "light incr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args, PRESS_BUTTON);
-    String_button light_decr_tool_button (Vector (60, 0), 60, 20, "light decr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args, PRESS_BUTTON);
+    String_button light_incr_tool_button (Vector (0, 0),  60, 20, "light incr",        Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,      PRESS_BUTTON);
+    String_button light_decr_tool_button (Vector (60, 0), 60, 20, "light decr",        Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,      PRESS_BUTTON);
     String_button saturation_incr_tool_button (Vector (120, 0),  60, 20, "satur incr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args, PRESS_BUTTON);
-    String_button saturation_decr_tool_button (Vector (180, 0), 60, 20, "satur decr", Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
+    String_button saturation_decr_tool_button (Vector (180, 0), 60, 20, "satur decr",  Purple, Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
     
     // main_window.add_menu_button (&filter_tool_button);
 
@@ -148,7 +152,9 @@ int main ()
     button_palette.add_tool_button (&brush_button);
     button_palette.add_tool_button (&tool_button);
     button_palette.add_tool_button (&circle_button);
+    button_palette.add_tool_button (&rect_button);
     button_palette.add_tool_button (&fill_button);
+    button_palette.add_tool_button (&text_button);
     
     widget_manager.add_widget (&button_palette);
     //Button (pos + Vector (0, 30), 50, 20, (Button_run_fn)tool_button_act, (void *)tool_palette, (void *)tool, Color (255, 0, 0, 255))
@@ -171,11 +177,21 @@ int main ()
                             break;
                     }
                     else 
-                        break;
+                    {
+                        status = widget_manager.on_keyboard_pressed ((Keyboard_key)event.key.code); // tool must return  bool
+                        if (status)
+                            break;
+                    }
+                    break;
                 }
                 case sf::Event::Closed:
                 {
                     window.close();
+                    break;
+                }
+                case sf::Event::KeyReleased:
+                {
+                    status = widget_manager.on_keyboard_released ((Keyboard_key)event.key.code); // tool must return  bool
                     break;
                 }
                 case sf::Event::MouseButtonPressed:

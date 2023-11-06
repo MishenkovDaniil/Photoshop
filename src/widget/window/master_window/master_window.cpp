@@ -197,10 +197,14 @@ bool Master_window::on_keyboard_pressed  (Keyboard_key key)
         assert (window);
 
         status |= window->on_keyboard_pressed (key);
+        if (status)
+            return true;
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
     status |= Window::on_keyboard_pressed (key);
+    if (status)
+            return true;
     status |= menu_->on_keyboard_pressed (key);
 
     return status;   
