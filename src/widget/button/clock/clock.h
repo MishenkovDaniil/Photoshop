@@ -17,7 +17,7 @@ class Clock : public Button
 
 public:
     Clock (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, float hours, float minutes, float seconds, void *arg = nullptr, Color fill_color = Color (0, 0, 0, 0), int run_mask = RELEASE_BUTTON);
-    ~Clock ();
+    ~Clock () = default;
 
     void change_time (float seconds, float minutes = -1, float hours = -1);
 

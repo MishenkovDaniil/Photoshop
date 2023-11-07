@@ -61,8 +61,8 @@ public:
     Button_run_fn get_func          ()const {return run_fn_;};
     Color         get_fill_color    ()const {return fill_color_;};
     bool          get_status        ()const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
-    int           get_width         ()const {return width_;};
-    int           get_height        ()const {return height_;};
+    int           get_width         ()const {assert (layout_); return layout_->get_size ().get_x ();};
+    int           get_height        ()const {assert (layout_); return layout_->get_size ().get_y ();};
 
     void          set_arg           (void *arg) {arg_ = arg;};
     

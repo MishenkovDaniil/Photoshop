@@ -10,8 +10,6 @@ Clock::Clock (Vector lh_corner, int width, int height, Button_run_fn func, Windo
     seconds_ (seconds) 
 {};
 
-Clock::~Clock () {};
-
 void Clock::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
     Button::render (target, transform_stack);

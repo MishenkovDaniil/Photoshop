@@ -24,8 +24,10 @@ Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, voi
 
 bool Button::contains (double x, double y) const
 {
+    Vector size = layout_->get_size ();
+
     return (0 <= x && 0 <= y &&
-            x <= width_ && y <= height_);
+            x <= size.get_x () && y <= size.get_y ());
 }
 
 bool Button::run ()
@@ -44,8 +46,9 @@ void Button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
     Transform tr (layout_->get_position ());
     Transform unite = tr.unite (transform_stack.top ());
     Vector lh_corner = unite.offset_;
+    Vector size = layout_->get_size ();
 
-    sf::RectangleShape rect (Vector (width_, height_));
+    sf::RectangleShape rect (unite.scale_apply(size));
     rect.setFillColor (fill_color_);
 /*TODO: 
 //make constant for thickness and add possibility to change it (in constructor for example)*/
@@ -222,10 +225,14 @@ String_button::~String_button ()
 
 void String_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
 {
+    assert (layout_);
+
     transform_stack.push (Transform (layout_->get_position ()));
     Vector lh_pos = transform_stack.top ().offset_;
 
-    sf::RectangleShape button (sf::Vector2f (width_, height_));
+    Vector size = layout_->get_size ();
+    Vector real_size = transform_stack.top ().scale_apply (size);
+    sf::RectangleShape button (real_size);
                        button.setFillColor (*cur_color_);
                        button.setOutlineThickness (1);
                        button.setPosition (lh_pos.get_x (), lh_pos.get_y ());
@@ -238,7 +245,7 @@ void String_button::render (sf::RenderTarget &target, Transform_stack &transform
     text.setCharacterSize (BUTTON_TEXT_SIZE);
 
     double text_width = text.findCharacterPos(str_size_ - 1).x - text.findCharacterPos (0).x;
-    text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + height_ / 2 - BUTTON_TEXT_SIZE / 2);
+    text.setPosition (lh_pos.get_x () + (real_size.get_x () - text_width) / 2, lh_pos.get_y () + real_size.get_y () / 2 - BUTTON_TEXT_SIZE / 2);
     
     target.draw (button);
     target.draw (text);
