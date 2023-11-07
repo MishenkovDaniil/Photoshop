@@ -60,6 +60,15 @@ public:
     void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
 };
 
+class White_black_filter : public Filter
+{
+public:
+    White_black_filter () {};
+    ~White_black_filter () = default;
+
+    void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
+};
+
 class Filter_palette 
 {
     M_vector<Filter *>filters = M_vector<Filter *> (nullptr);
