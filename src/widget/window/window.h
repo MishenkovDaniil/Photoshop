@@ -34,7 +34,7 @@ public:
     Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = true, Tool_palette *palette = nullptr);
     virtual ~Window ();
 
-    // Transform &get_transform () {return transform_;};
+    Canvas *get_canvas () {return canvas_;};
 
     void render (sf::RenderTarget &target, Transform_stack &transform_stack)  override;
     bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;

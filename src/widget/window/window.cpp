@@ -10,7 +10,6 @@
 #include "scrollbar/scrollbar.h"
 
 Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
-    // transform_ (Transform (lh_pos)),
     width_ (width),
     height_ (height),
     contained_widgets (nullptr, 3)
@@ -160,17 +159,18 @@ bool Window::on_keyboard_released (Keyboard_key key)
 
 bool Window::on_tick (float delta_sec)
 {
-    bool on_time_status = false;
+    bool status = false;
 
-    if (scrollbar_) 
+    size_t widgets_num = contained_widgets.get_size ();
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
-        on_time_status |= scrollbar_->on_tick (delta_sec);
+        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_tick (delta_sec))
+        {
+            status = true;
+        }
     }
     
-    on_time_status |= header_->on_tick (delta_sec);
-    on_time_status |= canvas_->on_tick (delta_sec);
-    
-    return on_time_status;
+    return status;
 }
 
 
