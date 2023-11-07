@@ -17,6 +17,16 @@ struct Pair
     ~Pair () {};    
 };
 
+enum Tool_buttons
+{
+    Brush_idx,
+    Line_idx,
+    Circle_shape_idx, 
+    Rect_shape_idx,
+    Fill_idx, 
+    Text_idx
+};
+
 class Button_palette : public Menu
 {
     Tool_palette *palette_;
@@ -25,6 +35,8 @@ public:
     Button_palette (Vector lh_pos, int width, int height, Tool_palette *palette);
     ~Button_palette ();
 
+    bool on_keyboard_pressed  (Keyboard_key key) override;
+    bool on_keyboard_released (Keyboard_key key) override;
     void add_tool_button (Button *tool_button);
 };
 

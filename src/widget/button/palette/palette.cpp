@@ -7,20 +7,68 @@ Button_palette::Button_palette (Vector lh_pos, int width, int height, Tool_palet
 
 Button_palette::~Button_palette () 
 {
-    for (int tool_button_idx = 0; tool_button_idx < buttons.size; ++tool_button_idx)
+    size_t button_num = buttons.get_size ();
+    for (int tool_button_idx = 0; tool_button_idx < button_num; ++tool_button_idx)
     {
-        Button *tool_button = (Button *)list_get (&buttons, tool_button_idx + 1);
+        Button *tool_button = buttons[tool_button_idx];
         if (!tool_button)
         {
             fprintf (stderr, "Event error: nil tool_button is detected.\n"
-                             "Hint: nil tool_button idx in tool_buttons list = %d.\n"
-                             "Hint: tool_buttons list size = %d.\n", tool_button_idx + 1, buttons.size);
+                             "Hint: nil tool_button idx in tool_buttons vector = %d.\n"
+                             "Hint: tool_buttons vector size = %lu.\n", tool_button_idx, button_num);
             return;
         }
         assert (tool_button);
 
         delete (Pair *)(tool_button->arg_);
     }
+}
+
+bool Button_palette::on_keyboard_pressed  (Keyboard_key key)
+{
+    switch (key)
+    {
+        case B:
+        {
+            buttons[Brush_idx]->run ();
+            return true;
+        }
+        case L:
+        {
+            buttons[Line_idx]->run ();
+            return true;
+        }
+        case C:
+        {
+            buttons[Circle_shape_idx]->run ();
+            return true;
+        }
+        case R:
+        {
+            buttons[Rect_shape_idx]->run ();
+            return true;
+        }
+        case F:
+        {
+            buttons[Fill_idx]->run ();
+            return true;
+        }
+        case T:
+        {
+            buttons[Text_idx]->run ();
+            return true;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return false;
+}
+
+bool Button_palette::on_keyboard_released  (Keyboard_key key)
+{
+    return false;
 }
 
 void Button_palette::add_tool_button (Button *tool_button)

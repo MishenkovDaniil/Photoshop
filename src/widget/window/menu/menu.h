@@ -21,14 +21,11 @@ protected:
     int cur_width_ = 0;
     int height_ = 0;
 
-    List buttons = {};
-    // Transform transform_;
+    M_vector<Button *> buttons = M_vector<Button *> (nullptr);
     
 public:
     Menu (Vector lh_pos, int width, int height = MENU_HEIGHT);
     virtual ~Menu ();
-
-    // Transform &get_transform () {return transform_;};
 
     void add_button (Button *button);
     
