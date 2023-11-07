@@ -32,7 +32,7 @@ bool Button::run ()
 {
     if (!run_fn_)
     {
-        fprintf (stderr, "Error: nullptr function pointer in Button.\n");
+        fprintf (stderr, "Warning: nullptr function pointer in Button.\n");
         return false;
     }
     
@@ -280,3 +280,203 @@ bool String_button::on_keyboard_released (Keyboard_key key)
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
     return status;
 }
+
+
+List_button::List_button (Button *list_button) :
+    list_button_ (list_button)
+{
+    assert (list_button);
+    layout_ = new Default_layout_box (Vector (list_button->layout_->get_position () + Vector (0, list_button->layout_->get_size ().get_y ())), 
+                                              list_button->layout_->get_size ());
+    assert (layout_);
+
+}
+
+List_button::~List_button ()
+{
+    if (layout_) delete (Default_layout_box *)layout_;
+    layout_ = nullptr;
+}
+
+void List_button::add_button (Button *button)
+{
+    assert (button);
+    Layout_box *old_layout = button->layout_;
+    assert (old_layout);
+
+    size_t button_height = old_layout->get_size ().get_y ();
+    delete old_layout;
+    
+    Default_layout_box *new_layout = new Default_layout_box (Vector (0, relative_height_), Vector (layout_->get_size ().get_x (), button_height));
+    relative_height_ += button_height;
+    button->set_layout_box (*new_layout);
+    
+    buttons_.add (button);
+}
+
+
+void List_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+{
+    list_button_->render (target, transform_stack);
+
+    if (is_open_)
+    {
+        transform_stack.push (Transform (layout_->get_position ()));
+
+        size_t button_num = buttons_.get_size ();
+        for (int button_idx = 0; button_idx < button_num; ++button_idx)
+        {
+            Button *button = buttons_[button_idx];
+            if (!button)
+            {
+                fprintf (stderr, "Event error: nil button is detected.\n"
+                                "Hint: nil button idx in buttons vector = %d.\n"
+                                "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+                return;
+            }
+            assert (button);
+
+            button->render (target, transform_stack);
+        }
+
+        transform_stack.pop ();
+    }
+}   
+
+bool List_button::on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+{
+    assert (layout_);
+    
+    bool status = false;
+
+    Transform list_button_tr (list_button_->layout_->get_position ());
+    Transform unite = list_button_tr.unite (transform_stack.top ());
+    Vector pos_ = unite.apply_transform (pos);
+
+    status |= list_button_->on_mouse_pressed (mouse_key, pos, transform_stack);
+    
+    if (list_button_->contains (pos_.get_x (), pos_.get_y ()))
+    {
+        is_open_ = !is_open_;
+        return true;
+    }
+    
+    if (!is_open_)
+    {
+        return status;
+    }
+
+    transform_stack.push (Transform (layout_->get_position ()));
+    
+    size_t button_num = buttons_.get_size ();
+
+    for (int button_idx = 0; button_idx < button_num; ++button_idx)
+    {
+        Button *button = buttons_[button_idx];
+        if (!button)
+        {
+            fprintf (stderr, "Event error: nil button is detected.\n"
+                            "Hint: nil button idx in buttons vector = %d.\n"
+                            "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+            return false;
+        }
+        assert (button);
+
+        status |= button->on_mouse_pressed (mouse_key, pos, transform_stack);
+    }
+
+    transform_stack.pop ();
+    
+    if ((!status))
+    {
+        is_open_ = !is_open_;
+        status = true;
+    }
+
+    return status;
+}
+
+bool List_button::on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+{
+    bool status = false;
+    
+    status |= list_button_->on_mouse_released (mouse_key, pos, transform_stack);
+
+    if (is_open_)
+    {
+        transform_stack.push (Transform (layout_->get_position ()));
+
+        Vector lh_pos = transform_stack.top ().offset_;
+
+        size_t button_num = buttons_.get_size ();
+        for (int button_idx = 0; button_idx < button_num; ++button_idx)
+        {
+            Button *button = buttons_[button_idx];
+            if (!button)
+            {
+                fprintf (stderr, "Event error: nil button is detected.\n"
+                                "Hint: nil button idx in buttons vector = %d.\n"
+                                "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+                return false;
+            }
+            assert (button);
+
+            status |= button->on_mouse_released (mouse_key, lh_pos, transform_stack);
+        }
+
+        transform_stack.pop ();
+    }
+
+    return status;
+}
+
+bool List_button::on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)
+{
+    bool status = false;
+    
+    status |= list_button_->on_mouse_moved (new_pos, transform_stack);
+
+    if (is_open_)
+    {
+        transform_stack.push (Transform (layout_->get_position ()));
+
+        Vector lh_pos = transform_stack.top ().offset_;
+
+        size_t button_num = buttons_.get_size ();
+        for (int button_idx = 0; button_idx < button_num; ++button_idx)
+        {
+            Button *button = buttons_[button_idx];
+            if (!button)
+            {
+                fprintf (stderr, "Event error: nil button is detected.\n"
+                                "Hint: nil button idx in buttons vector = %d.\n"
+                                "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+                return false;
+            }
+            assert (button);
+
+            status |= button->on_mouse_moved (lh_pos, transform_stack);
+        }
+
+        transform_stack.pop ();
+    }
+
+    return status;
+}   
+
+bool List_button::on_keyboard_pressed  (Keyboard_key key)
+{
+    return false;
+
+}   
+
+bool List_button::on_keyboard_released (Keyboard_key key)
+{
+    return false;
+
+}   
+
+bool List_button::on_tick (float delta_sec)
+{
+    return false;
+}   

@@ -11,6 +11,7 @@ enum Button_type
 
 class Window;
 class Menu;
+class List_button;
 class Tool_palette;
 class Button_palette;
 
@@ -49,16 +50,12 @@ protected:
     
     int run_mask_ = 0;
 
-    // Transform transform_;
-
 public:
     Button () {}; //TODO: make button_create for this constructor case
     Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget,
             void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON);
     
     virtual ~Button () {delete layout_;};
-
-    // Transform &get_transform () {return transform_;};
 
     bool contains (double x, double y) const;
     Button_run_fn get_func          ()const {return run_fn_;};
@@ -80,6 +77,7 @@ public:
 
     friend Scrollbar;
     friend Menu;
+    friend List_button;
     friend Button_palette;
 };
 
@@ -126,9 +124,28 @@ public:
     bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
     bool on_keyboard_pressed  (Keyboard_key key)              override;
     bool on_keyboard_released (Keyboard_key key)              override;
+};
 
-    // void update (bool is_pressed);
-    // bool run (Point &object, sf::Keyboard::Key key) override = 0;
+class List_button : public Button
+{
+    Button *list_button_ = nullptr;
+    M_vector<Button *> buttons_ = M_vector<Button *> (nullptr);
+    bool is_open_ = false;
+    size_t relative_height_ = 0;
+
+public:
+    List_button (Button *list_button);
+    ~List_button ();
+
+    void add_button (Button *button); /// can change button layout
+    
+    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                        override;
+    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)  override;
+    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)  override;
+    bool on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)                   override;    
+    bool on_keyboard_pressed  (Keyboard_key key)                                                    override;
+    bool on_keyboard_released (Keyboard_key key)                                                    override;
+    bool on_tick (float delta_sec)                                                                  override;
 };
 
 #endif /* BUTTON_H */
