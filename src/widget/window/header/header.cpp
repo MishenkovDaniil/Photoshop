@@ -115,69 +115,6 @@ void Header::onTick             (TickEvent &event, EHC &ehc)
 }
 
 
-
-// bool Header::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
-// {
-//     Transform tr (layout_->get_position ());
-//     Transform unite = tr.combine (transform_stack.top ());
-//     Vec2d pos_ = unite.apply (pos);
-
-//     if (contains (pos_.get_x (), pos_.get_y ()))
-//     {
-//         is_moving_ = true;
-//         move_start_ = pos;
-//         return true;
-//     }
-
-//     return false;
-// }
-
-// bool Header::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
-// {
-//     if (is_moving_)
-//     {
-//         is_moving_ = false;
-//         return true;
-//     }
-
-//     return false;
-// }
-
-// bool Header::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
-// {
-//     if (is_moving_)
-//     {
-//         Vec2d move = new_pos - move_start_;
-//         // parent_window_->get_transform ().offset_ += move;
-//         Layout_box &layout = parent_window_->get_layout_box ();
-//         layout.set_position (layout.get_position () + move);
-//         parent_window_->set_layout_box (layout);
-//         move_start_ = new_pos;
-//         return true;
-//     }
-
-//     return false;
-// }   
-
-// bool Header::on_keyboard_pressed  (KeyCode key)
-// {
-//     ///TODO
-//     return false;
-// }
-
-// bool Header::on_keyboard_released (KeyCode key)
-// {
-//     ///TODO
-//     return false;
-// }
-
-// bool Header::on_tick (float delta_sec)
-// {
-//     ///TODO
-//     return false;
-// }
-
-
 bool Header::contains (int x, int y)
 {
     if ((x >= 0 && x <= width_) &&

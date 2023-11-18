@@ -206,64 +206,6 @@ int main ()
             widget_manager.onEvent (&event, delta_clock + delta_time);
             delta_clock = clock.getElapsedTime ().asSeconds() - delta_time;
             clock.restart ();
-            // break;
-            // switch (event.type)
-            // {
-            //     case sf::Event::KeyPressed:
-            //     {
-            //         KeyboardPressedEvent key_event;
-            //         key_event.key_id = (KeyCode)event.key.code;
-                   
-            //         if (event.key.code == sf::Keyboard::Escape)
-            //         {
-            //             status = widget_manager.on_keyboard_pressed (Escape); // tool must return  bool
-            //             if (status)
-            //                 break;
-            //         }
-            //         else 
-            //         {
-            //             status = widget_manager.on_keyboard_pressed ((KeyCode)event.key.code); // tool must return  bool
-            //             if (status)
-            //                 break;
-            //         }
-            //         break;
-            //     }
-            //     case sf::Event::Closed:
-            //     {
-            //         window.close();
-            //         break;
-            //     }
-            //     case sf::Event::KeyReleased:
-            //     {
-            //         status = widget_manager.on_keyboard_released ((KeyCode)event.key.code); // tool must return  bool
-            //         break;
-            //     }
-            //     case sf::Event::MouseButtonPressed:
-            //     {
-            //         Vec2d pos (event.mouseButton.x, event.mouseButton.y);
-
-            //         status = widget_manager.on_mouse_pressed ((MouseButton)event.mouseButton.button, pos);
-            //         break;
-            //     }
-            //     case sf::Event::MouseButtonReleased:
-            //     {
-            //         Vec2d pos (event.mouseButton.x, event.mouseButton.y);
-
-            //         status = widget_manager.on_mouse_released ((MouseButton)event.mouseButton.button, pos);
-            //         break;
-            //     }
-            //     case sf::Event::MouseMoved:
-            //     {
-            //         Vec2d pos (event.mouseMove.x, event.mouseMove.y);
-
-            //         status = widget_manager.on_mouse_moved (pos);
-            //         break;
-            //     }
-            //     default:
-            //     {
-            //         break;
-            //     }
-            // }
         }       
         else
         {
@@ -271,13 +213,7 @@ int main ()
             widget_manager.onEvent (nullptr, delta_clock + delta_time);
             delta_clock = clock.getElapsedTime ().asSeconds() - delta_time;
             clock.restart ();
-            // break; 
         }
-        // float delta_time = clock.getElapsedTime ().asSeconds();
-        // widget_manager.onTick (delta_clock + delta_time);
-
-        // delta_clock = clock.getElapsedTime ().asSeconds() - delta_time;
-        // clock.restart ();
 
         // if (status)
         {

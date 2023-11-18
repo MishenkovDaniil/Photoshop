@@ -21,14 +21,6 @@ public:
     void render (sf::RenderTarget &target);
 
     void onEvent (sf::Event *event, double delta_time);
-    
-    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos);
-    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos);
-    // bool on_mouse_moved    (Vec2d &new_pos);    /// x, y - absolute values 
-    // bool on_keyboard_pressed  (KeyCode key);
-    // bool on_keyboard_released (KeyCode key);
-    // bool on_tick (float delta_sec);
-
     void onTick             (TickEvent &event, EHC &ehc);
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc);
     void onMousePressed     (MousePressedEvent &event, EHC &ehc);

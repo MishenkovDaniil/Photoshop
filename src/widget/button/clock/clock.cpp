@@ -88,55 +88,6 @@ void Clock::onTick             (TickEvent &event, EHC &ehc)
     // return true;
 }
 
-
-// bool Clock::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
-// {
-//     return false;
-// } 
-
-// bool Clock::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
-// {
-//     return false;
-// } 
-
-// bool Clock::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
-// {
-//     return false;
-// }   
-
-// bool Clock::on_keyboard_pressed  (KeyCode key)
-// {
-//     return false;
-// }   
-
-// bool Clock::on_keyboard_released (KeyCode key)
-// {
-//     return false;
-// }   
-
-// bool Clock::on_tick (float delta_sec)
-// {
-//     seconds_ += delta_sec;
-//     if ((int)seconds_ > 59)
-//     {
-//         seconds_ = (int)seconds_ % 60;
-//         minutes_++;
-
-//         if ((int)minutes_ > 59)
-//         {
-//             minutes_ = (int)minutes_ % 60;
-//             hours_++;
-
-//             if ((int)hours_ > 23)
-//             {
-//                hours_ = (int)hours_ % 24;
-//             }
-//         }
-//     }
-
-//     return true;
-// }   
-
 void Clock::change_time (float seconds, float minutes, float hours)
 {   
     if (seconds < 0 || (int)seconds > 59)

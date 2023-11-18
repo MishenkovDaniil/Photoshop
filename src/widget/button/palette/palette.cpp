@@ -78,53 +78,6 @@ void Button_palette::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc
 }
 
 
-// bool Button_palette::on_keyboard_pressed  (KeyCode key)
-// {
-//     switch (key)
-//     {
-//         case B:
-//         {
-//             buttons[Brush_idx]->run ();
-//             return true;
-//         }
-//         case L:
-//         {
-//             buttons[Line_idx]->run ();
-//             return true;
-//         }
-//         case C:
-//         {
-//             buttons[Circle_shape_idx]->run ();
-//             return true;
-//         }
-//         case R:
-//         {
-//             buttons[Rect_shape_idx]->run ();
-//             return true;
-//         }
-//         case F:
-//         {
-//             buttons[Fill_idx]->run ();
-//             return true;
-//         }
-//         case T:
-//         {
-//             buttons[Text_idx]->run ();
-//             return true;
-//         }
-//         default:
-//         {
-//             break;
-//         }
-//     }
-//     return false;
-// }
-
-// bool Button_palette::on_keyboard_released  (KeyCode key)
-// {
-//     return false;
-// }
-
 void Button_palette::add_tool_button (Button *tool_button)
 {
     assert (tool_button);

@@ -63,12 +63,6 @@ public:
     virtual void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) = 0;
     virtual void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) = 0;
     
-    // virtual bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) = 0;
-    // virtual bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) = 0;
-    // virtual bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack) = 0;    /// x, y - absolute values 
-    // virtual bool on_keyboard_pressed  (KeyCode key) = 0;
-    // virtual bool on_keyboard_released (KeyCode key) = 0;
-    // virtual bool on_tick (float delta_sec) = 0;
     Layout_box &get_layout_box () {return *layout_;};
     void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};
 };

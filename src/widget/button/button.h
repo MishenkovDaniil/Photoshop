@@ -68,13 +68,6 @@ public:
     
     bool run ();
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override;
-    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
-    // bool on_keyboard_pressed  (KeyCode key)              override;
-    // bool on_keyboard_released (KeyCode key)              override;
-    // bool on_tick (float delta_sec)                            override;
-
     void onTick             (TickEvent &event, EHC &ehc) override;
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
     void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
@@ -102,11 +95,6 @@ public:
     ~Texture_button () override;
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
-    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
-    // bool on_keyboard_pressed  (KeyCode key)              override;
-    // bool on_keyboard_released (KeyCode key)              override;
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
     void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
     void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
@@ -131,11 +119,6 @@ public:
     ~String_button ();
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
-    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
-    // bool on_keyboard_pressed  (KeyCode key)              override;
-    // bool on_keyboard_released (KeyCode key)              override;
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
     void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
     void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
@@ -157,12 +140,6 @@ public:
     void add_button (Button *button); /// can change button layout
     
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                        override;
-    // bool on_mouse_pressed     (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)  override;
-    // bool on_mouse_released    (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)  override;
-    // bool on_mouse_moved       (Vec2d &new_pos, TransformStack &transform_stack)                   override;    
-    // bool on_keyboard_pressed  (KeyCode key)                                                    override;
-    // bool on_keyboard_released (KeyCode key)                                                    override;
-    // bool on_tick (float delta_sec)                                                                  override;
     void onTick             (TickEvent &event, EHC &ehc) override;
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
     void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;

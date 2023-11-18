@@ -22,12 +22,6 @@ public:
     void change_time (float seconds, float minutes = -1, float hours = -1);
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override;
-    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
-    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
-    // bool on_keyboard_pressed  (KeyCode key)              override;
-    // bool on_keyboard_released (KeyCode key)              override;
-    // bool on_tick (float delta_sec)                            override;
     void onTick             (TickEvent &event, EHC &ehc) override;
     void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
     void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
