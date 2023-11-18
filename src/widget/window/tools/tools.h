@@ -34,13 +34,13 @@ protected:
 
 public:
     virtual ~Tool () = default;
-    virtual void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) = 0;
-    virtual void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) = 0;
+    virtual void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) = 0;
+    virtual void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) = 0;
     virtual void on_modifier_1          (Canvas &canvas) = 0;
     virtual void on_modifier_2          (Canvas &canvas) = 0;
     virtual void on_modifier_3          (Canvas &canvas) = 0;
 
-    virtual void on_move                (Vector &pos, Canvas &canvas) = 0;
+    virtual void on_move                (Vec2d &pos, Canvas &canvas) = 0;
     virtual void on_confirm             (Canvas &canvas) = 0;
     virtual void on_cancel              () = 0;
     virtual void on_released_key        () = 0;
@@ -50,20 +50,20 @@ public:
 
 class Brush : public Tool
 {
-    Vector prev_pos = 0;
+    Vec2d prev_pos = 0;
     bool is_pressed = false;
 
 public:
     Brush ();
     ~Brush ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {};
@@ -72,19 +72,19 @@ public:
 class Line : public Tool 
 {
     sf::Vertex vertex[2];
-    Vector latest_pos_ = Vector ();
+    Vec2d latest_pos_ = Vec2d ();
 
 public:
     Line ();
     ~Line ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {};
@@ -94,23 +94,23 @@ public:
 
 class Circle_shape : public Tool
 {
-    Vector center_;
-    Vector last_center_;
+    Vec2d center_;
+    Vec2d last_center_;
     sf::CircleShape circle_ = sf::CircleShape ();
-    Vector latest_pos_ = Vector ();
+    Vec2d latest_pos_ = Vec2d ();
     bool is_on_modifier_1_ = false;
 
 public:
     Circle_shape ();
     ~Circle_shape ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {is_on_modifier_1_ = false;};
@@ -118,24 +118,24 @@ public:
 
 class Rect_shape : public Tool 
 {
-    Vector center_;
-    Vector last_center_;
+    Vec2d center_;
+    Vec2d last_center_;
     sf::RectangleShape rect_ = sf::RectangleShape ();
     Color canvas_bg_color = Transparent;
-    Vector latest_pos_ = Vector ();
+    Vec2d latest_pos_ = Vec2d ();
     bool is_on_modifier_1_ = false;
 
 public:
     Rect_shape ();
     ~Rect_shape ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {is_on_modifier_1_ = false;};
@@ -146,7 +146,7 @@ public:
 class Fill : public Tool
 {
     uint8_t *pixel_arr_ = 0;
-    Vector size_;
+    Vec2d size_;
 
     Color fill_color_;
     Color cur_color_;
@@ -160,19 +160,19 @@ public:
     Fill ();
     ~Fill ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {};
 
 private:
-    void fill_pixels (Vector &pos, Canvas &canvas);
+    void fill_pixels (Vec2d &pos, Canvas &canvas);
 };
 
 
@@ -184,13 +184,13 @@ public:
     Filter_tool (Filter *filter) : filter_(filter) {};
     ~Filter_tool () = default;
     
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {};
@@ -201,19 +201,19 @@ class Text_tool : public Tool
     const char buf[512] = {};
     Rect_shape rect_tool = Rect_shape ();
     bool on_rect_ = false;
-    Vector latest_pos_ = Vector (0, 0);
+    Vec2d latest_pos_ = Vec2d (0, 0);
 
 public:
     Text_tool ();
     ~Text_tool ();
 
-    void on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) override;
+    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
 
-    void on_move                (Vector &pos, Canvas &canvas) override;
+    void on_move                (Vec2d &pos, Canvas &canvas) override;
     void on_confirm             (Canvas &canvas) override;
     void on_cancel              () override;
     void on_released_key        () override {if (on_rect_) rect_tool.on_released_key ();};

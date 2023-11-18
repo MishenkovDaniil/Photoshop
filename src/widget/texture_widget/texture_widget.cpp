@@ -1,8 +1,8 @@
 #include "texture_widget.h"
 
-void M_render_texture::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void M_render_texture::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
-    Vector lh_pos = transform_stack.top ().offset_;
+    Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     sf::Sprite sprite;
     sprite.setTexture (texture_.getTexture ());

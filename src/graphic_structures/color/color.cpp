@@ -2,52 +2,52 @@
 
 Color Color::operator * (double mult) const 
 {
-    double r = r_ * mult;
-           r = r > 0xff ? 0xff : r;
-    double g = g_ * mult;
-           g = g > 0xff ? 0xff : g;
-    double b = b_ * mult;
-           b = b > 0xff ? 0xff : b;
-    double a = a_ * mult;
-           a = a > 0xff ? 0xff : a;        
+    double r_new = r * mult;
+           r_new = r_new > 0xff ? 0xff : r_new;
+    double g_new = g * mult;
+           g_new = g_new > 0xff ? 0xff : g_new;
+    double b_new = b * mult;
+           b_new = b_new > 0xff ? 0xff : b_new;
+    double a_new = a * mult;
+           a_new = a_new > 0xff ? 0xff : a_new;        
     
-    return Color (r, g, b, a);
+    return Color (r_new, g_new, b_new, a_new);
 }
 
 Color Color::operator + (const Color &color) const
 {
-    double r = r_ + color.r_;
-           r = r > 0xff ? 0xff : r;
-    double g = g_ + color.g_;
-           g = g > 0xff ? 0xff : g;
-    double b = b_ + color.b_;
-           b = b > 0xff ? 0xff : b;
-    double a = a_ + color.a_;
-           a = a > 0xff ? 0xff : a; 
+    double r_new = r + color.r;
+           r_new = r_new > 0xff ? 0xff : r_new;
+    double g_new = g + color.g;
+           g_new = g_new > 0xff ? 0xff : g_new;
+    double b_new = b + color.b;
+           b_new = b_new > 0xff ? 0xff : b_new;
+    double a_new = a + color.a;
+           a_new = a_new > 0xff ? 0xff : a_new; 
             
-    return Color (r, g, b, a);
+    return Color (r_new, g_new, b_new, a_new);
 }
 
 Color Color::operator += (const Color &color)      
 {
-    r_ += color.r_;
-    r_ = r_ < color.r_ ? 0xff : r_;
-    g_ += color.g_;
-    g_ = g_ < color.g_ ? 0xff : g_;
-    b_ += color.b_;
-    b_ = b_ < color.b_ ? 0xff : b_;
-    a_ += color.a_;
-    a_ = a_ < color.a_ ? 0xff : a_;
+    r += color.r;
+    r = r < color.r ? 0xff : r;
+    g += color.g;
+    g = g < color.g ? 0xff : g;
+    b += color.b;
+    b = b < color.b ? 0xff : b;
+    a += color.a;
+    a = a < color.a ? 0xff : a;
                                                         
-    return Color (r_, g_, b_, a_);
+    return Color (r, g, b, a);
 }
 
 Color Color::operator = (const sf::Color &other)
 {
-       r_ = other.r;
-       g_ = other.g;
-       b_ = other.b;
-       a_ = other.a;
+       r = other.r;
+       g = other.g;
+       b = other.b;
+       a = other.a;
 
        return *this;
 }
@@ -55,9 +55,9 @@ Color Color::operator = (const sf::Color &other)
 
 Luma_color rgb_to_luma (const Color &color)
 {
-       double r = (double)color.r_ / MAX_COLOR_VAL;
-       double g = (double)color.g_ / MAX_COLOR_VAL;
-       double b = (double)color.b_ / MAX_COLOR_VAL;
+       double r = (double)color.r / MAX_COLOR_VAL;
+       double g = (double)color.g / MAX_COLOR_VAL;
+       double b = (double)color.b / MAX_COLOR_VAL;
        
        double luma = LUMA_R_PARAM * r + LUMA_G_PARAM * g + LUMA_B_PARAM * b;
 
@@ -171,9 +171,9 @@ Color luma_to_rgb (Luma_color &luma_color)
 
 Hsl_color  rgb_to_hsl  (const Color &color)
 {
-       double r = (double)color.r_ / MAX_COLOR_VAL;
-       double g = (double)color.g_ / MAX_COLOR_VAL;
-       double b = (double)color.b_ / MAX_COLOR_VAL;
+       double r = (double)color.r / MAX_COLOR_VAL;
+       double g = (double)color.g / MAX_COLOR_VAL;
+       double b = (double)color.b / MAX_COLOR_VAL;
        
 
        double max = std::max (std::max (r, g), b);

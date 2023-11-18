@@ -98,8 +98,8 @@ static void make_graph         (const List *list, FILE *list_graph);
 static void list_realloc       (List *list, int previous_capacity,            unsigned int *err = &ERRNO);
 static int  linearize_list     (List *list,                                   unsigned int *err = &ERRNO);
 static void list_free          (List *list);
-static int  find_logic_number  (List *list, int phys_index, unsigned int *err = &ERRNO);
-static int  find_number        (List *list, int phys_index, unsigned int *err = &ERRNO);
+// static int  find_logic_number  (List *list, int phys_index, unsigned int *err = &ERRNO);
+// static int  find_number        (List *list, int phys_index, unsigned int *err = &ERRNO);
 static void set_error_bit      (unsigned int *error, int bit);
 
 #ifdef LIST_DEBUG
@@ -115,10 +115,10 @@ static list_elem_t debug_list_remove (List *list, int remove_place, unsigned int
                                const int call_line, const char *call_file, const char *call_func);
 static int debug_linearize_list      (List *list, unsigned int *err,
                                const int call_line, const char *call_file, const char *call_func);
-static int debug_find_logic_number   (List *list, int phys_index, unsigned int *err,
-                               const int call_line, const char *call_file, const char *call_func);
-static int debug_find_number         (List *list, int phys_index, unsigned int *err,
-                               const int call_line, const char *call_file, const char *call_func);
+// static int debug_find_logic_number   (List *list, int phys_index, unsigned int *err,
+//                                const int call_line, const char *call_file, const char *call_func);
+// static int debug_find_number         (List *list, int phys_index, unsigned int *err,
+//                                const int call_line, const char *call_file, const char *call_func);
 #endif
 
 static void set_error_bit (unsigned int *error, int bit)
@@ -247,7 +247,7 @@ static list_elem_t list_get (const List *list, int get_place, unsigned int *err)
 {
     if (!(get_place > 0 && get_place < list->capacity) || (list->elems[get_place].prev == EMPTY))
     {
-        fprintf (stderr, "GET_ERROR: incorrect get place");
+        fprintf (stderr, "GET_ERROR: incorrect get place.\n");
 
         set_error_bit (err, LIST_INCORRECT_REMOVE_PLACE);
         list_dump (list, err);
@@ -256,7 +256,7 @@ static list_elem_t list_get (const List *list, int get_place, unsigned int *err)
     }
     else if (list->size == 0)
     {
-        fprintf (stderr, "GET_ERROR: get from empty list");
+        fprintf (stderr, "GET_ERROR: get from empty list.\n");
 
         set_error_bit (err, LIST_REMOVE_FROM_EMPTY_LIST);
         list_dump (list, err);
@@ -308,79 +308,79 @@ static void list_realloc (List *list, int previous_capacity, unsigned int *err)
 
 //headers in dump (h2)
 //---------------------
-static int find_logic_number (List *list, int phys_index, unsigned int *err)
-{
-    printf ("the function will be working too long, do you really want to call it? (yes/no)");
+// static int find_logic_number (List *list, int phys_index, unsigned int *err)
+// {
+//     printf ("the function will be working too long, do you really want to call it? (yes/no)");
 
-    const int answer_size = 5;
-    char status[answer_size] = {};
+//     const int answer_size = 5;
+//     char status[answer_size] = {};
 
-    scanf ("%s", status);
+//     scanf ("%s", status);
 
-    if (strcasecmp (status, "yes") == 0)
-    {
-        int desired_index = 1;
+//     if (strcasecmp (status, "yes") == 0)
+//     {
+//         int desired_index = 1;
 
-        List_elem elem = list->elems[phys_index];
+//         List_elem elem = list->elems[phys_index];
 
-        if (elem.data != POISON && elem.prev != EMPTY)
-        {
-            while (elem.prev)
-            {
-                elem = list->elems[elem.prev];
-                desired_index++;
-            }
-        }
+//         if (elem.data != POISON && elem.prev != EMPTY)
+//         {
+//             while (elem.prev)
+//             {
+//                 elem = list->elems[elem.prev];
+//                 desired_index++;
+//             }
+//         }
 
-        if (desired_index)
-        {
-            return desired_index;
-        }
+//         if (desired_index)
+//         {
+//             return desired_index;
+//         }
 
-        printf ("this element is empty or null");
-    }
+//         printf ("this element is empty or null");
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
-static int find_number (List *list, int phys_index, unsigned int *err)
-{
-    printf ("the function will be working too long, do you really want to call it? (yes/no)\n");
+// static int find_number (List *list, int phys_index, unsigned int *err)
+// {
+//     printf ("the function will be working too long, do you really want to call it? (yes/no)\n");
 
-    const int answer_size = 5;
-    char status[answer_size] = {};
+//     const int answer_size = 5;
+//     char status[answer_size] = {};
 
-    scanf ("%s", status);
+//     scanf ("%s", status);
 
-    if (strcasecmp (status, "no") == 0)
-    {
-        int desired_index = 1;
+//     if (strcasecmp (status, "no") == 0)
+//     {
+//         int desired_index = 1;
 
-        List_elem elem = list->elems[phys_index];
+//         List_elem elem = list->elems[phys_index];
 
-        if (elem.data != POISON && elem.prev != EMPTY)
-        {
-            while (elem.prev)
-            {
-                elem = list->elems[elem.prev];
-                desired_index++;
-            }
-        }
+//         if (elem.data != POISON && elem.prev != EMPTY)
+//         {
+//             while (elem.prev)
+//             {
+//                 elem = list->elems[elem.prev];
+//                 desired_index++;
+//             }
+//         }
 
-        if (desired_index)
-        {
-            return desired_index;
-        }
+//         if (desired_index)
+//         {
+//             return desired_index;
+//         }
 
-        printf ("this element is empty or null");
-    }
-    else
-    {
-        List new_list = {};
-        new_list.elems[NULL_ELEM].data = POISON;
-    }
-    return -1;
-}
+//         printf ("this element is empty or null");
+//     }
+//     else
+//     {
+//         List new_list = {};
+//         new_list.elems[NULL_ELEM].data = POISON;
+//     }
+//     return -1;
+// }
 
 static int linearize_list (List *list, unsigned int *err)
 {
@@ -748,23 +748,23 @@ static int debug_linearize_list (List *list, unsigned int *err,
     return linearize_list (list, err);
 }
 
-static int debug_find_logic_number (List *list, int phys_index, unsigned int *err,
-                             const int call_line, const char *call_file, const char *call_func)
-{
-    init_debug_info (list, call_line, call_file, call_func, __FILE__,
-                    "int find_logic_number (List *list, int phys_index, unsigned int *err = &ERRNO)");
+// static int debug_find_logic_number (List *list, int phys_index, unsigned int *err,
+//                              const int call_line, const char *call_file, const char *call_func)
+// {
+//     init_debug_info (list, call_line, call_file, call_func, __FILE__,
+//                     "int find_logic_number (List *list, int phys_index, unsigned int *err = &ERRNO)");
 
-    return find_logic_number (list, phys_index, err);
-}
+//     return find_logic_number (list, phys_index, err);
+// }
 
-static int debug_find_number (List *list, int phys_index, unsigned int *err,
-                       const int call_line, const char *call_file, const char *call_func)
-{
-    init_debug_info (list, call_line, call_file, call_func, __FILE__,
-                    "int find_number (List *list, int phys_index, unsigned int *err = &ERRNO)");
+// static int debug_find_number (List *list, int phys_index, unsigned int *err,
+//                        const int call_line, const char *call_file, const char *call_func)
+// {
+//     init_debug_info (list, call_line, call_file, call_func, __FILE__,
+//                     "int find_number (List *list, int phys_index, unsigned int *err = &ERRNO)");
 
-    return find_number (list, phys_index, err);
-}
+//     return find_number (list, phys_index, err);
+// }
 #endif 
 
 #ifdef LIST_DEBUG
@@ -779,10 +779,10 @@ static int debug_find_number (List *list, int phys_index, unsigned int *err,
         debug_list_remove (list, remove_place, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
 #define linearize_list(list, err)                                                               \
         debug_linearize_list (list, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
-#define find_logic_number(list, phys_index, err)                                                \
-        debug_find_logic_number (list, phys_index, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
-#define find_number(list, phys_index, err)                                                      \
-        debug_find_number (list, phys_index, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
+// #define find_logic_number(list, phys_index, err)                                                \
+//         debug_find_logic_number (list, phys_index, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
+// #define find_number(list, phys_index, err)                                                      \
+//         debug_find_number (list, phys_index, err, __LINE__, __FILE__, __PRETTY_FUNCTION__)
 
 #endif
 

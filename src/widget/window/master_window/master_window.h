@@ -19,7 +19,7 @@ class Master_window : public Window
     size_t last_  = 0;
 
 public:
-    Master_window (int width, int height, Vector lh_pos, const char *w_name, int list_capacity = INIT_WINDOWS_CAPACITY);
+    Master_window (int width, int height, Vec2d lh_pos, const char *w_name, int list_capacity = INIT_WINDOWS_CAPACITY);
     ~Master_window ();
 
     void add_menu_button (Button *button);
@@ -28,13 +28,20 @@ public:
     int     get_list_size ()        {return windows.size;};
     Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
 
-    void render    (sf::RenderTarget &target, Transform_stack &transform_stack)     override;
-    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                        override;
-    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                        override;
-    bool on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)                                         override;
-    bool on_keyboard_pressed  (Keyboard_key key)                                        override;
-    bool on_keyboard_released (Keyboard_key key)                                        override;
-    bool on_tick (float delta_sec)                                                      override;
+    void render    (sf::RenderTarget &target, TransformStack &transform_stack)     override;
+    // bool on_mouse_pressed     (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)                        override;
+    // bool on_mouse_released    (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)                        override;
+    // bool on_mouse_moved       (Vec2d &new_pos, TransformStack &transform_stack)                                         override;
+    // bool on_keyboard_pressed  (KeyCode key)                                        override;
+    // bool on_keyboard_released (KeyCode key)                                        override;
+    // bool on_tick (float delta_sec)                                                      override;
+
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 
     friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 };

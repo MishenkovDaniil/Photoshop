@@ -9,20 +9,20 @@
 #include "canvas/canvas.h"
 #include "scrollbar/scrollbar.h"
 
-Window::Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
+Window::Window (int width, int height, Vec2d lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
     width_ (width),
     height_ (height),
     contained_widgets (nullptr, 3)
 {
-    layout_= new Default_layout_box (lh_pos, Vector (width, height));
+    layout_= new Default_layout_box (lh_pos, Vec2d (width, height));
 
-    header_ = new Header (Vector (0, 0), width, w_name, this);
-    canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vector (0, HEADER_HEIGHT), palette);
+    header_ = new Header (Vec2d (0, 0), width, w_name, this);
+    canvas_ = new Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vec2d (0, HEADER_HEIGHT), palette);
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
 
     if (need_scrollbar)
     {
-        scrollbar_ = new Scrollbar (Vector (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->height_, height - HEADER_HEIGHT, this);
+        scrollbar_ = new Scrollbar (Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->height_, height - HEADER_HEIGHT, this);
         assert (scrollbar_ && "failed to allocate window scrollbar \n");
 
         Widget *scrollbar = scrollbar_;
@@ -46,13 +46,13 @@ Window::~Window ()
     delete layout_;
 }
 
-void Window::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void Window::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
+    transform_stack.enter (Transform (layout_->get_position ()));
 
-    Vector lh_pos = transform_stack.top ().offset_;
+    Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    sf::RectangleShape rect (Vector (width_, height_));
+    sf::RectangleShape rect (Vec2d (width_, height_));
     rect.setFillColor (Color (0, 0,0,0));
     rect.setOutlineColor (Color (50, 50, 50));
     rect.setOutlineThickness (-1);
@@ -69,114 +69,216 @@ void Window::render (sf::RenderTarget &target, Transform_stack &transform_stack)
     
     target.draw (rect);
 
-    transform_stack.pop ();
-}
-
-bool Window::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
-{   
-    transform_stack.push (Transform (layout_->get_position ()));
-
-    size_t widgets_num = contained_widgets.get_size ();
-
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_pressed (mouse_key, pos, transform_stack))
-        {
-            transform_stack.pop ();
-            return true;
-        }
-    }
-
-    transform_stack.pop ();
-    return false;
-} 
-
-bool Window::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
-{
-    bool status = false;
-    
-    transform_stack.push (Transform (layout_->get_position ()));
-
-    size_t widgets_num = contained_widgets.get_size ();
-
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        status |= (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_released (mouse_key, pos, transform_stack));
-    }
-
-    transform_stack.pop ();
-    return status;
-} 
-
-bool Window::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
-{
-    transform_stack.push (Transform (layout_->get_position ()));
-
-    size_t widgets_num = contained_widgets.get_size ();
-
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_moved (new_pos, transform_stack))
-        {
-            transform_stack.pop ();
-            return true;
-        }
-    }
-
-    transform_stack.pop ();
-    return false;
-}   
-
-bool Window::on_keyboard_pressed  (Keyboard_key key)
-{
-    size_t widgets_num = contained_widgets.get_size ();
-
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_pressed (key))
-        {
-            return true;
-        }
-    }
-
-    return false;
-} 
-
-bool Window::on_keyboard_released (Keyboard_key key)
-{
-    size_t widgets_num = contained_widgets.get_size ();
-    bool status = false;
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_released (key))
-        {
-            status = true;
-        }
-    }
-
-    return status;
-} 
-
-bool Window::on_tick (float delta_sec)
-{
-    bool status = false;
-
-    size_t widgets_num = contained_widgets.get_size ();
-    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
-    {
-        if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_tick (delta_sec))
-        {
-            status = true;
-        }
-    }
-    
-    return status;
+    transform_stack.leave ();
 }
 
 
-bool Window::contains (Vector &pos)
+
+void Window::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
+{
+    ehc.stack.enter (Transform (layout_->get_position ()));
+
+    size_t widgets_num = contained_widgets.get_size ();
+
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx])
+        {
+            contained_widgets[window_widget_idx]->onMousePressed (event, ehc);
+            if (ehc.stopped == true)
+            {
+                ehc.stack.leave ();
+                return;
+            }
+        }
+    }
+
+    ehc.stack.leave ();
+}
+
+void Window::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
+{
+    ehc.stack.enter (Transform (layout_->get_position ()));
+
+    size_t widgets_num = contained_widgets.get_size ();
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx]) 
+            contained_widgets[window_widget_idx]->onMouseReleased (event, ehc);
+    }
+
+    ehc.stack.leave ();
+}
+
+void Window::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
+{
+    ehc.stack.enter (Transform (layout_->get_position ()));
+
+    size_t widgets_num = contained_widgets.get_size ();
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx]) 
+        {
+            contained_widgets[window_widget_idx]->onMouseMove (event, ehc);
+            if (ehc.stopped == true)
+            {
+                ehc.stack.leave ();
+                return;
+            }
+        }
+    }
+
+    ehc.stack.leave ();
+}
+
+void Window::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+{
+    size_t widgets_num = contained_widgets.get_size ();
+
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx])
+        {
+            contained_widgets[window_widget_idx]->onKeyboardPressed (event, ehc);
+            if (ehc.stopped)
+                return;
+        }
+    }
+} 
+
+void Window::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+{
+    size_t widgets_num = contained_widgets.get_size ();
+    
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx])
+            contained_widgets[window_widget_idx]->onKeyboardReleased (event, ehc);
+    }
+}
+
+void Window::onTick             ( TickEvent &event, EHC &ehc)
+{
+    size_t widgets_num = contained_widgets.get_size ();
+    for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+    {
+        if (contained_widgets[window_widget_idx])
+        {
+            contained_widgets[window_widget_idx]->onTick (event, ehc);
+        }
+    }
+}
+
+
+
+
+
+
+// bool Window::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {   
+//     transform_stack.enter (Transform (layout_->get_position ()));
+
+//     size_t widgets_num = contained_widgets.get_size ();
+
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_pressed (mouse_button, pos, transform_stack))
+//         {
+//             transform_stack.leave ();
+//             return true;
+//         }
+//     }
+
+//     transform_stack.leave ();
+//     return false;
+// } 
+
+// bool Window::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = false;
+    
+//     transform_stack.enter (Transform (layout_->get_position ()));
+
+//     size_t widgets_num = contained_widgets.get_size ();
+
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         status |= (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_released (mouse_button, pos, transform_stack));
+//     }
+
+//     transform_stack.leave ();
+//     return status;
+// } 
+
+// bool Window::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
+// {
+//     transform_stack.enter (Transform (layout_->get_position ()));
+
+//     size_t widgets_num = contained_widgets.get_size ();
+
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_mouse_moved (new_pos, transform_stack))
+//         {
+//             transform_stack.leave ();
+//             return true;
+//         }
+//     }
+
+//     transform_stack.leave ();
+//     return false;
+// }   
+
+// bool Window::on_keyboard_pressed  (KeyCode key)
+// {
+//     size_t widgets_num = contained_widgets.get_size ();
+
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_pressed (key))
+//         {
+//             return true;
+//         }
+//     }
+
+//     return false;
+// } 
+
+// bool Window::on_keyboard_released (KeyCode key)
+// {
+//     size_t widgets_num = contained_widgets.get_size ();
+//     bool status = false;
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_keyboard_released (key))
+//         {
+//             status = true;
+//         }
+//     }
+
+//     return status;
+// } 
+
+// bool Window::on_tick (float delta_sec)
+// {
+//     bool status = false;
+
+//     size_t widgets_num = contained_widgets.get_size ();
+//     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
+//     {
+//         if (contained_widgets[window_widget_idx] && contained_widgets[window_widget_idx]->on_tick (delta_sec))
+//         {
+//             status = true;
+//         }
+//     }
+    
+//     return status;
+// }
+
+
+bool Window::contains (const Vec2d &pos)
 {   
-    Vector pos_ = pos - layout_->get_position ();
+    Vec2d pos_ = pos - layout_->get_position ();
 
     double x = pos_.get_x ();
     double y = pos_.get_y ();

@@ -18,30 +18,37 @@ class Canvas : public Widget
     Color color_;
 
     Tool_palette *palette_;
-    // Transform transform_;
     sf::IntRect draw_rect_;
     bool is_focused = false;
-
+    
 public:
     sf::RenderTexture canvas_texture;
 
 public: 
-    Canvas (int width, int height, const Color color, const Vector lh_pos, Tool_palette *palette = nullptr);
+    Canvas (int width, int height, const Color color, const Vec2d lh_pos, Tool_palette *palette = nullptr);
     ~Canvas ();
 
-    void render                 (sf::RenderTarget &target, Transform_stack &transform_stack)    override;
-    bool on_mouse_pressed       (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                                  override;
-    bool on_mouse_released      (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)                                  override;
-    bool on_mouse_moved         (Vector &new_pos, Transform_stack &transform_stack)                                                   override;    /// x, y - absolute values 
-    bool on_keyboard_pressed    (Keyboard_key key)                                                  override;
-    bool on_keyboard_released   (Keyboard_key key)                                                  override;
-    bool on_tick                (float delta_sec)                                                   override;
+    void render                 (sf::RenderTarget &target, TransformStack &transform_stack)    override;
+    // bool on_mouse_pressed       (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)                                  override;
+    // bool on_mouse_released      (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)                                  override;
+    // bool on_mouse_moved         (Vec2d &new_pos, TransformStack &transform_stack)                                                   override;    /// x, y - absolute values 
+    // bool on_keyboard_pressed    (KeyCode key)                                                  override;
+    // bool on_keyboard_released   (KeyCode key)                                                  override;
+    // bool on_tick                (float delta_sec)                                                   override;
+
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+
 
     bool contains (int x, int y);
     
     Color get_fg_color ();
-    Color get_bg_color ();
-    Vector get_size () {return Vector (width_, height_);};
+    Color get_bg_color ();  
+    Vec2d get_size () {return Vec2d (width_, height_);};
     sf::IntRect &get_draw_rect () {return draw_rect_;};
     void set_draw_rect_offset (int left, int top);
     void set_draw_rect_size   (int width, int height);

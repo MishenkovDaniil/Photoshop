@@ -10,29 +10,43 @@ static const double TEXT_CHARACTER_WIDTH = 8.4; //hardcode!!!
 
 class M_text : public Widget
 {
-    char *buf_ = nullptr;
-    Color text_color_ = Transparent;
+    char  *buf_ = nullptr;
+    size_t letters_in_string_ = 0;
     size_t len_ = 0;
     size_t capacity_ = 0;
-    bool is_pressed;
-    Keyboard_key latest_key_ = Unknown;
-    size_t string_size_ = 0;
-    size_t letters_in_string_ = 0;
-    size_t cur_height = 0;
+    
+    const size_t string_size_ = 0;
+    
+    bool is_pressed = false;
     bool is_filled_ = false;
+    size_t cur_height = 0;
+    Color  text_color_ = Transparent;
+    KeyCode latest_key_ = Unknown;
+
+    size_t cursor_pos = 0;
 
 public:
-    M_text (Vector lh_pos, int width, int height, Color color = Black);
+    M_text (Vec2d lh_pos, int width, int height, Color color = Black);
     ~M_text ();
 
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                    override; 
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
-    bool on_keyboard_pressed  (Keyboard_key key)                                                override;
-    bool on_keyboard_released (Keyboard_key key)                                                override;
-    bool on_tick (float delta_sec)                                                              override;
-    char convert_key_to_char (Keyboard_key key, Keyboard_key latest_key_);
+    const char *get_string () {assert (buf_); buf_[len_] = '\0'; return buf_;}
+
+    void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override; 
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
+    // bool on_keyboard_pressed  (KeyCode key)                                                override;
+    // bool on_keyboard_released (KeyCode key)                                                override;
+    // bool on_tick (float delta_sec)                                                              override;
+
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+
+    char convert_key_to_char (KeyCode key, KeyCode latest_key_);
     void check_string ();
     void set_last_symbol (char symbol) {assert (buf_); buf_[len_] = symbol;};
 };

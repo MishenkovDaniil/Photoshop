@@ -41,7 +41,7 @@ protected:
     int height_ = 0;
 
     bool is_pressed_ = false;
-    Vector press_pos_;
+    Vec2d press_pos_;
     Color fill_color_;
 
     Button_run_fn run_fn_ = nullptr;
@@ -52,7 +52,7 @@ protected:
 
 public:
     Button () {}; //TODO: make button_create for this constructor case
-    Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget,
+    Button (Vec2d lh_corner, int width, int height, Button_run_fn func, void *controlled_widget,
             void *arg = nullptr, Color fill_color = Black, int run_mask = RELEASE_BUTTON);
     
     virtual ~Button () {delete layout_;};
@@ -67,13 +67,20 @@ public:
     void          set_arg           (void *arg) {arg_ = arg;};
     
     bool run ();
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                    override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
-    bool on_keyboard_pressed  (Keyboard_key key)              override;
-    bool on_keyboard_released (Keyboard_key key)              override;
-    bool on_tick (float delta_sec)                            override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override;
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
+    // bool on_keyboard_pressed  (KeyCode key)              override;
+    // bool on_keyboard_released (KeyCode key)              override;
+    // bool on_tick (float delta_sec)                            override;
+
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 
     friend Scrollbar;
     friend Menu;
@@ -90,16 +97,21 @@ protected:
     sf::Sprite *sprite_ = nullptr;
 
 public:
-    Texture_button (Vector lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+    Texture_button (Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
                     Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~Texture_button () override;
 
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack) override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
-    bool on_keyboard_pressed  (Keyboard_key key)              override;
-    bool on_keyboard_released (Keyboard_key key)              override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
+    // bool on_keyboard_pressed  (KeyCode key)              override;
+    // bool on_keyboard_released (KeyCode key)              override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 class String_button : public Button
@@ -113,17 +125,22 @@ protected:
     int str_size_ = 0;
     
 public:
-    String_button (Vector lh_corner, int width, int height, const char *string, 
+    String_button (Vec2d lh_corner, int width, int height, const char *string, 
                    const Color &pressed_color, const Color &released_color, Button_run_fn func, 
                    void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~String_button ();
 
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack) override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
-    bool on_keyboard_pressed  (Keyboard_key key)              override;
-    bool on_keyboard_released (Keyboard_key key)              override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
+    // bool on_keyboard_pressed  (KeyCode key)              override;
+    // bool on_keyboard_released (KeyCode key)              override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 class List_button : public Button
@@ -139,13 +156,19 @@ public:
 
     void add_button (Button *button); /// can change button layout
     
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                        override;
-    bool on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)  override;
-    bool on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)  override;
-    bool on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)                   override;    
-    bool on_keyboard_pressed  (Keyboard_key key)                                                    override;
-    bool on_keyboard_released (Keyboard_key key)                                                    override;
-    bool on_tick (float delta_sec)                                                                  override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack)                        override;
+    // bool on_mouse_pressed     (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)  override;
+    // bool on_mouse_released    (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)  override;
+    // bool on_mouse_moved       (Vec2d &new_pos, TransformStack &transform_stack)                   override;    
+    // bool on_keyboard_pressed  (KeyCode key)                                                    override;
+    // bool on_keyboard_released (KeyCode key)                                                    override;
+    // bool on_tick (float delta_sec)                                                                  override;
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 #endif /* BUTTON_H */

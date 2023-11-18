@@ -2,13 +2,13 @@
 
 #include <cstring>
 
-Header::Header (Vector lh_pos, int width, const char *string, Window *window, Color background) : 
+Header::Header (Vec2d lh_pos, int width, const char *string, Window *window, Color background) : 
     // transform_ (Transform (lh_pos)),
     width_ (width),
     parent_window_ (window),
     background_color (background)
 {
-    layout_ = new Default_layout_box (lh_pos, Vector (width, HEADER_HEIGHT));
+    layout_ = new Default_layout_box (lh_pos, Vec2d (width, HEADER_HEIGHT));
     assert (layout_);
 
     if (string)
@@ -32,11 +32,11 @@ Header::~Header ()
     delete layout_;
 }
 
-void Header::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void Header::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
+    transform_stack.enter (Transform (layout_->get_position ()));
 
-    Vector lh_pos = transform_stack.top ().offset_;
+    Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     sf::RectangleShape header (sf::Vector2f (width_, HEADER_HEIGHT));
                        header.setFillColor((sf::Color)background_color); 
@@ -58,69 +58,124 @@ void Header::render (sf::RenderTarget &target, Transform_stack &transform_stack)
     target.draw (header);
     target.draw (text);
 
-    transform_stack.pop ();
+    transform_stack.leave ();
 }
 
-bool Header::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+
+void Header::onMousePressed     (MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector pos_ = unite.apply_transform (pos);
+    Transform unite = tr.combine (ehc.stack.top ());
+    Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
         is_moving_ = true;
-        move_start_ = pos;
-        return true;
+        move_start_ = event.pos;
+        ehc.stopped = true;
     }
-
-    return false;
 }
 
-bool Header::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void Header::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
 {
     if (is_moving_)
     {
         is_moving_ = false;
-        return true;
     }
+}   
 
-    return false;
-}
-
-bool Header::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
+void Header::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
 {
     if (is_moving_)
     {
-        Vector move = new_pos - move_start_;
+        Vec2d move = event.pos - move_start_;
         // parent_window_->get_transform ().offset_ += move;
         Layout_box &layout = parent_window_->get_layout_box ();
         layout.set_position (layout.get_position () + move);
         parent_window_->set_layout_box (layout);
-        move_start_ = new_pos;
-        return true;
+        move_start_ = event.pos;
+
+        ehc.stopped = true;
     }
-
-    return false;
-}   
-
-bool Header::on_keyboard_pressed  (Keyboard_key key)
-{
-    ///TODO
-    return false;
 }
 
-bool Header::on_keyboard_released (Keyboard_key key)
+void Header::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
 {
-    ///TODO
-    return false;
+    return;
 }
 
-bool Header::on_tick (float delta_sec)
+void Header::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
 {
-    ///TODO
-    return false;
+    return;
 }
+
+void Header::onTick             (TickEvent &event, EHC &ehc)
+{
+    return;
+}
+
+
+
+// bool Header::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+//     Vec2d pos_ = unite.apply (pos);
+
+//     if (contains (pos_.get_x (), pos_.get_y ()))
+//     {
+//         is_moving_ = true;
+//         move_start_ = pos;
+//         return true;
+//     }
+
+//     return false;
+// }
+
+// bool Header::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     if (is_moving_)
+//     {
+//         is_moving_ = false;
+//         return true;
+//     }
+
+//     return false;
+// }
+
+// bool Header::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
+// {
+//     if (is_moving_)
+//     {
+//         Vec2d move = new_pos - move_start_;
+//         // parent_window_->get_transform ().offset_ += move;
+//         Layout_box &layout = parent_window_->get_layout_box ();
+//         layout.set_position (layout.get_position () + move);
+//         parent_window_->set_layout_box (layout);
+//         move_start_ = new_pos;
+//         return true;
+//     }
+
+//     return false;
+// }   
+
+// bool Header::on_keyboard_pressed  (KeyCode key)
+// {
+//     ///TODO
+//     return false;
+// }
+
+// bool Header::on_keyboard_released (KeyCode key)
+// {
+//     ///TODO
+//     return false;
+// }
+
+// bool Header::on_tick (float delta_sec)
+// {
+//     ///TODO
+//     return false;
+// }
 
 
 bool Header::contains (int x, int y)

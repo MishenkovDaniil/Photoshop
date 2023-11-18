@@ -16,16 +16,22 @@ class Clock : public Button
     char clck[20] = "";
 
 public:
-    Clock (Vector lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, float hours, float minutes, float seconds, void *arg = nullptr, Color fill_color = Color (0, 0, 0, 0), int run_mask = RELEASE_BUTTON);
+    Clock (Vec2d lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, float hours, float minutes, float seconds, void *arg = nullptr, Color fill_color = Color (0, 0, 0, 0), int run_mask = RELEASE_BUTTON);
     ~Clock () = default;
 
     void change_time (float seconds, float minutes = -1, float hours = -1);
 
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack)                    override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                  override;
-    bool on_keyboard_pressed  (Keyboard_key key)              override;
-    bool on_keyboard_released (Keyboard_key key)              override;
-    bool on_tick (float delta_sec)                            override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override;
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                  override;
+    // bool on_keyboard_pressed  (KeyCode key)              override;
+    // bool on_keyboard_released (KeyCode key)              override;
+    // bool on_tick (float delta_sec)                            override;
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 };

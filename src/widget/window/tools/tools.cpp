@@ -7,13 +7,13 @@ Brush::Brush ()
 Brush::~Brush () 
 {};
 
-void Brush::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Brush::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     //TODO make circle class member (maybe)
     if (state.pressed)
     {
         sf::IntRect &rect = canvas.get_draw_rect ();
-        pos += Vector (rect.left, rect.top);
+        pos += Vec2d (rect.left, rect.top);
 
         sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
@@ -28,7 +28,7 @@ void Brush::on_main_button         (Button_state &state, Vector &pos, Canvas &ca
     }
 }
 
-void Brush::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Brush::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -48,13 +48,13 @@ void Brush::on_modifier_3          (Canvas &canvas)
     return;
 }
 
-void Brush::on_move                (Vector &pos, Canvas &canvas)
+void Brush::on_move                (Vec2d &pos, Canvas &canvas)
 {
     if (!is_pressed)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
-    pos += Vector (rect.left, rect.top);
+    pos += Vec2d (rect.left, rect.top);
 
     sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
@@ -88,11 +88,11 @@ void Brush::on_cancel              ()
 Line::Line () {};
 Line::~Line () {};
 
-void Line::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Line::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     if (state.pressed)
     {
-        Vector canvas_size = canvas.get_size ();
+        Vec2d canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
@@ -106,7 +106,7 @@ void Line::on_main_button         (Button_state &state, Vector &pos, Canvas &can
     }
 }
 
-void Line::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Line::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     return;   
 }
@@ -126,7 +126,7 @@ void Line::on_modifier_3          (Canvas &canvas)
     return;   
 }
 
-void Line::on_move                (Vector &pos, Canvas &canvas)
+void Line::on_move                (Vec2d &pos, Canvas &canvas)
 {
     if (!state_.pressed)
         return;
@@ -149,7 +149,7 @@ void Line::on_confirm             (Canvas &canvas)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
-    Vector draw_rect_offset (rect.left, rect.top);
+    Vec2d draw_rect_offset (rect.left, rect.top);
 
     vertex[1] = sf::Vertex (latest_pos_ + draw_rect_offset, canvas.get_fg_color ());
     vertex[0].position += sf::Vector2f (draw_rect_offset.get_x (), draw_rect_offset.get_y ());
@@ -182,13 +182,13 @@ void Line::on_cancel              ()
 Circle_shape::Circle_shape () {};
 Circle_shape::~Circle_shape () {};
 
-void Circle_shape::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Circle_shape::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     if (state.pressed)
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        Vector canvas_size = canvas.get_size ();
+        Vec2d canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
         
@@ -202,7 +202,7 @@ void Circle_shape::on_main_button         (Button_state &state, Vector &pos, Can
     }
 }
 
-void Circle_shape::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Circle_shape::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -219,7 +219,7 @@ void Circle_shape::on_modifier_1          (Canvas &canvas)
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vector pos_offset = latest_pos_ - center_;
+    Vec2d pos_offset = latest_pos_ - center_;
 
     double min = 0;
     if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
@@ -235,11 +235,11 @@ void Circle_shape::on_modifier_1          (Canvas &canvas)
         
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  -= Vector (min, 0);
+        last_center_  -= Vec2d (min, 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  -= Vector (0, min);
+        last_center_  -= Vec2d (0, min);
     }
 
     circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -261,7 +261,7 @@ void Circle_shape::on_modifier_3          (Canvas &canvas)
     return;
 }
 
-void Circle_shape::on_move                (Vector &pos, Canvas &canvas)
+void Circle_shape::on_move                (Vec2d &pos, Canvas &canvas)
 {
     if (!state_.pressed)
         return;
@@ -279,7 +279,7 @@ void Circle_shape::on_move                (Vector &pos, Canvas &canvas)
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vector pos_offset = pos - center_;
+    Vec2d pos_offset = pos - center_;
 
     int min_idx = 0;
     double min = 0;
@@ -312,11 +312,11 @@ void Circle_shape::on_move                (Vector &pos, Canvas &canvas)
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  += Vector (pos_offset.get_x (), 0);
+        last_center_  += Vec2d (pos_offset.get_x (), 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  += Vector (0, pos_offset.get_y ());
+        last_center_  += Vec2d (0, pos_offset.get_y ());
     }
 
     circle_.setOutlineThickness (std::min (DEFAULT_CIRCLE_THICKNESS, MIN_CIRCLE_THICKNESS + min / max));
@@ -333,7 +333,7 @@ void Circle_shape::on_confirm             (Canvas &canvas)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
-    circle_.setPosition (last_center_ + Vector (rect.left, rect.top));
+    circle_.setPosition (last_center_ + Vec2d (rect.left, rect.top));
     canvas.canvas_texture.draw (circle_);
     canvas.canvas_texture.display ();
 
@@ -356,17 +356,17 @@ void Circle_shape::on_cancel              ()
 Rect_shape::Rect_shape () {};
 Rect_shape::~Rect_shape () {};
 
-void Rect_shape::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Rect_shape::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     if (state.pressed)
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        Vector canvas_size = canvas.get_size ();
+        Vec2d canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
         
-        rect_.setSize (Vector (0, 0));
+        rect_.setSize (Vec2d (0, 0));
         rect_.setPosition (center_);
         rect_.setFillColor (Transparent);
         rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -376,7 +376,7 @@ void Rect_shape::on_main_button         (Button_state &state, Vector &pos, Canva
     }
 }
 
-void Rect_shape::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Rect_shape::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -393,7 +393,7 @@ void Rect_shape::on_modifier_1          (Canvas &canvas)
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vector pos_offset = latest_pos_ - center_;
+    Vec2d pos_offset = latest_pos_ - center_;
 
     double min = 0;
     if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
@@ -405,15 +405,15 @@ void Rect_shape::on_modifier_1          (Canvas &canvas)
         min = std::abs (pos_offset.get_y ());
     }
 
-    rect_.setSize (Vector (min, min));    
+    rect_.setSize (Vec2d (min, min));    
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  -= Vector (min, 0);
+        last_center_  -= Vec2d (min, 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  -= Vector (0, min);
+        last_center_  -= Vec2d (0, min);
     }
 
     rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -434,7 +434,7 @@ void Rect_shape::on_modifier_3          (Canvas &canvas)
     return;
 }
 
-void Rect_shape::on_move                (Vector &pos, Canvas &canvas)
+void Rect_shape::on_move                (Vec2d &pos, Canvas &canvas)
 {
     if (!state_.pressed)
         return;
@@ -452,17 +452,17 @@ void Rect_shape::on_move                (Vector &pos, Canvas &canvas)
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vector pos_offset = pos - center_;
+    Vec2d pos_offset = pos - center_;
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  += Vector (pos_offset.get_x (), 0);
-        pos_offset = Vector (std::abs (pos_offset.get_x ()), pos_offset.get_y ());
+        last_center_  += Vec2d (pos_offset.get_x (), 0);
+        pos_offset = Vec2d (std::abs (pos_offset.get_x ()), pos_offset.get_y ());
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  += Vector (0, pos_offset.get_y ());
-        pos_offset = Vector (pos_offset.get_x (), std::abs (pos_offset.get_y ()));
+        last_center_  += Vec2d (0, pos_offset.get_y ());
+        pos_offset = Vec2d (pos_offset.get_x (), std::abs (pos_offset.get_y ()));
     }
     
     rect_.setSize (pos_offset);    
@@ -478,7 +478,7 @@ void Rect_shape::on_confirm             (Canvas &canvas)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
-    rect_.setPosition (last_center_ + Vector (rect.left, rect.top));
+    rect_.setPosition (last_center_ + Vec2d (rect.left, rect.top));
     canvas.canvas_texture.draw (rect_);
     canvas.canvas_texture.display ();
 
@@ -503,19 +503,19 @@ void Rect_shape::on_cancel              ()
 Fill::Fill () {};
 Fill::~Fill () {};
 
-void Fill::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Fill::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     if (state.pressed)
     {
         rect_ = canvas.get_draw_rect ();
-        Vector real_pos = pos + Vector (rect_.left, rect_.top);
+        Vec2d real_pos = pos + Vec2d (rect_.left, rect_.top);
 
-        Vector canvas_size = canvas.get_size ();
+        Vec2d canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
         prev_canvas_img_ = canvas.canvas_texture.getTexture ().copyToImage ();
-        size_ = Vector (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
+        size_ = Vec2d (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
         fill_color_ = canvas.get_fg_color ();
         cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
 
@@ -542,7 +542,7 @@ void Fill::on_main_button         (Button_state &state, Vector &pos, Canvas &can
 
 }
 
-void Fill::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Fill::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
 
 }
@@ -562,7 +562,7 @@ void Fill::on_modifier_3          (Canvas &canvas)
 
 }
 
-void Fill::on_move                (Vector &pos, Canvas &canvas)
+void Fill::on_move                (Vec2d &pos, Canvas &canvas)
 {
 
 }
@@ -594,25 +594,25 @@ void Fill::on_cancel              ()
     }
 }
 
-void Fill::fill_pixels (Vector &pos, Canvas &canvas)
+void Fill::fill_pixels (Vec2d &pos, Canvas &canvas)
 {
     assert (pixel_arr_);
-    M_vector<Vector> pixels (Vector (0)); // think about init capacity
+    M_vector<Vec2d> pixels (Vec2d (0)); // think about init capacity
 
-    Vector offset (rect_.left, rect_.top);
+    Vec2d offset (rect_.left, rect_.top);
     pixels.push (pos);
 
     while (pixels.get_size ())
     {
-        Vector cur_pixel = pixels.top ();
-        Vector real_cur_pixel = cur_pixel + offset;
+        Vec2d cur_pixel = pixels.top ();
+        Vec2d real_cur_pixel = cur_pixel + offset;
 
         pixels.pop ();
 
-        Vector left    = (cur_pixel.get_x() - 1 >= 0)                   ? Vector (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vector (-1);
-        Vector right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? Vector (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Vector (-1);
-        Vector top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vector (cur_pixel.get_x(), cur_pixel.get_y () + 1) : Vector (-1);
-        Vector low     = (cur_pixel.get_y () - 1 >= 0)                  ? Vector (cur_pixel.get_x(), cur_pixel.get_y () - 1) : Vector (-1);
+        Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vec2d (-1);
+        Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Vec2d (-1);
+        Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : Vec2d (-1);
+        Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : Vec2d (-1);
         
         sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
                                    ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
@@ -627,28 +627,28 @@ void Fill::fill_pixels (Vector &pos, Canvas &canvas)
                                    ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
                                    : Transparent;
 
-        if ((int)left.get_x () >= 0 && (((Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
+        if ((int)left.get_x () >= 0 && (((Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
         {
             if (cur_color_ == left_color)
             {
                 pixels.push (left);
             }
         }
-        if ((int)right.get_x () >= 0 && (((Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
+        if ((int)right.get_x () >= 0 && (((Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
         {
             if (cur_color_ == right_color)
             {
                 pixels.push (right);
             }
         }
-        if ((int)low.get_x () >= 0 && (((Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
+        if ((int)low.get_x () >= 0 && (((Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
         {
             if (cur_color_ == low_color)
             {
                 pixels.push (low);
             }
         }
-        if ((int)top.get_x () >= 0 && (((Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a_ == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
+        if ((int)top.get_x () >= 0 && (((Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
         {
             if (cur_color_ == top_color)
             {
@@ -661,14 +661,14 @@ void Fill::fill_pixels (Vector &pos, Canvas &canvas)
 }
 
 
-void Filter_tool::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas) 
+void Filter_tool::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) 
 {
     Filter_mask mask (canvas.canvas_texture.getSize ().x, canvas.canvas_texture.getSize ().y);
     mask.fill (true);
     filter_->apply_filter (canvas, &mask);
 }
 
-void Filter_tool::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas) 
+void Filter_tool::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) 
 {
     return;
 }
@@ -688,7 +688,7 @@ void Filter_tool::on_modifier_3          (Canvas &canvas)
     return;
 }
 
-void Filter_tool::on_move                (Vector &pos, Canvas &canvas) 
+void Filter_tool::on_move                (Vec2d &pos, Canvas &canvas) 
 {
     return;
 }
@@ -706,7 +706,7 @@ void Filter_tool::on_cancel              ()
 Text_tool::Text_tool () {}
 Text_tool::~Text_tool () {}
 
-void Text_tool::on_main_button         (Button_state &state, Vector &pos, Canvas &canvas)
+void Text_tool::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     if (!state_.pressed)
     {
@@ -720,7 +720,7 @@ void Text_tool::on_main_button         (Button_state &state, Vector &pos, Canvas
     // }
 }
 
-void Text_tool::on_secondary_button    (Button_state &state, Vector &pos, Canvas &canvas)
+void Text_tool::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -743,7 +743,7 @@ void Text_tool::on_modifier_3          (Canvas &canvas)
     return;
 }
 
-void Text_tool::on_move                (Vector &pos, Canvas &canvas)
+void Text_tool::on_move                (Vec2d &pos, Canvas &canvas)
 {
     if (on_rect_)
     {
@@ -763,6 +763,8 @@ void Text_tool::on_confirm             (Canvas &canvas)
     {
         rect_tool.on_cancel ();
         on_rect_ = false;
+        printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
+
         widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, canvas.get_fg_color ());
     }
     else 
@@ -772,13 +774,13 @@ void Text_tool::on_confirm             (Canvas &canvas)
             return;
         }
         
-        Vector size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
+        Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
         if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
             (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
             (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
             (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
         {
-            Transform_stack stack;
+            TransformStack stack;
 
             widget_->render (canvas.canvas_texture, stack);
             canvas.canvas_texture.display ();
@@ -791,7 +793,7 @@ void Text_tool::on_confirm             (Canvas &canvas)
     }
 }
 
-void Text_tool::on_cancel              ()
+void Text_tool::on_cancel ()
 {
     if (on_rect_)
     {

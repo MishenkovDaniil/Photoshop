@@ -38,9 +38,84 @@ void Widget_manager::render (sf::RenderTarget &target)
     }
 }
 
-bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
+void Widget_manager::onEvent (sf::Event *event, double delta_time)
 {
-    bool is_pressed_on_child = false;
+    EHC ehc (transform_stack_);
+    if (event)
+    {
+        sf::Event cur_event = *event;
+        // printf ("event\n");
+        switch (cur_event.type)
+        {
+            case sf::Event::KeyPressed:
+            {
+                // printf ("KeyPressed\n");
+
+                KeyboardPressedEvent key_event;
+                key_event.key_id = (KeyCode)cur_event.key.code;
+                
+                onKeyboardPressed (key_event, ehc);
+                break;
+            }
+            case sf::Event::KeyReleased:
+            {
+                // printf ("KeyReleased\n");
+                KeyboardReleasedEvent key_event;
+                key_event.key_id = (KeyCode)cur_event.key.code;
+                
+                onKeyboardReleased (key_event, ehc);
+                break;
+            }
+            case sf::Event::MouseButtonPressed:
+            {
+                // printf ("MouseButtonPressed\n");
+                Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
+                
+                MousePressedEvent mouse_event;
+                mouse_event.pos = pos;
+                
+                onMousePressed (mouse_event, ehc);
+
+                break;
+            }
+            case sf::Event::MouseButtonReleased:
+            {
+                // printf ("MouseButtonReleased\n");
+                Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
+                
+                MouseReleasedEvent mouse_event;
+                mouse_event.pos = pos;
+                
+                onMouseReleased (mouse_event, ehc);
+                break;
+            }
+            case sf::Event::MouseMoved:
+            {
+                // printf ("MouseMoved\n");
+                Vec2d pos (cur_event.mouseMove.x, cur_event.mouseMove.y);
+
+                MouseMoveEvent mouse_event;
+                mouse_event.pos = pos;
+                
+                onMouseMove (mouse_event, ehc);
+                break;
+            }
+            default:
+            {
+                // printf ("default\n");
+                break;
+            }
+        }
+    }
+    TickEvent tick_event;
+    tick_event.delta_time = delta_time;
+    ehc.overlapped = ehc.stopped = false;
+    onTick (tick_event, ehc);
+}
+
+void Widget_manager::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+{
+    // bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
@@ -49,23 +124,21 @@ bool Widget_manager::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        is_pressed_on_child = widget->on_mouse_pressed (mouse_key, pos, transform_stack_);
-        
-        if (is_pressed_on_child)
-            return true;
+        widget->onMousePressed (event, ehc);
+        if (ehc.stopped == true)
+            return;
     }
 
-    return false;
+    // return false;
 }
 
-bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
+void Widget_manager::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
 {
-    bool status = false;
-    
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
@@ -74,17 +147,16 @@ bool Widget_manager::on_mouse_released (Mouse_key mouse_key, Vector &pos)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        status |= widget->on_mouse_released (mouse_key, pos, transform_stack_);
+        widget->onMouseReleased (event, ehc);
     }
-
-    return status;
 }
 
-bool Widget_manager::on_mouse_moved (Vector &new_pos)
+void Widget_manager::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -95,19 +167,20 @@ bool Widget_manager::on_mouse_moved (Vector &new_pos)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        is_moved = widget->on_mouse_moved (new_pos, transform_stack_);
-        if (is_moved)
-            return true;
+        widget->onMouseMove (event, ehc);
+        if (ehc.stopped)
+            return;
     }
 
-    return false;
-}   
+    // return false;
+}
 
-bool Widget_manager::on_keyboard_pressed  (Keyboard_key key)
+void Widget_manager::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
 {
     bool is_keyboard_pressed = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -118,21 +191,21 @@ bool Widget_manager::on_keyboard_pressed  (Keyboard_key key)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        is_keyboard_pressed = widget->on_keyboard_pressed (key);
-        if (is_keyboard_pressed)
-            return true;
+        widget->onKeyboardPressed (event, ehc);
+        if (ehc.stopped)
+            return;
     }
 
-    return false;
+    // return false;
 }
 
-bool Widget_manager::on_keyboard_released (Keyboard_key key)
+void Widget_manager::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
 {
-    bool is_keyboard_released = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
@@ -141,21 +214,22 @@ bool Widget_manager::on_keyboard_released (Keyboard_key key)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        is_keyboard_released = widget->on_keyboard_released (key);
-        if (is_keyboard_released)
-            return true;
+        widget->onKeyboardReleased (event, ehc);
+        if (ehc.stopped)
+            return;
     }
 
-    return false;
+    // return false;
 }
 
-bool Widget_manager::on_tick (float delta_sec)
+void Widget_manager::onTick             (TickEvent &event, EHC &ehc)
 {
-    bool on_time_status = false;
+    // bool on_time_status = false;
     
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -165,12 +239,153 @@ bool Widget_manager::on_tick (float delta_sec)
             fprintf (stderr, "Event error: nil widget is detected.\n"
                              "Hint: nil widget idx in widgets list = %d.\n"
                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (widget);
 
-        on_time_status |= widget->on_tick (delta_sec);
+        widget->onTick (event, ehc);
     }
 
-    return on_time_status;
+    // return on_time_status;
 }
+
+
+
+
+// bool Widget_manager::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos)
+// {
+//     bool is_pressed_on_child = false;
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         is_pressed_on_child = widget->on_mouse_pressed (mouse_button, pos, transform_stack_);
+        
+//         if (is_pressed_on_child)
+//             return true;
+//     }
+
+//     return false;
+// }
+
+// bool Widget_manager::on_mouse_released (MouseButton mouse_button, Vec2d &pos)
+// {
+//     bool status = false;
+    
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         status |= widget->on_mouse_released (mouse_button, pos, transform_stack_);
+//     }
+
+//     return status;
+// }
+
+// bool Widget_manager::on_mouse_moved (Vec2d &new_pos)
+// {
+//     bool is_moved = false;
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         is_moved = widget->on_mouse_moved (new_pos, transform_stack_);
+//         if (is_moved)
+//             return true;
+//     }
+
+//     return false;
+// }   
+
+// bool Widget_manager::on_keyboard_pressed  (KeyCode key)
+// {
+//     bool is_keyboard_pressed = false;
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         is_keyboard_pressed = widget->on_keyboard_pressed (key);
+//         if (is_keyboard_pressed)
+//             return true;
+//     }
+
+//     return false;
+// }
+
+// bool Widget_manager::on_keyboard_released (KeyCode key)
+// {
+//     bool is_keyboard_released = false;
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         is_keyboard_released = widget->on_keyboard_released (key);
+//         if (is_keyboard_released)
+//             return true;
+//     }
+
+//     return false;
+// }
+
+// bool Widget_manager::on_tick (float delta_sec)
+// {
+//     bool on_time_status = false;
+    
+//     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
+//     {
+//         Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+//         if (!widget)
+//         {
+//             fprintf (stderr, "Event error: nil widget is detected.\n"
+//                              "Hint: nil widget idx in widgets list = %d.\n"
+//                              "Hint: widgets list size = %d.\n", widget_idx + 1, widgets.size);
+//             return false;
+//         }
+//         assert (widget);
+
+//         on_time_status |= widget->on_tick (delta_sec);
+//     }
+
+//     return on_time_status;
+// }

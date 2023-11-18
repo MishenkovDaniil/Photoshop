@@ -1,7 +1,7 @@
 #include "scrollbar.h"
 
-Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed_height, Window *window) :
-    Button (rh_pos + Vector (-SCROLLBAR_WIDTH, SCROLLBAR_BUTTON_H), 
+Scrollbar::Scrollbar (Vec2d rh_pos, int height, int obj_height, int obj_allowed_height, Window *window) :
+    Button (rh_pos + Vec2d (-SCROLLBAR_WIDTH, SCROLLBAR_BUTTON_H), 
                          SCROLLBAR_WIDTH -2 , 
                          height - 2 * SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_space, 
@@ -10,21 +10,21 @@ Scrollbar::Scrollbar (Vector rh_pos, int height, int obj_height, int obj_allowed
                          Color (150, 150, 150)),
     scrollbar_height_ (height)
 {
-    up_    = new Button (Vector (0, -SCROLLBAR_BUTTON_H), 
+    up_    = new Button (Vec2d (0, -SCROLLBAR_BUTTON_H), 
                          SCROLLBAR_WIDTH - 2, 
                          SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_up, 
                          window,
                          nullptr, 
                          Color (50, 50, 50));
-    down_  = new Button (Vector (0, height - 2 * SCROLLBAR_BUTTON_H),
+    down_  = new Button (Vec2d (0, height - 2 * SCROLLBAR_BUTTON_H),
                          SCROLLBAR_WIDTH - 2, 
                          SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_down, 
                          window, 
                          nullptr, 
                          Color (50, 50, 50));
-    mid_   = new Button (Vector (0, 0), 
+    mid_   = new Button (Vec2d (0, 0), 
                          SCROLLBAR_WIDTH - 2, 
                          100, 
                          change_canvas_rect_mid,
@@ -48,74 +48,73 @@ Scrollbar::~Scrollbar ()
 };
 
 
-void Scrollbar::render (sf::RenderTarget &target, Transform_stack &transform_stack) 
+void Scrollbar::render (sf::RenderTarget &target, TransformStack &transform_stack) 
 {
     Button::render  (target, transform_stack);
 
-    transform_stack.push (Transform (layout_->get_position ()));
+    transform_stack.enter (Transform (layout_->get_position ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
         buttons[i]->render (target, transform_stack);
     } 
 
-    transform_stack.pop ();
+    transform_stack.leave ();
     return;
 }
 
-bool Scrollbar::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) 
+
+void Scrollbar::onMousePressed     (MousePressedEvent &event, EHC &ehc)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
+    ehc.stack.enter (Transform (layout_->get_position ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
-        if (buttons[i]->on_mouse_pressed (mouse_key, pos, transform_stack)) 
+        buttons[i]->onMousePressed (event, ehc);
+        if (ehc.stopped)
         {
-            transform_stack.pop ();
-            return true;
+            ehc.stack.leave ();
+            return;
         }
     }
 
-    transform_stack.pop ();
-
-    return false;
+    ehc.stack.leave ();
 }
 
-bool Scrollbar::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) 
+void Scrollbar::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
-    bool status = false;
+    ehc.stack.enter (Transform (layout_->get_position ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
-        status |= (buttons[i]->on_mouse_released (mouse_key, pos, transform_stack));
+        buttons[i]->onMouseReleased (event, ehc);
     }
 
-    transform_stack.pop ();
-
-    return status;
+    ehc.stack.leave ();
 }
 
-bool Scrollbar::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) 
+void Scrollbar::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
+    ehc.stack.enter (Transform (layout_->get_position ()));
    
-    Vector new_pos_ = transform_stack.top ().apply_transform (new_pos);
-    Vector mid_pos = new_pos;
+    Vec2d new_pos_ = ehc.stack.top ().apply (event.pos);
+    Vec2d mid_pos = event.pos;
 
-    if (   up_->on_mouse_moved (new_pos, transform_stack)) 
+    up_->onMouseMove (event, ehc);
+    if (ehc.stopped) 
     {
-        transform_stack.pop ();
-        return true;
+        ehc.stack.leave ();
+        return;
     }
-    if ( down_->on_mouse_moved (new_pos, transform_stack))
+    down_->onMouseMove (event, ehc);
+    if (ehc.stopped)
     {
-        transform_stack.pop ();
-        return true;
+        ehc.stack.leave ();
+        return;
     }
 
-    // Vector mid_offset = mid_->transform_.offset_;
-    Vector mid_offset = mid_->layout_->get_position ();
+    // Vec2d mid_offset = mid_->transform_.offset_;
+    Vec2d mid_offset = mid_->layout_->get_position ();
 
     double new_y = new_pos_.get_y();
     double old_y = mid_->press_pos_.get_y () + mid_offset.get_y ();
@@ -123,45 +122,147 @@ bool Scrollbar::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_s
 
     if (new_y < old_y && delta > mid_offset.get_y()) 
     {
-        mid_pos += Vector (0, delta - mid_offset.get_y());
+        mid_pos += Vec2d (0, delta - mid_offset.get_y());
     }
     else if (new_y > old_y && delta > (height_ - mid_offset.get_y () - mid_->height_))
     {
-        mid_pos += Vector (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
+        mid_pos += Vec2d (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
     }
     
-    if (mid_->on_mouse_moved (mid_pos, transform_stack)) 
+    mid_->onMouseMove (event, ehc);
+    if (ehc.stopped) 
     {
         // double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
         double arg = (double)(mid_->layout_->get_position ().get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
 
         mid_->set_arg ((void *)&arg);
         mid_->run ();
-        transform_stack.pop ();
-        return true;
     }
-    transform_stack.pop ();
 
-    return false;
-}   
-
-bool Scrollbar::on_keyboard_pressed  (Keyboard_key key) 
-{
-    //TODO....
-    return false;
+    ehc.stack.leave ();
 }
 
-bool Scrollbar::on_keyboard_released (Keyboard_key key) 
+void Scrollbar::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
 {
-    //TODO....
-    return false;
+    return;
 }
 
-bool Scrollbar::on_tick (float delta_sec) 
+void Scrollbar::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
 {
-    //TODO....
-    return false;
+    return;
 }
+
+void Scrollbar::onTick             (TickEvent &event, EHC &ehc)
+{
+    return;
+}
+
+
+
+
+
+
+
+
+// bool Scrollbar::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) 
+// {
+//     transform_stack.enter (Transform (layout_->get_position ()));
+
+//     for (size_t i = 0; i < buttons.get_size (); ++i)
+//     {
+//         if (buttons[i]->on_mouse_pressed (mouse_button, pos, transform_stack)) 
+//         {
+//             transform_stack.leave ();
+//             return true;
+//         }
+//     }
+
+//     transform_stack.leave ();
+
+//     return false;
+// }
+
+// bool Scrollbar::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) 
+// {
+//     transform_stack.enter (Transform (layout_->get_position ()));
+//     bool status = false;
+
+//     for (size_t i = 0; i < buttons.get_size (); ++i)
+//     {
+//         status |= (buttons[i]->on_mouse_released (mouse_button, pos, transform_stack));
+//     }
+
+//     transform_stack.leave ();
+
+//     return status;
+// }
+
+// bool Scrollbar::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack) 
+// {
+//     transform_stack.enter (Transform (layout_->get_position ()));
+   
+//     Vec2d new_pos_ = transform_stack.top ().apply (new_pos);
+//     Vec2d mid_pos = new_pos;
+
+//     if (   up_->on_mouse_moved (new_pos, transform_stack)) 
+//     {
+//         transform_stack.leave ();
+//         return true;
+//     }
+//     if ( down_->on_mouse_moved (new_pos, transform_stack))
+//     {
+//         transform_stack.leave ();
+//         return true;
+//     }
+
+//     // Vec2d mid_offset = mid_->transform_.offset_;
+//     Vec2d mid_offset = mid_->layout_->get_position ();
+
+//     double new_y = new_pos_.get_y();
+//     double old_y = mid_->press_pos_.get_y () + mid_offset.get_y ();
+//     double delta = std::abs (new_y - old_y);
+
+//     if (new_y < old_y && delta > mid_offset.get_y()) 
+//     {
+//         mid_pos += Vec2d (0, delta - mid_offset.get_y());
+//     }
+//     else if (new_y > old_y && delta > (height_ - mid_offset.get_y () - mid_->height_))
+//     {
+//         mid_pos += Vec2d (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
+//     }
+    
+//     if (mid_->on_mouse_moved (mid_pos, transform_stack)) 
+//     {
+//         // double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
+//         double arg = (double)(mid_->layout_->get_position ().get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
+
+//         mid_->set_arg ((void *)&arg);
+//         mid_->run ();
+//         transform_stack.leave ();
+//         return true;
+//     }
+//     transform_stack.leave ();
+
+//     return false;
+// }   
+
+// bool Scrollbar::on_keyboard_pressed  (KeyCode key) 
+// {
+//     //TODO....
+//     return false;
+// }
+
+// bool Scrollbar::on_keyboard_released (KeyCode key) 
+// {
+//     //TODO....
+//     return false;
+// }
+
+// bool Scrollbar::on_tick (float delta_sec) 
+// {
+//     //TODO....
+//     return false;
+// }
 
 bool change_canvas_rect_up (void *window, void *arg)
 {

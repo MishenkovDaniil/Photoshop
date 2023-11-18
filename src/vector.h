@@ -27,10 +27,10 @@ public:
     bool push (T &val);
     bool rm   (int num);
     bool pop  ();
-    T    &top ();
+    T    top () const;
 
-    int get_size () {return size_;};
-    int get_capacity () {return capacity_;};
+    int get_size () const {return size_;};
+    int get_capacity () const {return capacity_;};
     T operator [] (int num) const {return arr_[num];};
 
 private:
@@ -62,7 +62,7 @@ template <typename T> bool M_vector<T>::recalloc ()
     {
         arr_ = (T *)std::realloc (arr_, sizeof (T) * capacity_ * REALLOC_COEFF);
         capacity_ *= REALLOC_COEFF;
-        fprintf (stderr, "new capacity\n");
+        // fprintf (stderr, "new capacity\n");
     }
 
     assert (arr_);
@@ -130,7 +130,7 @@ template <typename T> bool M_vector<T>::pop ()
     return true;
 }
 
-template <typename T> T &M_vector<T>::top ()
+template <typename T> T M_vector<T>::top () const
 {
     assert (arr_);
     

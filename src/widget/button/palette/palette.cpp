@@ -1,6 +1,6 @@
 #include "palette.h"
 
-Button_palette::Button_palette (Vector lh_pos, int width, int height, Tool_palette *palette) : 
+Button_palette::Button_palette (Vec2d lh_pos, int width, int height, Tool_palette *palette) : 
     Menu (lh_pos, width, height),
     palette_ (palette)
 {};
@@ -24,52 +24,106 @@ Button_palette::~Button_palette ()
     }
 }
 
-bool Button_palette::on_keyboard_pressed  (Keyboard_key key)
+void Button_palette::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
 {
-    switch (key)
+    switch (event.key_id)
     {
         case B:
         {
             buttons[Brush_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         case L:
         {
             buttons[Line_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         case C:
         {
             buttons[Circle_shape_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         case R:
         {
             buttons[Rect_shape_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         case F:
         {
             buttons[Fill_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         case T:
         {
             buttons[Text_idx]->run ();
-            return true;
+            ehc.stopped = true;
+            return;
         }
         default:
         {
             break;
         }
     }
-    return false;
+    // return false;
 }
 
-bool Button_palette::on_keyboard_released  (Keyboard_key key)
+void Button_palette::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
 {
-    return false;
+    return;
 }
+
+
+// bool Button_palette::on_keyboard_pressed  (KeyCode key)
+// {
+//     switch (key)
+//     {
+//         case B:
+//         {
+//             buttons[Brush_idx]->run ();
+//             return true;
+//         }
+//         case L:
+//         {
+//             buttons[Line_idx]->run ();
+//             return true;
+//         }
+//         case C:
+//         {
+//             buttons[Circle_shape_idx]->run ();
+//             return true;
+//         }
+//         case R:
+//         {
+//             buttons[Rect_shape_idx]->run ();
+//             return true;
+//         }
+//         case F:
+//         {
+//             buttons[Fill_idx]->run ();
+//             return true;
+//         }
+//         case T:
+//         {
+//             buttons[Text_idx]->run ();
+//             return true;
+//         }
+//         default:
+//         {
+//             break;
+//         }
+//     }
+//     return false;
+// }
+
+// bool Button_palette::on_keyboard_released  (KeyCode key)
+// {
+//     return false;
+// }
 
 void Button_palette::add_tool_button (Button *tool_button)
 {
@@ -85,7 +139,7 @@ void Button_palette::add_tool_button (Button *tool_button)
 bool color_button_run_fn (void *widget, void *args) 
 {
     assert (widget && args);
-    
+    printf ("color run ()\n");
     static bool is_init = false;
     Master_window *m_window = (Master_window *)widget;
 

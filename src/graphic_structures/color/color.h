@@ -22,20 +22,36 @@ Color hsl_to_rgb (Hsl_color &hsl_color);
 class Color
 {
 public:
-    uint8_t r_ = 0;
-    uint8_t g_ = 0;
-    uint8_t b_ = 0;
-    uint8_t a_ = 0;
+    union
+    {
+        uint8_t r = 0;
+        uint8_t red;
+    };
+    union
+    {
+        uint8_t g = 0;
+        uint8_t green;
+    };
+    union
+    {
+        uint8_t b = 0;
+        uint8_t blue;
+    };
+    union
+    {
+        uint8_t a = 0;
+        uint8_t alpha;
+    };
 
 public:
     Color () {;};
-    Color (uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff) : r_(r), g_ (g), b_ (b), a_(a) {};
+    Color (uint8_t r_val, uint8_t g_val, uint8_t b_val, uint8_t a_val = 0xff) : r (r_val), g (g_val), b (b_val), a (a_val) {};
 
     Color operator *  (double mult) const;
     Color operator +  (const Color &color) const;
     Color operator += (const Color &color);
     Color operator = (const sf::Color &color);
-    operator sf::Color()const {return sf::Color (r_, g_, b_, a_);};
+    operator sf::Color()const {return sf::Color (r, g, b, a);};
 
     friend Luma_color rgb_to_luma (const Color &color);
     friend Hsl_color  rgb_to_hsl  (const Color &color);

@@ -7,8 +7,7 @@
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
-Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, Color fill_color, int run_mask) :
-            // transform_ (Transform (lh_corner)),
+Button::Button (Vec2d lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, Color fill_color, int run_mask) :
             width_ (width),
             height_ (height),
             run_fn_ (func),
@@ -16,15 +15,15 @@ Button::Button (Vector lh_corner, int width, int height, Button_run_fn func, voi
             controlled_widget_ (controlled_widget),
             run_mask_ (run_mask),
             arg_ (arg), 
-            press_pos_ (Vector ()) 
+            press_pos_ (Vec2d ()) 
 {
-    layout_ = new Default_layout_box (lh_corner, Vector (width, height));
+    layout_ = new Default_layout_box (lh_corner, Vec2d (width, height));
     assert (layout_);
 };
 
 bool Button::contains (double x, double y) const
 {
-    Vector size = layout_->get_size ();
+    Vec2d size = layout_->get_size ();
 
     return (0 <= x && 0 <= y &&
             x <= size.get_x () && y <= size.get_y ());
@@ -41,14 +40,15 @@ bool Button::run ()
     return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void Button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector lh_corner = unite.offset_;
-    Vector size = layout_->get_size ();
+    Transform unite = tr.combine (transform_stack.top ());
+    Vec2d lh_corner = unite.getOffset ();
+    Vec2d size = layout_->get_size ();
 
-    sf::RectangleShape rect (unite.scale_apply(size));
+    // sf::RectangleShape rect (unite.scale_apply(size));
+    sf::RectangleShape rect (size);
     rect.setFillColor (fill_color_);
 /*TODO: 
 //make constant for thickness and add possibility to change it (in constructor for example)*/
@@ -58,86 +58,168 @@ void Button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
     target.draw (rect);
 }   
 
-bool Button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+
+void Button::onMousePressed     (MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector pos_ = unite.apply_transform (pos);
+    Transform unite = tr.combine (ehc.stack.top ());
+    Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
         if (run_mask_ & PRESS_BUTTON)
         {
-            return run ();
+            ehc.stopped = run ();
+            return;
         }
         press_pos_ = pos_;
         is_pressed_ = true;
-        return true;
+        ehc.stopped = true;
+        return;
     }
 
-    return false;
+    // return false;
 } 
 
-bool Button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
-{ 
+void Button::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+{
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector pos_ = unite.apply_transform (pos);
+    Transform unite = tr.combine (ehc.stack.top ());
+    Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
         if (run_mask_ & RELEASE_BUTTON)
         {
-            return run ();
+            ehc.stopped = run ();
+            return;
         }
     }
 
     if (is_pressed_)
     {
         is_pressed_ = false;
-        return true;
+        ehc.stopped = true;
+        return;
     }
 
-    return false;
+    // return false;
 } 
 
-bool Button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
-{ 
+void Button::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+{
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector pos_ = unite.apply_transform (new_pos);
+    Transform unite = tr.combine (ehc.stack.top ());
+    Vec2d pos_ = unite.apply (event.pos);
     
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
-        Vector change (0, pos_.get_y () - press_pos_.get_y ());
+        Vec2d change (0, pos_.get_y () - press_pos_.get_y ());
         layout_->set_position (layout_->get_position () + change);
 
-        return true;
+        ehc.stopped = true;
+        return;
     }
 
-    return false;
-}   
+    // return false;
+} 
 
-bool Button::on_keyboard_pressed  (Keyboard_key key)
-{ 
-    // TODO
-    return false;
-}   
-
-bool Button::on_keyboard_released (Keyboard_key key)
+void Button::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
 {
-    // TODO
-    return false;
-}   
+    return;
+} 
 
-bool Button::on_tick (float delta_sec)
+void Button::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
 {
-    // TODO
-    return false;
-}   
+    return;
+} 
+
+void Button::onTick             (TickEvent &event, EHC &ehc)
+{
+    return;
+} 
 
 
-Texture_button::Texture_button (Vector lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+// bool Button::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+//     Vec2d pos_ = unite.apply (pos);
+
+//     if (contains (pos_.get_x (), pos_.get_y ()))
+//     {
+//         if (run_mask_ & PRESS_BUTTON)
+//         {
+//             return run ();
+//         }
+//         press_pos_ = pos_;
+//         is_pressed_ = true;
+//         return true;
+//     }
+
+//     return false;
+// } 
+
+// bool Button::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// { 
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+//     Vec2d pos_ = unite.apply (pos);
+
+//     if (contains (pos_.get_x (), pos_.get_y ()))
+//     {
+//         if (run_mask_ & RELEASE_BUTTON)
+//         {
+//             return run ();
+//         }
+//     }
+
+//     if (is_pressed_)
+//     {
+//         is_pressed_ = false;
+//         return true;
+//     }
+
+//     return false;
+// } 
+
+// bool Button::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
+// { 
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+//     Vec2d pos_ = unite.apply (new_pos);
+    
+//     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
+//     {
+//         Vec2d change (0, pos_.get_y () - press_pos_.get_y ());
+//         layout_->set_position (layout_->get_position () + change);
+
+//         return true;
+//     }
+
+//     return false;
+// }   
+
+// bool Button::on_keyboard_pressed  (KeyCode key)
+// { 
+//     // TODO
+//     return false;
+// }   
+
+// bool Button::on_keyboard_released (KeyCode key)
+// {
+//     // TODO
+//     return false;
+// }   
+
+// bool Button::on_tick (float delta_sec)
+// {
+//     // TODO
+//     return false;
+// }   
+
+
+Texture_button::Texture_button (Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
                                 Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
     Button (lh_corner, width, height, func, controlled_widget, arg, Color (), run_mask),
     pressed_texture_ (pressed),
@@ -153,11 +235,11 @@ Texture_button::~Texture_button ()
         delete sprite_;
 }
 
-void Texture_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void Texture_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-    Vector lh_corner = unite.offset_;
+    Transform unite = tr.combine (transform_stack.top ());
+    Vec2d lh_corner = unite.getOffset ();
 
     sprite_->setTexture (*cur_texture_);
     sprite_->setPosition (lh_corner.get_x (), lh_corner.get_y ());
@@ -165,43 +247,75 @@ void Texture_button::render (sf::RenderTarget &target, Transform_stack &transfor
     target.draw (*sprite_);
 }
 
-bool Texture_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void Texture_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
+    Button::onMousePressed (event, ehc);
+    bool status = ehc.stopped;
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
-    return status;
 }
 
-bool Texture_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void Texture_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
+    Button::onMouseReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
-    return status;
 }
 
-bool Texture_button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
+void Texture_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_moved (new_pos, transform_stack);
+    Button::onMouseMove (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
-    return status;
-} 
+}
 
-bool Texture_button::on_keyboard_pressed  (Keyboard_key key)
+void Texture_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_keyboard_pressed (key);
+    Button::onKeyboardPressed (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
-    return status;
-}   
+}
 
-bool Texture_button::on_keyboard_released (Keyboard_key key)
+void Texture_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_keyboard_released (key);
+    Button::onKeyboardReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
-    return status;
-}   
+}
 
 
-String_button::String_button (Vector lh_corner, int width, int height, const char *string, const Color &pressed_color, const Color &released_color, Button_run_fn func, void *controlled_widget,
+// bool Texture_button::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = Button::on_mouse_pressed (mouse_button, pos, transform_stack);
+//     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+//     return status;
+// }
+
+// bool Texture_button::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = Button::on_mouse_released (mouse_button, pos, transform_stack);
+//     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+//     return status;
+// }
+
+// bool Texture_button::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
+// {
+//     bool status = Button::on_mouse_moved (new_pos, transform_stack);
+//     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+//     return status;
+// } 
+
+// bool Texture_button::on_keyboard_pressed  (KeyCode key)
+// {
+//     bool status = Button::on_keyboard_pressed (key);
+//     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+//     return status;
+// }   
+
+// bool Texture_button::on_keyboard_released (KeyCode key)
+// {
+//     bool status = Button::on_keyboard_released (key);
+//     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+//     return status;
+// }   
+
+
+String_button::String_button (Vec2d lh_corner, int width, int height, const char *string, const Color &pressed_color, const Color &released_color, Button_run_fn func, void *controlled_widget,
                void *arg, int run_mask) :
     Button (lh_corner, width, height, func, controlled_widget, arg, Transparent, run_mask),
     pressed_color_  (pressed_color), 
@@ -223,15 +337,16 @@ String_button::~String_button ()
     if (string_) delete[] string_;
 }
 
-void String_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void String_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
     assert (layout_);
 
-    transform_stack.push (Transform (layout_->get_position ()));
-    Vector lh_pos = transform_stack.top ().offset_;
+    transform_stack.enter (Transform (layout_->get_position ()));
+    Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    Vector size = layout_->get_size ();
-    Vector real_size = transform_stack.top ().scale_apply (size);
+    Vec2d size = layout_->get_size ();
+    Vec2d real_size = size;
+    // transform_stack.top ().scale_apply (size);
     sf::RectangleShape button (real_size);
                        button.setFillColor (*cur_color_);
                        button.setOutlineThickness (1);
@@ -250,50 +365,81 @@ void String_button::render (sf::RenderTarget &target, Transform_stack &transform
     target.draw (button);
     target.draw (text);
 
-    transform_stack.pop ();
+    transform_stack.leave ();
 }
 
-bool String_button::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+
+void String_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_pressed (mouse_key, pos, transform_stack);
+    Button::onMousePressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
-    return status;
 }
 
-bool String_button::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void String_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_released (mouse_key, pos, transform_stack);
+    Button::onMouseReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
-    return status;
 }
 
-bool String_button::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)                 
+void String_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
 {
-    bool status = Button::on_mouse_moved (new_pos, transform_stack);
+    Button::onMouseMove (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
-    return status;
 }
 
-bool String_button::on_keyboard_pressed  (Keyboard_key key)             
+void String_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_keyboard_pressed (key);
+    Button::onKeyboardPressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
-    return status;
 }
 
-bool String_button::on_keyboard_released (Keyboard_key key)             
+void String_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
 {
-    bool status = Button::on_keyboard_released (key);
+    Button::onKeyboardReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
-    return status;
 }
+
+// bool String_button::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = Button::on_mouse_pressed (mouse_button, pos, transform_stack);
+//     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+//     return status;
+// }
+
+// bool String_button::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = Button::on_mouse_released (mouse_button, pos, transform_stack);
+//     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+//     return status;
+// }
+
+// bool String_button::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)                 
+// {
+//     bool status = Button::on_mouse_moved (new_pos, transform_stack);
+//     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+//     return status;
+// }
+
+// bool String_button::on_keyboard_pressed  (KeyCode key)             
+// {
+//     bool status = Button::on_keyboard_pressed (key);
+//     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+//     return status;
+// }
+
+// bool String_button::on_keyboard_released (KeyCode key)             
+// {
+//     bool status = Button::on_keyboard_released (key);
+//     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
+//     return status;
+// }
 
 
 List_button::List_button (Button *list_button) :
     list_button_ (list_button)
 {
     assert (list_button);
-    layout_ = new Default_layout_box (Vector (list_button->layout_->get_position () + Vector (0, list_button->layout_->get_size ().get_y ())), 
+    layout_ = new Default_layout_box (Vec2d (list_button->layout_->get_position () + Vec2d (0, list_button->layout_->get_size ().get_y ())), 
                                               list_button->layout_->get_size ());
     assert (layout_);
 
@@ -314,7 +460,7 @@ void List_button::add_button (Button *button)
     size_t button_height = old_layout->get_size ().get_y ();
     delete old_layout;
     
-    Default_layout_box *new_layout = new Default_layout_box (Vector (0, relative_height_), Vector (layout_->get_size ().get_x (), button_height));
+    Default_layout_box *new_layout = new Default_layout_box (Vec2d (0, relative_height_), Vec2d (layout_->get_size ().get_x (), button_height));
     relative_height_ += button_height;
     button->set_layout_box (*new_layout);
     
@@ -322,13 +468,13 @@ void List_button::add_button (Button *button)
 }
 
 
-void List_button::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void List_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
     list_button_->render (target, transform_stack);
 
     if (is_open_)
     {
-        transform_stack.push (Transform (layout_->get_position ()));
+        transform_stack.enter (Transform (layout_->get_position ()));
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
@@ -346,34 +492,36 @@ void List_button::render (sf::RenderTarget &target, Transform_stack &transform_s
             button->render (target, transform_stack);
         }
 
-        transform_stack.pop ();
+        transform_stack.leave ();
     }
 }   
 
-bool List_button::on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void List_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc) // rm status
 {
     assert (layout_);
     
     bool status = false;
 
     Transform list_button_tr (list_button_->layout_->get_position ());
-    Transform unite = list_button_tr.unite (transform_stack.top ());
-    Vector pos_ = unite.apply_transform (pos);
+    Transform unite = list_button_tr.combine (ehc.stack.top ());
+    Vec2d pos_ = unite.apply (event.pos);
 
-    status |= list_button_->on_mouse_pressed (mouse_key, pos, transform_stack);
-    
+    list_button_->onMousePressed (event, ehc);
+    status |= ehc.stopped;
+
     if (list_button_->contains (pos_.get_x (), pos_.get_y ()))
     {
         is_open_ = !is_open_;
-        return true;
+        ehc.stopped = true;
+        return;
     }
     
     if (!is_open_)
     {
-        return status;
+        return;
     }
 
-    transform_stack.push (Transform (layout_->get_position ()));
+    ehc.stack.enter (Transform (layout_->get_position ()));
     
     size_t button_num = buttons_.get_size ();
 
@@ -385,14 +533,16 @@ bool List_button::on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transf
             fprintf (stderr, "Event error: nil button is detected.\n"
                             "Hint: nil button idx in buttons vector = %d.\n"
                             "Hint: buttons vector size = %lu.\n", button_idx, button_num);
-            return false;
+            ehc.stopped = true;
+            return;
         }
         assert (button);
 
-        status |= button->on_mouse_pressed (mouse_key, pos, transform_stack);
+        button->onMousePressed (event, ehc);
+        status |= ehc.stopped;
     }
 
-    transform_stack.pop ();
+    ehc.stack.leave ();
     
     if ((!status))
     {
@@ -400,20 +550,22 @@ bool List_button::on_mouse_pressed     (Mouse_key mouse_key, Vector &pos, Transf
         status = true;
     }
 
-    return status;
+    ehc.stopped = status;
+    // return status;
 }
 
-bool List_button::on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void List_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
 {
     bool status = false;
     
-    status |= list_button_->on_mouse_released (mouse_key, pos, transform_stack);
+    list_button_->onMouseReleased (event, ehc);
+    status |= ehc.stopped;
 
     if (is_open_)
     {
-        transform_stack.push (Transform (layout_->get_position ()));
+        ehc.stack.enter (Transform (layout_->get_position ()));
 
-        Vector lh_pos = transform_stack.top ().offset_;
+        Vec2d lh_pos = ehc.stack.top ().getOffset ();
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
@@ -424,30 +576,35 @@ bool List_button::on_mouse_released    (Mouse_key mouse_key, Vector &pos, Transf
                 fprintf (stderr, "Event error: nil button is detected.\n"
                                 "Hint: nil button idx in buttons vector = %d.\n"
                                 "Hint: buttons vector size = %lu.\n", button_idx, button_num);
-                return false;
+                ehc.stopped = true;
+                return;
             }
             assert (button);
 
-            status |= button->on_mouse_released (mouse_key, lh_pos, transform_stack);
+            event.pos = lh_pos; ///
+            button->onMouseReleased (event, ehc);
+            status |= ehc.stopped;
         }
 
-        transform_stack.pop ();
+        ehc.stack.leave ();
     }
 
-    return status;
+    ehc.stopped = status;
+    // return status;
 }
 
-bool List_button::on_mouse_moved       (Vector &new_pos, Transform_stack &transform_stack)
+void List_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
 {
     bool status = false;
     
-    status |= list_button_->on_mouse_moved (new_pos, transform_stack);
-
+    list_button_->onMouseMove (event, ehc);
+    status |= ehc.stopped;
+    
     if (is_open_)
     {
-        transform_stack.push (Transform (layout_->get_position ()));
+        ehc.stack.enter (Transform (layout_->get_position ()));
 
-        Vector lh_pos = transform_stack.top ().offset_;
+        Vec2d lh_pos = ehc.stack.top ().getOffset ();
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
@@ -458,32 +615,175 @@ bool List_button::on_mouse_moved       (Vector &new_pos, Transform_stack &transf
                 fprintf (stderr, "Event error: nil button is detected.\n"
                                 "Hint: nil button idx in buttons vector = %d.\n"
                                 "Hint: buttons vector size = %lu.\n", button_idx, button_num);
-                return false;
+                ehc.stopped = true;
+                return;
             }
             assert (button);
 
-            status |= button->on_mouse_moved (lh_pos, transform_stack);
+            event.pos = lh_pos; ///
+            button->onMouseMove (event, ehc);
+            status |= ehc.stopped;
         }
 
-        transform_stack.pop ();
+        ehc.stack.leave ();
     }
 
-    return status;
-}   
+    ehc.stopped = status;
+    // return status;
+}
 
-bool List_button::on_keyboard_pressed  (Keyboard_key key)
+void List_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
 {
-    return false;
+    return;
+}
 
-}   
-
-bool List_button::on_keyboard_released (Keyboard_key key)
+void List_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
 {
-    return false;
+    return;
+}
 
-}   
-
-bool List_button::on_tick (float delta_sec)
+void List_button::onTick             ( TickEvent &event, EHC &ehc)
 {
-    return false;
-}   
+    return;
+}
+
+
+
+
+// bool List_button::on_mouse_pressed     (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     assert (layout_);
+    
+//     bool status = false;
+
+//     Transform list_button_tr (list_button_->layout_->get_position ());
+//     Transform unite = list_button_tr.combine (transform_stack.top ());
+//     Vec2d pos_ = unite.apply (pos);
+
+//     status |= list_button_->on_mouse_pressed (mouse_button, pos, transform_stack);
+    
+//     if (list_button_->contains (pos_.get_x (), pos_.get_y ()))
+//     {
+//         is_open_ = !is_open_;
+//         return true;
+//     }
+    
+//     if (!is_open_)
+//     {
+//         return status;
+//     }
+
+//     transform_stack.enter (Transform (layout_->get_position ()));
+    
+//     size_t button_num = buttons_.get_size ();
+
+//     for (int button_idx = 0; button_idx < button_num; ++button_idx)
+//     {
+//         Button *button = buttons_[button_idx];
+//         if (!button)
+//         {
+//             fprintf (stderr, "Event error: nil button is detected.\n"
+//                             "Hint: nil button idx in buttons vector = %d.\n"
+//                             "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+//             return false;
+//         }
+//         assert (button);
+
+//         status |= button->on_mouse_pressed (mouse_button, pos, transform_stack);
+//     }
+
+//     transform_stack.leave ();
+    
+//     if ((!status))
+//     {
+//         is_open_ = !is_open_;
+//         status = true;
+//     }
+
+//     return status;
+// }
+
+// bool List_button::on_mouse_released    (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     bool status = false;
+    
+//     status |= list_button_->on_mouse_released (mouse_button, pos, transform_stack);
+
+//     if (is_open_)
+//     {
+//         transform_stack.enter (Transform (layout_->get_position ()));
+
+//         Vec2d lh_pos = transform_stack.top ().getOffset ();
+
+//         size_t button_num = buttons_.get_size ();
+//         for (int button_idx = 0; button_idx < button_num; ++button_idx)
+//         {
+//             Button *button = buttons_[button_idx];
+//             if (!button)
+//             {
+//                 fprintf (stderr, "Event error: nil button is detected.\n"
+//                                 "Hint: nil button idx in buttons vector = %d.\n"
+//                                 "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+//                 return false;
+//             }
+//             assert (button);
+
+//             status |= button->on_mouse_released (mouse_button, lh_pos, transform_stack);
+//         }
+
+//         transform_stack.leave ();
+//     }
+
+//     return status;
+// }
+
+// bool List_button::on_mouse_moved       (Vec2d &new_pos, TransformStack &transform_stack)
+// {
+//     bool status = false;
+    
+//     status |= list_button_->on_mouse_moved (new_pos, transform_stack);
+
+//     if (is_open_)
+//     {
+//         transform_stack.enter (Transform (layout_->get_position ()));
+
+//         Vec2d lh_pos = transform_stack.top ().getOffset ();
+
+//         size_t button_num = buttons_.get_size ();
+//         for (int button_idx = 0; button_idx < button_num; ++button_idx)
+//         {
+//             Button *button = buttons_[button_idx];
+//             if (!button)
+//             {
+//                 fprintf (stderr, "Event error: nil button is detected.\n"
+//                                 "Hint: nil button idx in buttons vector = %d.\n"
+//                                 "Hint: buttons vector size = %lu.\n", button_idx, button_num);
+//                 return false;
+//             }
+//             assert (button);
+
+//             status |= button->on_mouse_moved (lh_pos, transform_stack);
+//         }
+
+//         transform_stack.leave ();
+//     }
+
+//     return status;
+// }   
+
+// bool List_button::on_keyboard_pressed  (KeyCode key)
+// {
+//     return false;
+
+// }   
+
+// bool List_button::on_keyboard_released (KeyCode key)
+// {
+//     return false;
+
+// }   
+
+// bool List_button::on_tick (float delta_sec)
+// {
+//     return false;
+// }   

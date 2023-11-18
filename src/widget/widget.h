@@ -2,6 +2,8 @@
 #define WIDGET_H
 
 #include <SFML/Graphics.hpp>
+#include "constants.h"
+#include "event.h"
 #include "../graphic_structures/vector/vector.h"
 #include "../graphic_structures/color/color.h"
 #include "../vector.h"
@@ -10,149 +12,38 @@
 static const double TRANSFORM_HEIGHT = 100;
 static const double TRANSFORM_WIDTH  = 100;
 
-enum Mouse_key
-{
-    Unknown_mouse_key = -1,
-    M_Left, 
-    M_Right,
-    Middle
-};
-
-enum Keyboard_key
-{
-    Unknown = -1,
-    A,
-    B,
-    C,
-    D, 
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    Num0,
-    Num1,
-    Num2,
-    Num3,
-    Num4,
-    Num5,
-    Num6,
-    Num7,
-    Num8,
-    Num9,
-    Escape,
-    LControl,
-    LShift,
-    LAlt,
-    LSystem,
-    RControl,
-    RShift,
-    RAlt,
-    RSystem,
-    Menuu,
-    // Menu,
-    LBracket,
-    RBracket,
-    Semicolon,
-    Comma,
-    Period,
-    Apostrophe,
-    Slash,
-    Backslash,
-    Grave,
-    Equal,
-    Hyphen,
-    Space,
-    Enter,
-    Backspace,
-    Tab,
-    PageUp,
-    PageDown,
-    End,
-    Home,
-    Insert,
-    Delete,
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
-    Left,
-    Right,
-    Up,
-    Down,
-    Numpad0,
-    Numpad1,
-    Numpad2,
-    Numpad3,
-    Numpad4,
-    Numpad5,
-    Numpad6,
-    Numpad7,
-    Numpad8,
-    Numpad9,
-    F1,
-    F2,
-    F3,
-    F4,
-    F5,
-    F6,
-    F7,
-    F8,
-    F9,
-    F10,
-    F11,
-    F12,
-    F13,
-    F14,
-    F15,
-    Pause,
-    KeyCount
-};
-
 class Transform 
 {
-public:
-    Vector offset_;
-    Vector scale_;
+    Vec2d offset_;
+    Vec2d scale_;
 
+public:
     Transform () {};
-    Transform (const Vector offset, const Vector scale = Vector (1, 1)) : offset_ (offset), scale_ (scale) {};//
-    // Transform (Vector lh_pos, Vector size)  : offset_ (lh_pos), scale_ (Vector (1, 1)) {}; //scale_ (TRANSFORM_WIDTH / size.get_x (), TRANSFORM_HEIGHT / size.get_y ()) {};
+    Transform (const Vec2d offset, const Vec2d scale = Vec2d (1, 1)) : offset_ (offset), scale_ (scale) {};//
+    // Transform (Vec2d lh_pos, Vec2d size)  : offset_ (lh_pos), scale_ (Vec2d (1, 1)) {}; //scale_ (TRANSFORM_WIDTH / size.get_x (), TRANSFORM_HEIGHT / size.get_y ()) {};
     Transform (const Transform &transform) : offset_ (transform.offset_), scale_ (transform.scale_) {};
 
-    Transform unite(const Transform &prev) const;
-    Vector apply_transform (Vector &vector);
-    Vector cancel_transform (Vector &vector);
-    Vector scale_apply (Vector &vector) const;
-    // void change_offset (Vector new_offset) {offset_ = new_offset;};
-    // Vector &get_offset (Vector new_offset) {return offset_;};
+    Vec2d getOffset () const {return offset_;};
+    Vec2d getScale () const {return scale_;};
+    void setOffset (const Vec2d &new_offset) {offset_ = new_offset;};
+    void setScale (const Vec2d &new_scale) {scale_ = new_scale;};
+
+
+    Transform combine(const Transform &parent_transform) const;
+    Vec2d apply (const Vec2d &vector);
+    Vec2d restore (const Vec2d &vector);
 };
 
-class Transform_stack 
+class TransformStack 
 {
     M_vector<Transform> transform_stack = M_vector<Transform> (Transform (-1, -1));
 public:
-    void push (Transform transform);
-    void pop  ();
-    Transform top ();
-    int get_size ();
+    void enter (const Transform &transform);
+    void leave  ();
+    Transform top () const;
+    int get_size () const;
+    Vec2d apply (const Vec2d &vector) const; 
+    Vec2d restore (const Vec2d &vector) const;
 };
 
 class Widget 
@@ -161,13 +52,23 @@ protected:
     Layout_box *layout_ = nullptr;
 public:
     virtual ~Widget () = default;
-    virtual void render (sf::RenderTarget &target, Transform_stack &transform_stack) = 0;
-    virtual bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) = 0;
-    virtual bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) = 0;
-    virtual bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) = 0;    /// x, y - absolute values 
-    virtual bool on_keyboard_pressed  (Keyboard_key key) = 0;
-    virtual bool on_keyboard_released (Keyboard_key key) = 0;
-    virtual bool on_tick (float delta_sec) = 0;
+    virtual void render (sf::RenderTarget &target, TransformStack &transform_stack) = 0;
+    
+    virtual void onEvent (Event &event, EHC &ehc);
+
+    virtual void onTick             (TickEvent &event, EHC &ehc) = 0;
+    virtual void onMouseMove        (MouseMoveEvent &event, EHC &ehc) = 0;
+    virtual void onMousePressed     (MousePressedEvent &event, EHC &ehc) = 0;
+    virtual void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) = 0;
+    virtual void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) = 0;
+    virtual void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) = 0;
+    
+    // virtual bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) = 0;
+    // virtual bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) = 0;
+    // virtual bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack) = 0;    /// x, y - absolute values 
+    // virtual bool on_keyboard_pressed  (KeyCode key) = 0;
+    // virtual bool on_keyboard_released (KeyCode key) = 0;
+    // virtual bool on_tick (float delta_sec) = 0;
     Layout_box &get_layout_box () {return *layout_;};
     void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};
 };

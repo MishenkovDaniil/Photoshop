@@ -31,20 +31,27 @@ protected:
     // Transform transform_;
     
 public:
-    Window (int width, int height, Vector lh_pos, const char *w_name, bool need_scrollbar = true, Tool_palette *palette = nullptr);
+    Window (int width, int height, Vec2d lh_pos, const char *w_name, bool need_scrollbar = true, Tool_palette *palette = nullptr);
     virtual ~Window ();
 
     Canvas *get_canvas () {return canvas_;};
 
-    void render (sf::RenderTarget &target, Transform_stack &transform_stack)  override;
-    bool on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack) override;
-    bool on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack) override;    /// x, y - absolute values 
-    bool on_keyboard_pressed  (Keyboard_key key) override;
-    bool on_keyboard_released (Keyboard_key key) override;
-    bool on_tick (float delta_sec) override;
+    void render (sf::RenderTarget &target, TransformStack &transform_stack)  override;
+    // bool on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack) override;
+    // bool on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack) override;    /// x, y - absolute values 
+    // bool on_keyboard_pressed  (KeyCode key) override;
+    // bool on_keyboard_released (KeyCode key) override;
+    // bool on_tick (float delta_sec) override;
+    void onTick             (TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
 
-    bool contains (Vector &pos);
+
+    bool contains (const Vec2d &pos);
     
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);

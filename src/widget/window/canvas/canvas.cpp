@@ -1,7 +1,6 @@
 #include "canvas.h"
 
-Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos, Tool_palette *palette) :
-    // transform_ (Transform (lh_pos)),
+Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, Tool_palette *palette) :
     width_ (width),
     height_ (height),
     color_ (color),
@@ -13,7 +12,7 @@ Canvas::Canvas (int width, int height, const Color color, const Vector lh_pos, T
         return;
     }
 
-    layout_ = new Default_layout_box (lh_pos, Vector (width, height));
+    layout_ = new Default_layout_box (lh_pos, Vec2d (width, height));
     assert (layout_);
 
     canvas_texture.create (width, height * 2);
@@ -33,10 +32,10 @@ Canvas::~Canvas ()
     delete layout_;
 };
 
-void Canvas::render (sf::RenderTarget &target, Transform_stack &transform_stack)
+void Canvas::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
-    transform_stack.push (Transform (layout_->get_position ()));
-    Vector lh_pos = transform_stack.top ().offset_;
+    transform_stack.enter (Transform (layout_->get_position ()));
+    Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     sf::Sprite canvas_sprite (canvas_texture.getTexture ());
     canvas_sprite.setPosition (lh_pos);
@@ -57,46 +56,64 @@ void Canvas::render (sf::RenderTarget &target, Transform_stack &transform_stack)
         }
     }
 
-    transform_stack.pop ();
+    transform_stack.leave ();
 }
 
-bool Canvas::on_mouse_pressed  (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void Canvas::onMousePressed     (MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
-
-    Vector pos_ = unite.apply_transform (pos);
+    Transform unite = tr.combine (ehc.stack.top ());
+    
+    Vec2d pos_ = unite.apply (event.pos);
     if (!contains (pos_.get_x (), pos_.get_y ()))
-        return false;
+        return;
     
     if (!palette_)
-        return false;
+    {
+        return;
+    }
     
     Tool *tool = palette_->get_cur_tool ();
+    // Color fg_color = palette_->get_fg_color ();
+    // Color bg_color = palette_->get_bg_color ();
+    // printf ("fg_color = %d %d %d %d\n", fg_color.r, fg_color.g, fg_color.b, fg_color.a);
+    // printf ("bg_color = %d %d %d %d\n", bg_color.r, bg_color.g, bg_color.b, bg_color.a);
     if (tool)
     {
+        if (tool->get_widget ())
+        {
+            // if (tool->get_widget ()->get_layout_box ().get_position ())
+            // transform_stack.enter (unite);
+            
+            tool->get_widget ()->onMousePressed (event, ehc);
+            bool status = ehc.stopped;
+            is_focused = status;
+            // transform_stack.leave ();
+            if (status) 
+                return;
+        }
+
         Button_state state;
         state.pressed = true;
         state.released = false;
 
         tool->on_main_button (state, pos_, *this);
         is_focused = true;
+        ehc.stopped = true;
 
-        return true;
+        return;
     }
-
-    return false;
 }
 
-bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stack &transform_stack)
+void Canvas::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
+    Transform unite = tr.combine (ehc.stack.top ());
 
-    Vector pos_ = unite.apply_transform (pos);
+    Vec2d pos_ = unite.apply (event.pos);
 
     if (!(palette_ && is_focused))
-        return false;
+        return;
     
     Tool *tool = palette_->get_cur_tool ();
     if (tool)
@@ -107,37 +124,34 @@ bool Canvas::on_mouse_released (Mouse_key mouse_key, Vector &pos, Transform_stac
 
         tool->on_confirm (*this);
         if (!(tool->get_widget ())) is_focused = false;
-        return true;
+        ehc.stopped = true;
     }
-
-    return false;
 }
 
-bool Canvas::on_mouse_moved    (Vector &new_pos, Transform_stack &transform_stack)
+void Canvas::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.unite (transform_stack.top ());
+    Transform unite = tr.combine (ehc.stack.top ());
 
-    Vector pos_ = unite.apply_transform (new_pos);
+    Vec2d pos_ = unite.apply (event.pos);
 
     if (!(palette_ && is_focused))
-        return false;
+        return;
     
     Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
         tool->on_move (pos_, *this);
         // tool->on_modifier_1 (pos_, *this);
-        return true;
+        ehc.stopped = true;
     }
-    
-    return false;
 }   
 
-bool Canvas::on_keyboard_pressed  (Keyboard_key key)
+
+void Canvas::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
 {
     if (!palette_)
-        return false;
+        return;
     
     Tool *tool = palette_->get_cur_tool ();
 
@@ -145,30 +159,34 @@ bool Canvas::on_keyboard_pressed  (Keyboard_key key)
     {
         if (tool->get_widget ())
         {
-            bool status = tool->get_widget ()->on_keyboard_pressed (key);
+            tool->get_widget ()->onKeyboardPressed (event, ehc);
+            bool status = ehc.stopped;
             is_focused = status;
             if (status) 
-                return status;
+                return;
         }
 
-        switch (key)
+        switch (event.key_id)
         {
             case Escape:
             {
                 tool->on_cancel ();
-                return true;
+                ehc.stopped = true;
+                return;
             }
             case Enter:
             {
                 tool->on_confirm (*this);
-                return true;
+                ehc.stopped = true;
+                return;
             }
             case RShift:
             case LShift:
             {
                 tool->on_modifier_1 (*this);
                 is_focused = true;
-                return true;
+                ehc.stopped = true;
+                return;
             }
             default:
             {
@@ -176,33 +194,208 @@ bool Canvas::on_keyboard_pressed  (Keyboard_key key)
             }
         }
     }
-
-    return false;
 }
 
-bool Canvas::on_keyboard_released (Keyboard_key key)
+void Canvas::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
 {
     if (!palette_)
     {
-        return false;
+        return;
     }
 
     Tool *tool = palette_->get_cur_tool ();
     if (!tool)
     {
-        return false;
+        return;
     }
 
     tool->on_released_key ();
-
-    return true;
+    ehc.stopped = true;
 }
 
-bool Canvas::on_tick (float delta_sec)
+void Canvas::onTick             (TickEvent &event, EHC &ehc)
 {
-    // TODO
-    return false;
+    if (!palette_)
+    {
+        return;
+    }
+
+    Tool *tool = palette_->get_cur_tool ();
+    if (!(tool && tool->get_widget ()))
+    {
+        return;
+    }
+
+    tool->get_widget ()->onTick (event, ehc);
 }
+
+
+
+// bool Canvas::on_mouse_pressed  (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+    
+//     Vec2d pos_ = unite.apply (pos);
+//     if (!contains (pos_.get_x (), pos_.get_y ()))
+//         return false;
+    
+//     if (!palette_)
+//         return false;
+    
+//     Tool *tool = palette_->get_cur_tool ();
+//     if (tool)
+//     {
+//         if (tool->get_widget ())
+//         {
+//             // if (tool->get_widget ()->get_layout_box ().get_position ())
+//             // transform_stack.enter (unite);
+            
+//             bool status = tool->get_widget ()->on_mouse_pressed (mouse_button, pos, transform_stack);
+//             is_focused = status;
+//             // transform_stack.leave ();
+//             if (status) 
+//                 return status;
+//         }
+
+//         Button_state state;
+//         state.pressed = true;
+//         state.released = false;
+
+//         tool->on_main_button (state, pos_, *this);
+//         is_focused = true;
+
+//         return true;
+//     }
+
+//     return false;
+// }
+
+// bool Canvas::on_mouse_released (MouseButton mouse_button, Vec2d &pos, TransformStack &transform_stack)
+// {
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+
+//     Vec2d pos_ = unite.apply (pos);
+
+//     if (!(palette_ && is_focused))
+//         return false;
+    
+//     Tool *tool = palette_->get_cur_tool ();
+//     if (tool)
+//     {
+//         Button_state state;
+//         state.pressed = false;
+//         state.released = true;
+
+//         tool->on_confirm (*this);
+//         if (!(tool->get_widget ())) is_focused = false;
+//         return true;
+//     }
+
+//     return false;
+// }
+
+// bool Canvas::on_mouse_moved    (Vec2d &new_pos, TransformStack &transform_stack)
+// {
+//     Transform tr (layout_->get_position ());
+//     Transform unite = tr.combine (transform_stack.top ());
+
+//     Vec2d pos_ = unite.apply (new_pos);
+
+//     if (!(palette_ && is_focused))
+//         return false;
+    
+//     Tool *tool = palette_->get_cur_tool ();
+//     if (tool)
+//     {
+//         tool->on_move (pos_, *this);
+//         // tool->on_modifier_1 (pos_, *this);
+//         return true;
+//     }
+    
+//     return false;
+// }   
+
+// bool Canvas::on_keyboard_pressed  (KeyCode key)
+// {
+//     if (!palette_)
+//         return false;
+    
+//     Tool *tool = palette_->get_cur_tool ();
+
+//     if (tool) 
+//     {
+//         if (tool->get_widget ())
+//         {
+//             bool status = tool->get_widget ()->on_keyboard_pressed (key);
+//             is_focused = status;
+//             if (status) 
+//                 return status;
+//         }
+
+//         switch (key)
+//         {
+//             case Escape:
+//             {
+//                 tool->on_cancel ();
+//                 return true;
+//             }
+//             case Enter:
+//             {
+//                 tool->on_confirm (*this);
+//                 return true;
+//             }
+//             case RShift:
+//             case LShift:
+//             {
+//                 tool->on_modifier_1 (*this);
+//                 is_focused = true;
+//                 return true;
+//             }
+//             default:
+//             {
+//                 break;
+//             }
+//         }
+//     }
+
+//     return false;
+// }
+
+// bool Canvas::on_keyboard_released (KeyCode key)
+// {
+//     if (!palette_)
+//     {
+//         return false;
+//     }
+
+//     Tool *tool = palette_->get_cur_tool ();
+//     if (!tool)
+//     {
+//         return false;
+//     }
+
+//     tool->on_released_key ();
+
+//     return true;
+// }
+
+// bool Canvas::on_tick (float delta_sec)
+// {
+//     if (!palette_)
+//     {
+//         return false;
+//     }
+
+//     Tool *tool = palette_->get_cur_tool ();
+//     if (!(tool && tool->get_widget ()))
+//     {
+//         return false;
+//     }
+
+//     return tool->get_widget ()->on_tick (delta_sec);
+// }
 
 bool Canvas::contains (int x, int y)
 {
