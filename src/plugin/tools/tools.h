@@ -37,10 +37,11 @@ protected:
     Widget *widget_ = nullptr;
     ControlState state_;
     ColorPalette *color_palette_ = nullptr;
+    Canvas *active_canvas_ = nullptr;
 
 public:
     virtual void setColorPalette (ColorPalette &palette) {color_palette_ = &palette;};
-    // void setActiveCanvas (Canvas &) = 0; 	// храним канвас в самом туле чтобы не передавать его все время в качестве параметра и для того чтобы реагировать на изменение активного канваса.
+    void setActiveCanvas (Canvas &canvas) {active_canvas_ = &canvas;}; 	// храним канвас в самом туле чтобы не передавать его все время в качестве параметра и для того чтобы реагировать на изменение активного канваса.
     // void onMainButton (const ControlState &state, const Vec2d &) = 0;
     // void onSecondaryButton (const ControlState &state, const Vec2d &) = 0;
     // void onModifier1 (const ContolState &) = 0; 
@@ -50,14 +51,14 @@ public:
     // void onConfirm ();
 
     virtual ~Tool () = default;
-    virtual void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
-    virtual void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
-    virtual void on_modifier_1          (Canvas &canvas) = 0;
-    virtual void on_modifier_2          (Canvas &canvas) = 0;
-    virtual void on_modifier_3          (Canvas &canvas) = 0;
+    virtual void on_main_button         (const ControlState &control_state, Vec2d &pos) = 0;
+    virtual void on_secondary_button    (const ControlState &control_state, Vec2d &pos) = 0;
+    virtual void on_modifier_1          (const ControlState &control_state) = 0;
+    virtual void on_modifier_2          (const ControlState &control_state) = 0;
+    virtual void on_modifier_3          (const ControlState &control_state) = 0;
 
-    virtual void on_move                (Vec2d &pos, Canvas &canvas) = 0;
-    virtual void on_confirm             (Canvas &canvas) = 0;
+    virtual void on_move                (Vec2d &pos) = 0;
+    virtual void on_confirm             () = 0;
     virtual void on_cancel              () = 0;
     virtual void on_released_key        () = 0;
 
@@ -73,14 +74,14 @@ public:
     Brush ();
     ~Brush ();
 
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {};
 };
@@ -94,14 +95,14 @@ public:
     Line ();
     ~Line ();
 
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {};
 };
@@ -120,14 +121,14 @@ public:
     Circle_shape ();
     ~Circle_shape ();
 
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {is_on_modifier_1_ = false;};
 };
@@ -145,14 +146,14 @@ public:
     Rect_shape ();
     ~Rect_shape ();
 
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {is_on_modifier_1_ = false;};
 
@@ -176,19 +177,19 @@ public:
     Fill ();
     ~Fill ();
 
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {};
 
 private:
-    void fill_pixels (Vec2d &pos, Canvas &canvas);
+    void fill_pixels (Vec2d &pos);
 };
 
 
@@ -200,14 +201,14 @@ public:
     Filter_tool (Filter *filter) : filter_(filter) {};
     ~Filter_tool () = default;
     
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {};
 };
@@ -224,14 +225,14 @@ public:
     ~Text_tool ();
 
     void setColorPalette (ColorPalette &palette) override {color_palette_ = &palette; rect_tool.color_palette_ = &palette;};
-    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
-    void on_modifier_1          (Canvas &canvas) override;
-    void on_modifier_2          (Canvas &canvas) override;
-    void on_modifier_3          (Canvas &canvas) override;
+    void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
+    void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
+    void on_modifier_1          (const ControlState &control_state) override;
+    void on_modifier_2          (const ControlState &control_state) override;
+    void on_modifier_3          (const ControlState &control_state) override;
 
-    void on_move                (Vec2d &pos, Canvas &canvas) override;
-    void on_confirm             (Canvas &canvas) override;
+    void on_move                (Vec2d &pos) override;
+    void on_confirm             () override;
     void on_cancel              () override;
     void on_released_key        () override {if (on_rect_) rect_tool.on_released_key ();};
 };

@@ -121,7 +121,8 @@ void Canvas::onMousePressed     (MousePressedEvent &event, EHC &ehc)
         ControlState control_state;
         control_state.state = Pressed;
 
-        tool->on_main_button (control_state, pos_, *this);
+        tool->setActiveCanvas (*this);
+        tool->on_main_button (control_state, pos_);
         is_focused = true;
         ehc.stopped = true;
 
@@ -145,7 +146,7 @@ void Canvas::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
         // ControlState control_state;
         // control_state.state = Released;
 
-        tool->on_confirm (*this);
+        tool->on_confirm ();
         if (!(tool->get_widget ())) is_focused = false;
         ehc.stopped = true;
     }
@@ -164,7 +165,7 @@ void Canvas::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
-        tool->on_move (pos_, *this);
+        tool->on_move (pos_);
         // tool->on_modifier_1 (pos_, *this);
         ehc.stopped = true;
     }
@@ -199,14 +200,15 @@ void Canvas::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
             }
             case Enter:
             {
-                tool->on_confirm (*this);
+                tool->on_confirm ();
                 ehc.stopped = true;
                 return;
             }
             case RShift:
             case LShift:
             {
-                tool->on_modifier_1 (*this);
+                ControlState state = {Pressed};
+                tool->on_modifier_1 (state);
                 is_focused = true;
                 ehc.stopped = true;
                 return;
