@@ -1,10 +1,37 @@
 #include "canvas.h"
 
+bool SelectionMask::get_pixel (size_t x, size_t y) const
+{
+    assert (mask && "nullptr filter mask\n");
+    assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
+
+    return mask[x + y * width_];
+}  
+
+void SelectionMask::set_pixel (size_t x, size_t y, bool flag)
+{
+    assert (mask && "nullptr filter mask\n");
+    assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
+
+    mask[x + y * width_] = flag;
+}  
+
+void SelectionMask::fill (bool value)
+{
+    assert (mask && "nullptr filter mask\n");
+    for (size_t idx = 0; idx < width_ * height_; ++idx)
+    {
+        mask[idx] = value;
+    }
+}
+
+
 Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, Tool_palette *palette) :
     width_ (width),
     height_ (height),
     color_ (color),
-    palette_ (palette) 
+    palette_ (palette),
+    selection (width, height)
 {
     if (width <= 0 || height <= 0)
     {
@@ -23,7 +50,9 @@ Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, To
     
     canvas_texture.draw (rect);
     canvas_texture.display ();
-};
+    
+    selection.fill (true);
+}
 
 Canvas::~Canvas () 
 {
@@ -227,24 +256,6 @@ bool Canvas::contains (int x, int y)
 {
     return ((x >= 0 && y >= 0) && 
             (x <= width_ && y <= height_));
-}
-
-Color Canvas::get_fg_color ()
-{
-    if (palette_)
-    {
-        return palette_->get_fg_color ();
-    }
-    return Color (0, 0, 0, 0);
-}
-
-Color Canvas::get_bg_color ()
-{
-    if (palette_)
-    {
-        return palette_->get_bg_color ();
-    }
-    return Color (0, 0, 0, 0);
 }
 
 void Canvas::set_draw_rect_offset (int left, int top)

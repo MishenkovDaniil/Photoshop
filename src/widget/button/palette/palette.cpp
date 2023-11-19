@@ -92,7 +92,7 @@ void Button_palette::add_tool_button (Button *tool_button)
 bool color_button_run_fn (void *widget, void *args) 
 {
     assert (widget && args);
-    printf ("color run ()\n");
+
     static bool is_init = false;
     Master_window *m_window = (Master_window *)widget;
 
@@ -107,7 +107,7 @@ bool color_button_run_fn (void *widget, void *args)
         is_init = true;
     }
     
-    palette->fg_color_ = *color;
+    palette->color_palette_.setFGColor (*color);
     
     return true;
 }

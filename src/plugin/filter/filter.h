@@ -14,25 +14,25 @@ enum Filters
     Light_decr    
 };
 
-class Filter_mask
-{
-    bool *mask = nullptr;
-    size_t width_  = 0;
-    size_t height_ = 0;
+// class Filter_mask
+// {
+//     bool *mask = nullptr;
+//     size_t width_  = 0;
+//     size_t height_ = 0;
 
-public:
-    Filter_mask (size_t width, size_t height) : width_ (width), height_ (height) 
-                                                { mask = new bool[width * height];
-                                                  assert (mask);};
-    ~Filter_mask () {delete[] mask;};
-    size_t get_width () {return width_;};
-    size_t get_height () {return height_;};
+// public:
+//     Filter_mask (size_t width, size_t height) : width_ (width), height_ (height) 
+//                                                 { mask = new bool[width * height];
+//                                                   assert (mask);};
+//     ~Filter_mask () {delete[] mask;};
+//     size_t get_width () {return width_;};
+//     size_t get_height () {return height_;};
 
-    bool get_pixel (size_t x, size_t y);  
-    void set_pixel (size_t x, size_t y, bool flag);  
-    void fill (bool value);
-    //TODO :: void invert ();
-};
+//     bool get_pixel (size_t x, size_t y);  
+//     void set_pixel (size_t x, size_t y, bool flag);  
+//     void fill (bool value);
+//     //TODO :: void invert ();
+// };
 
 class Filter
 {
@@ -41,7 +41,7 @@ public:
     Filter () = default;
     ~Filter () = default;
 
-    virtual void apply_filter (Canvas &canvas, Filter_mask *mask) const = 0;
+    virtual void apply_filter (Canvas &canvas) const = 0;
     Widget *getWidget () {return filter_widget;};
 };
 
@@ -52,7 +52,7 @@ public:
     Light_filter (double delta_light) : delta_light_ (delta_light) {};
     ~Light_filter () = default;
 
-    void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
+    void apply_filter (Canvas &canvas) const override;
 };
 
 class Saturation_filter : public Filter
@@ -62,7 +62,7 @@ public:
     Saturation_filter (double delta_saturation) : delta_saturation_ (delta_saturation) {};
     ~Saturation_filter () = default;
 
-    void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
+    void apply_filter (Canvas &canvas) const override;
 };
 
 class White_black_filter : public Filter
@@ -71,7 +71,7 @@ public:
     White_black_filter () {};
     ~White_black_filter () = default;
 
-    void apply_filter (Canvas &canvas, Filter_mask *mask) const override;
+    void apply_filter (Canvas &canvas) const override;
 };
 
 class Filter_palette 

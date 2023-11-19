@@ -1,11 +1,8 @@
 #include "tools.h"
 #include "../../widget/texture_widget/texture_widget.h"
 
-Brush::Brush () 
-{};
-
-Brush::~Brush () 
-{};
+Brush::Brush () {};
+Brush::~Brush () {};
 
 void Brush::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
@@ -18,7 +15,7 @@ void Brush::on_main_button         (ControlState &control_state, Vec2d &pos, Can
         sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
 
-        circle.setFillColor (canvas.get_fg_color ());
+        circle.setFillColor (color_palette_->getFGColor ());
 
         prev_pos = pos;
 
@@ -58,7 +55,7 @@ void Brush::on_move                (Vec2d &pos, Canvas &canvas)
 
     sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
-    circle.setFillColor (canvas.get_fg_color ());   //fg_color
+    circle.setFillColor (color_palette_->getFGColor ());   //fg_color
     
     prev_pos = pos;
 
@@ -96,7 +93,7 @@ void Line::on_main_button         (ControlState &control_state, Vec2d &pos, Canv
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
-        vertex[0] = sf::Vertex (pos, canvas.get_fg_color ());
+        vertex[0] = sf::Vertex (pos, color_palette_->getFGColor ());
         M_render_texture *draw_texture = (M_render_texture *)widget_;
 
         draw_texture->texture_.draw (vertex, 1, sf::Points);
@@ -135,7 +132,7 @@ void Line::on_move                (Vec2d &pos, Canvas &canvas)
     assert (draw_texture);
     draw_texture->clear (Transparent);
     
-    vertex[1] = sf::Vertex (pos, canvas.get_fg_color ());
+    vertex[1] = sf::Vertex (pos, color_palette_->getFGColor ());
     (vertex[0].position == vertex[1].position) ? draw_texture->texture_.draw(&vertex[0], 1, sf::Points) :
                                                  draw_texture->texture_.draw (vertex,    2, sf::Lines);
     draw_texture->texture_.display ();
@@ -151,7 +148,7 @@ void Line::on_confirm             (Canvas &canvas)
     sf::IntRect &rect = canvas.get_draw_rect ();
     Vec2d draw_rect_offset (rect.left, rect.top);
 
-    vertex[1] = sf::Vertex (latest_pos_ + draw_rect_offset, canvas.get_fg_color ());
+    vertex[1] = sf::Vertex (latest_pos_ + draw_rect_offset, color_palette_->getFGColor ());
     vertex[0].position += sf::Vector2f (draw_rect_offset.get_x (), draw_rect_offset.get_y ());
 
     (vertex[0].position == vertex[1].position) ? canvas.canvas_texture.draw(&vertex[0], 1, sf::Points) :
@@ -196,7 +193,7 @@ void Circle_shape::on_main_button         (ControlState &control_state, Vec2d &p
         circle_.setPosition (center_);
         circle_.setFillColor (Transparent);
         circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
-        circle_.setOutlineColor (canvas.get_fg_color ());
+        circle_.setOutlineColor (color_palette_->getFGColor ());
 
         state_.state = Pressed;
     }
@@ -353,6 +350,7 @@ void Circle_shape::on_cancel              ()
     }
 }
 
+
 Rect_shape::Rect_shape () {};
 Rect_shape::~Rect_shape () {};
 
@@ -370,7 +368,7 @@ void Rect_shape::on_main_button         (ControlState &control_state, Vec2d &pos
         rect_.setPosition (center_);
         rect_.setFillColor (Transparent);
         rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
-        rect_.setOutlineColor (canvas.get_fg_color ());
+        rect_.setOutlineColor (color_palette_->getFGColor ());
 
         state_.state = Pressed;
     }
@@ -516,7 +514,7 @@ void Fill::on_main_button         (ControlState &control_state, Vec2d &pos, Canv
 
         prev_canvas_img_ = canvas.canvas_texture.getTexture ().copyToImage ();
         size_ = Vec2d (canvas.get_size ().get_x (), canvas.get_size ().get_y ());
-        fill_color_ = canvas.get_fg_color ();
+        fill_color_ = color_palette_->getFGColor ();
         cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
 
         pixel_arr_ = (uint8_t *)calloc (4 * size_.get_x () * size_.get_y (), sizeof (uint8_t));
@@ -663,9 +661,7 @@ void Fill::fill_pixels (Vec2d &pos, Canvas &canvas)
 
 void Filter_tool::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) 
 {
-    Filter_mask mask (canvas.canvas_texture.getSize ().x, canvas.canvas_texture.getSize ().y);
-    mask.fill (true);
-    filter_->apply_filter (canvas, &mask);
+    filter_->apply_filter (canvas);
 }
 
 void Filter_tool::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) 
@@ -702,6 +698,7 @@ void Filter_tool::on_cancel              ()
 {
     return;
 }
+
 
 Text_tool::Text_tool () {}
 Text_tool::~Text_tool () {}
@@ -765,7 +762,7 @@ void Text_tool::on_confirm             (Canvas &canvas)
         on_rect_ = false;
         printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
 
-        widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, canvas.get_fg_color ());
+        widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
     }
     else 
     {

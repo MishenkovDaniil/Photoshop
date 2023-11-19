@@ -8,13 +8,23 @@ class Button_palette;
 // #include "../../../button/button.h"
 // #include "../../../button/palette/palette.h"
 
+class ColorPalette 
+{
+    Color fg_color_ = Red;
+    Color bg_color_ = White;
+public:
+    Color getFGColor () const {return fg_color_;}; 
+    Color getBGColor () const {return bg_color_;}; 
+    void setFGColor (Color fg_color) {fg_color_ = fg_color;};
+    void setBGColor (Color bg_color) {bg_color_ = bg_color;};
+};
+
 class Tool_palette 
 {
-    M_vector< Tool *> palette_;
+    M_vector<Tool *> palette_;
     Tool *cur_tool_ = nullptr;
     
-    Color fg_color_;
-    Color bg_color_;
+    ColorPalette color_palette_;
     
 public:
     Tool_palette ();
@@ -22,8 +32,8 @@ public:
     ~Tool_palette ();
 
     Tool *get_cur_tool () const {return cur_tool_;};
-    Color get_fg_color () const {return fg_color_;};
-    Color get_bg_color () const {return bg_color_;};
+    Color get_fg_color () const {return color_palette_.getFGColor ();};
+    Color get_bg_color () const {return color_palette_.getBGColor ();};
 
     void add_tool (Tool *tool);
     // void change_cur_tool (Tool *tool);

@@ -14,6 +14,7 @@ class Filter;
 //sf::RTX --> canvas 
 
 class Tool;
+class ColorPalette;
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
@@ -35,8 +36,19 @@ class Tool
 protected:
     Widget *widget_ = nullptr;
     ControlState state_;
+    ColorPalette *color_palette_ = nullptr;
 
 public:
+    virtual void setColorPalette (ColorPalette &palette) {color_palette_ = &palette;};
+    // void setActiveCanvas (Canvas &) = 0; 	// храним канвас в самом туле чтобы не передавать его все время в качестве параметра и для того чтобы реагировать на изменение активного канваса.
+    // void onMainButton (const ControlState &state, const Vec2d &) = 0;
+    // void onSecondaryButton (const ControlState &state, const Vec2d &) = 0;
+    // void onModifier1 (const ContolState &) = 0; 
+    // void onModifier2 (const ContolState &) = 0; 
+    // void onModifier3 (const ContolState &) = 0; 
+    // void onMove (const Vec2d &);
+    // void onConfirm ();
+
     virtual ~Tool () = default;
     virtual void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
     virtual void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
@@ -211,6 +223,7 @@ public:
     Text_tool ();
     ~Text_tool ();
 
+    void setColorPalette (ColorPalette &palette) override {color_palette_ = &palette; rect_tool.color_palette_ = &palette;};
     void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;

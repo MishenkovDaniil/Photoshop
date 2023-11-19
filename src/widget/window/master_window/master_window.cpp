@@ -100,7 +100,6 @@ void Master_window::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     ehc.stack.enter (Transform (layout_->get_position ()));
     
     menu_->onMousePressed (event, ehc);
-    printf ("ehc.stopped = %d\n", ehc.stopped);
     ehc.stack.leave ();
 }   
 

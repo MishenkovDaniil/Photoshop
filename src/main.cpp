@@ -70,14 +70,22 @@ int main ()
 
     clock_button.change_time (time_info->tm_sec, time_info->tm_min, time_info->tm_hour);
 
-    Button_palette button_palette (Vec2d (1650, 50), 200, 200, &palette);
     
     class Brush brush_tool; 
     Line line_tool; 
     Circle_shape circle_tool; 
     Rect_shape rect_tool; 
     Fill fill_tool; 
-    Text_tool text_tool; 
+    Text_tool text_tool;
+
+    palette.add_tool (&brush_tool);
+    palette.add_tool (&line_tool);
+    palette.add_tool (&circle_tool);
+    palette.add_tool (&rect_tool);
+    palette.add_tool (&fill_tool);
+    palette.add_tool (&text_tool);
+
+    Button_palette button_palette (Vec2d (1650, 50), 200, 200, &palette);
     
     Light_filter light_incr (LIGHT_DELTA_CHANGE);
     Light_filter light_decr (-LIGHT_DELTA_CHANGE);

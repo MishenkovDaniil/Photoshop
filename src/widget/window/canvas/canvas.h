@@ -10,6 +10,26 @@ class Tool_palette;
 
 class Master_window;
 
+struct SelectionMask
+{
+    bool *mask = nullptr;
+    size_t width_  = 0;
+    size_t height_ = 0;
+
+public:
+    SelectionMask (size_t width, size_t height) : width_ (width), height_ (height) 
+                                                { mask = new bool[width * height];
+                                                  assert (mask);};
+    ~SelectionMask () {delete[] mask;};
+    size_t get_width () {return width_;};
+    size_t get_height () {return height_;};
+
+    bool get_pixel (size_t x, size_t y) const;  
+    void set_pixel (size_t x, size_t y, bool flag);  
+    void fill (bool value);
+    //TODO :: void invert ();
+};
+
 class Canvas : public Widget
 {
     int width_ = 0;
@@ -20,7 +40,8 @@ class Canvas : public Widget
     Tool_palette *palette_;
     sf::IntRect draw_rect_;
     bool is_focused = false;
-    
+    SelectionMask selection;
+
 public:
     sf::RenderTexture canvas_texture;
 
@@ -39,13 +60,13 @@ public:
 
     bool contains (int x, int y);
     
-    Color get_fg_color ();
-    Color get_bg_color ();  
     Vec2d get_size () {return Vec2d (width_, height_);};
     sf::IntRect &get_draw_rect () {return draw_rect_;};
     void set_draw_rect_offset (int left, int top);
     void set_draw_rect_size   (int width, int height);
-    
+    void setSelectionMask (SelectionMask &new_selection) {selection = new_selection;};
+    const SelectionMask &getSelectionMask () {return selection;};
+
     friend bool change_canvas_rect_up_down  (void *window, void *arg);
     friend bool change_canvas_rect_mid      (void *window, void *arg);
     friend bool change_canvas_rect_space    (void *window, void *arg);
