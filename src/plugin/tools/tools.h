@@ -40,17 +40,11 @@ protected:
     Canvas *active_canvas_ = nullptr;
 
 public:
+    virtual ~Tool () = default;
+
     virtual void setColorPalette (ColorPalette &palette) {color_palette_ = &palette;};
     void setActiveCanvas (Canvas &canvas) {active_canvas_ = &canvas;}; 	// храним канвас в самом туле чтобы не передавать его все время в качестве параметра и для того чтобы реагировать на изменение активного канваса.
-    // void onMainButton (const ControlState &state, const Vec2d &) = 0;
-    // void onSecondaryButton (const ControlState &state, const Vec2d &) = 0;
-    // void onModifier1 (const ContolState &) = 0; 
-    // void onModifier2 (const ContolState &) = 0; 
-    // void onModifier3 (const ContolState &) = 0; 
-    // void onMove (const Vec2d &);
-    // void onConfirm ();
 
-    virtual ~Tool () = default;
     virtual void on_main_button         (const ControlState &control_state, Vec2d &pos) = 0;
     virtual void on_secondary_button    (const ControlState &control_state, Vec2d &pos) = 0;
     virtual void on_modifier_1          (const ControlState &control_state) = 0;
