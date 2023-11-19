@@ -1,5 +1,5 @@
 #include "tools.h"
-#include "../../texture_widget/texture_widget.h"
+#include "../../widget/texture_widget/texture_widget.h"
 
 Brush::Brush () 
 {};

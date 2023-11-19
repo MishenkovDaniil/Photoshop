@@ -6,11 +6,11 @@
 
 class Filter;
 
-#include "../../widget.h"
-#include "../canvas/canvas.h"
-#include "../window.h"
+#include "../../widget/widget.h"
+#include "../../widget/window/canvas/canvas.h"
+#include "../../widget/window/window.h"
 #include "../filter/filter.h"
-#include "../../text/text.h"
+#include "../../widget/text/text.h"
 //sf::RTX --> canvas 
 
 class Tool;

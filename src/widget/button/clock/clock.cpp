@@ -40,7 +40,6 @@ void Clock::render (sf::RenderTarget &target, TransformStack &transform_stack)
 
 void Clock::onMousePressed     (MousePressedEvent &event, EHC &ehc)
 {
-    printf ("clock\n");
     return;
 }
 

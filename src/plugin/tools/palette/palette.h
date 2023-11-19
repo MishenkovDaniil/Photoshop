@@ -3,7 +3,7 @@
 
 class Button;
 class Button_palette;
-#include "../../../../vector.h"
+#include "../../../graphic_structures/vector/vector.h"
 #include "../tools.h"
 // #include "../../../button/button.h"
 // #include "../../../button/palette/palette.h"

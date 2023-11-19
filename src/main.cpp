@@ -10,10 +10,10 @@
 #include "widget/window/canvas/canvas.h"
 #include "widget/window/master_window/master_window.h"
 #include "widget/button/clock/clock.h"
-#include "widget/window/tools/tools.h"
-#include "widget/window/tools/palette/palette.h"
+#include "plugin/tools/tools.h"
+#include "plugin/tools/palette/palette.h"
 #include "widget/button/palette/palette.h"
-#include "widget/window/filter/filter.h"
+#include "plugin/filter/filter.h"
 
 static const char *line_img   = "resources/imgs/line.png";
 static const char *fill_img   = "resources/imgs/fill.png";

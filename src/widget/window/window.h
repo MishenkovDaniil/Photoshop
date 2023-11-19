@@ -10,7 +10,7 @@ class Scrollbar;
 #include "menu/menu.h"
 #include "header/header.h"
 #include "canvas/canvas.h"
-#include "tools/palette/palette.h"
+#include "../../plugin/tools/palette/palette.h"
 // #include "scrollbar/scrollbar.h"
 
 /// TODO : FRAME

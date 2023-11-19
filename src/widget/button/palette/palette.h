@@ -4,7 +4,7 @@
 #include "../../../list.h"
 #include "../../widget.h"
 #include "../button.h"
-#include "../../window/tools/palette/palette.h"
+#include "../../../plugin/tools/palette/palette.h"
 #include "../../window/master_window/master_window.h"
 #include "../../window/canvas/canvas.h"
 

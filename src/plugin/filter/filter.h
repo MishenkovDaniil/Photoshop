@@ -1,8 +1,8 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include "../../widget.h"
-#include "../canvas/canvas.h"
+#include "../../widget/widget.h"
+#include "../../widget/window/canvas/canvas.h"
 
 static const double MIN_SATURATION_VAL = 0.05;
 static const double MIN_LIGHT_VAL = 0.05;

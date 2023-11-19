@@ -6,7 +6,7 @@ class Tool_palette;
 #include "../menu/menu.h"
 #include "../canvas/canvas.h"
 #include "../window.h"
-#include "../tools/palette/palette.h"
+#include "../../../plugin/tools/palette/palette.h"
 
 static int INIT_WINDOWS_CAPACITY = 10;
 

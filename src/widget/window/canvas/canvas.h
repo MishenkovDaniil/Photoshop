@@ -5,8 +5,8 @@ class Tool;
 class Tool_palette;
 #include "../../widget.h"
 #include "../../button/button.h"
-#include "../tools/tools.h"
-#include "../tools/palette/palette.h"
+#include "../../../plugin/tools/tools.h"
+#include "../../../plugin/tools/palette/palette.h"
 
 class Master_window;
 
