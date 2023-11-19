@@ -14,26 +14,6 @@ enum Filters
     Light_decr    
 };
 
-// class Filter_mask
-// {
-//     bool *mask = nullptr;
-//     size_t width_  = 0;
-//     size_t height_ = 0;
-
-// public:
-//     Filter_mask (size_t width, size_t height) : width_ (width), height_ (height) 
-//                                                 { mask = new bool[width * height];
-//                                                   assert (mask);};
-//     ~Filter_mask () {delete[] mask;};
-//     size_t get_width () {return width_;};
-//     size_t get_height () {return height_;};
-
-//     bool get_pixel (size_t x, size_t y);  
-//     void set_pixel (size_t x, size_t y, bool flag);  
-//     void fill (bool value);
-//     //TODO :: void invert ();
-// };
-
 class Filter
 {
     Widget *filter_widget = nullptr;

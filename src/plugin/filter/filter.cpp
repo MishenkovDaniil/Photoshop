@@ -1,30 +1,5 @@
 #include "filter.h"
 
-// bool Filter_mask::get_pixel (size_t x, size_t y)
-// {
-//     assert (mask && "nullptr filter mask\n");
-//     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
-
-//     return mask[x + y * width_];
-// }  
-
-// void Filter_mask::set_pixel (size_t x, size_t y, bool flag)
-// {
-//     assert (mask && "nullptr filter mask\n");
-//     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
-
-//     mask[x + y * width_] = flag;
-// }  
-
-// void Filter_mask::fill (bool value)
-// {
-//     assert (mask && "nullptr filter mask\n");
-//     for (size_t idx = 0; idx < width_ * height_; ++idx)
-//     {
-//         mask[idx] = value;
-//     }
-// }
-
 Filter *Filter_palette::get_last_filter () 
 {
     return last_filter_;
