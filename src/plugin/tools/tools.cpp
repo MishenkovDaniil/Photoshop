@@ -7,10 +7,10 @@ Brush::Brush ()
 Brush::~Brush () 
 {};
 
-void Brush::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Brush::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     //TODO make circle class member (maybe)
-    if (state.pressed)
+    if (control_state.state == Pressed)
     {
         sf::IntRect &rect = canvas.get_draw_rect ();
         pos += Vec2d (rect.left, rect.top);
@@ -28,7 +28,7 @@ void Brush::on_main_button         (Button_state &state, Vec2d &pos, Canvas &can
     }
 }
 
-void Brush::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Brush::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -88,9 +88,9 @@ void Brush::on_cancel              ()
 Line::Line () {};
 Line::~Line () {};
 
-void Line::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Line::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
-    if (state.pressed)
+    if (control_state.state == Pressed)
     {
         Vec2d canvas_size = canvas.get_size ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
@@ -101,12 +101,12 @@ void Line::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canv
 
         draw_texture->texture_.draw (vertex, 1, sf::Points);
         draw_texture->texture_.display ();
-        state_.pressed = true;
+        state_.state = Pressed;
         latest_pos_ = pos;
     }
 }
 
-void Line::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Line::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     return;   
 }
@@ -128,7 +128,7 @@ void Line::on_modifier_3          (Canvas &canvas)
 
 void Line::on_move                (Vec2d &pos, Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
 
     M_render_texture *draw_texture = (M_render_texture *)widget_;
@@ -145,7 +145,7 @@ void Line::on_move                (Vec2d &pos, Canvas &canvas)
 
 void Line::on_confirm             (Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
@@ -158,7 +158,7 @@ void Line::on_confirm             (Canvas &canvas)
                                                  canvas.canvas_texture.draw (vertex,    2, sf::Lines);
     canvas.canvas_texture.display ();
 
-    state_.pressed = false;
+    state_.state = Released;
 
     delete (M_render_texture *)widget_;
     widget_ = nullptr;
@@ -168,11 +168,11 @@ void Line::on_confirm             (Canvas &canvas)
 
 void Line::on_cancel              ()
 {
-    if (state_.pressed)
+    if (state_.state == Pressed)
     {
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
-        state_.pressed = false;
+        state_.state = Released;
     }
     
     return;   
@@ -182,9 +182,9 @@ void Line::on_cancel              ()
 Circle_shape::Circle_shape () {};
 Circle_shape::~Circle_shape () {};
 
-void Circle_shape::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Circle_shape::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
-    if (state.pressed)
+    if (control_state.state == Pressed)
     {
         center_ = last_center_ = latest_pos_ = pos;
         
@@ -198,18 +198,18 @@ void Circle_shape::on_main_button         (Button_state &state, Vec2d &pos, Canv
         circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
         circle_.setOutlineColor (canvas.get_fg_color ());
 
-        state_.pressed = true;
+        state_.state = Pressed;
     }
 }
 
-void Circle_shape::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Circle_shape::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
 
 void Circle_shape::on_modifier_1          (Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
     
     is_on_modifier_1_ = true;
@@ -263,7 +263,7 @@ void Circle_shape::on_modifier_3          (Canvas &canvas)
 
 void Circle_shape::on_move                (Vec2d &pos, Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
 
     latest_pos_ = pos;
@@ -329,7 +329,7 @@ void Circle_shape::on_move                (Vec2d &pos, Canvas &canvas)
 
 void Circle_shape::on_confirm             (Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
@@ -337,7 +337,7 @@ void Circle_shape::on_confirm             (Canvas &canvas)
     canvas.canvas_texture.draw (circle_);
     canvas.canvas_texture.display ();
 
-    state_.pressed = false;
+    state_.state = Released;
 
     delete (M_render_texture *)widget_;
     widget_ = nullptr;
@@ -345,20 +345,20 @@ void Circle_shape::on_confirm             (Canvas &canvas)
 
 void Circle_shape::on_cancel              ()
 {
-    if (state_.pressed)
+    if (state_.state == Pressed)
     {
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
-        state_.pressed = false;
+        state_.state = Released;
     }
 }
 
 Rect_shape::Rect_shape () {};
 Rect_shape::~Rect_shape () {};
 
-void Rect_shape::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Rect_shape::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
-    if (state.pressed)
+    if (control_state.state == Pressed)
     {
         center_ = last_center_ = latest_pos_ = pos;
         
@@ -372,18 +372,18 @@ void Rect_shape::on_main_button         (Button_state &state, Vec2d &pos, Canvas
         rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
         rect_.setOutlineColor (canvas.get_fg_color ());
 
-        state_.pressed = true;
+        state_.state = Pressed;
     }
 }
 
-void Rect_shape::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Rect_shape::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
 
 void Rect_shape::on_modifier_1          (Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
     
     is_on_modifier_1_ = true;
@@ -436,7 +436,7 @@ void Rect_shape::on_modifier_3          (Canvas &canvas)
 
 void Rect_shape::on_move                (Vec2d &pos, Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
     
     latest_pos_ = pos;
@@ -474,7 +474,7 @@ void Rect_shape::on_move                (Vec2d &pos, Canvas &canvas)
 
 void Rect_shape::on_confirm             (Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
         return;
 
     sf::IntRect &rect = canvas.get_draw_rect ();
@@ -482,7 +482,7 @@ void Rect_shape::on_confirm             (Canvas &canvas)
     canvas.canvas_texture.draw (rect_);
     canvas.canvas_texture.display ();
 
-    state_.pressed = false;
+    state_.state = Released;
     center_ = last_center_;
     
     delete (M_render_texture *)widget_;
@@ -491,11 +491,11 @@ void Rect_shape::on_confirm             (Canvas &canvas)
 
 void Rect_shape::on_cancel              ()
 {
-    if (state_.pressed)
+    if (state_.state == Pressed)
     {
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
-        state_.pressed = false;
+        state_.state = Released;
     }
 }
 
@@ -503,9 +503,9 @@ void Rect_shape::on_cancel              ()
 Fill::Fill () {};
 Fill::~Fill () {};
 
-void Fill::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Fill::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
-    if (state.pressed)
+    if (control_state.state == Pressed)
     {
         rect_ = canvas.get_draw_rect ();
         Vec2d real_pos = pos + Vec2d (rect_.left, rect_.top);
@@ -536,13 +536,13 @@ void Fill::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canv
         ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
         ((M_render_texture *)widget_)->texture_.display ();
 
-        state_.pressed = true;
+        state_.state = Pressed;
         free (pixel_arr_);
     }
 
 }
 
-void Fill::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Fill::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
 
 }
@@ -569,14 +569,14 @@ void Fill::on_move                (Vec2d &pos, Canvas &canvas)
 
 void Fill::on_confirm             (Canvas &canvas)
 {
-    if (state_.pressed)
+    if (state_.state == Pressed)
     {
         draw_sprite_.setPosition (rect_.left, rect_.top);
         
         canvas.canvas_texture.draw (draw_sprite_);
         canvas.canvas_texture.display ();
 
-        state_.pressed = false;
+        state_.state = Released;
 
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
@@ -585,9 +585,9 @@ void Fill::on_confirm             (Canvas &canvas)
 
 void Fill::on_cancel              ()
 {
-    if (state_.pressed)
+    if (state_.state == Pressed)
     {
-        state_.pressed = false;
+        state_.state = Released;
         
         delete (M_render_texture *)widget_;
         widget_ = nullptr;
@@ -661,14 +661,14 @@ void Fill::fill_pixels (Vec2d &pos, Canvas &canvas)
 }
 
 
-void Filter_tool::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) 
+void Filter_tool::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) 
 {
     Filter_mask mask (canvas.canvas_texture.getSize ().x, canvas.canvas_texture.getSize ().y);
     mask.fill (true);
     filter_->apply_filter (canvas, &mask);
 }
 
-void Filter_tool::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) 
+void Filter_tool::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) 
 {
     return;
 }
@@ -706,21 +706,21 @@ void Filter_tool::on_cancel              ()
 Text_tool::Text_tool () {}
 Text_tool::~Text_tool () {}
 
-void Text_tool::on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Text_tool::on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
-    if (!state_.pressed)
+    if (state_.state == Released)
     {
-        rect_tool.on_main_button (state, pos, canvas);
+        rect_tool.on_main_button (control_state, pos, canvas);
         rect_tool.rect_.setOutlineColor (Black);
         on_rect_ = true;
-        state_.pressed = true;
+        state_.state = Pressed;
     }
     // else
     // {
     // }
 }
 
-void Text_tool::on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas)
+void Text_tool::on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas)
 {
     return;
 }
@@ -788,7 +788,7 @@ void Text_tool::on_confirm             (Canvas &canvas)
             delete (M_text *)widget_;
             widget_ = nullptr;
             
-            state_.pressed = false;
+            state_.state = Released;
         } 
     }
 }
@@ -807,5 +807,5 @@ void Text_tool::on_cancel ()
         if (widget_) delete (M_text *)widget_;
         widget_ = nullptr;
     }
-    state_.pressed = false;
+    state_.state = Released;
 }

@@ -36,8 +36,13 @@ public:
 
 class Filter
 {
+    Widget *filter_widget = nullptr;
 public:
+    Filter () = default;
+    ~Filter () = default;
+
     virtual void apply_filter (Canvas &canvas, Filter_mask *mask) const = 0;
+    Widget *getWidget () {return filter_widget;};
 };
 
 class Light_filter : public Filter

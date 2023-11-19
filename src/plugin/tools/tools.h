@@ -19,23 +19,27 @@ static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
 static const double DEFAULT_BRUSH_THICKNESS     = 10.0;
 
-// enum Button_state ???
-struct Button_state 
+enum State
 {
-    bool pressed = false;
-    bool released = false;
+    Pressed, 
+    Released
+};
+
+struct ControlState 
+{
+    State state = Released;
 };
 
 class Tool 
 {    
 protected:
     Widget *widget_ = nullptr;
-    Button_state state_ = {false, false};
+    ControlState state_;
 
 public:
     virtual ~Tool () = default;
-    virtual void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) = 0;
-    virtual void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) = 0;
+    virtual void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
+    virtual void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) = 0;
     virtual void on_modifier_1          (Canvas &canvas) = 0;
     virtual void on_modifier_2          (Canvas &canvas) = 0;
     virtual void on_modifier_3          (Canvas &canvas) = 0;
@@ -57,8 +61,8 @@ public:
     Brush ();
     ~Brush ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -78,8 +82,8 @@ public:
     Line ();
     ~Line ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -104,8 +108,8 @@ public:
     Circle_shape ();
     ~Circle_shape ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -129,8 +133,8 @@ public:
     Rect_shape ();
     ~Rect_shape ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -160,8 +164,8 @@ public:
     Fill ();
     ~Fill ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -184,8 +188,8 @@ public:
     Filter_tool (Filter *filter) : filter_(filter) {};
     ~Filter_tool () = default;
     
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;
@@ -207,8 +211,8 @@ public:
     Text_tool ();
     ~Text_tool ();
 
-    void on_main_button         (Button_state &state, Vec2d &pos, Canvas &canvas) override;
-    void on_secondary_button    (Button_state &state, Vec2d &pos, Canvas &canvas) override;
+    void on_main_button         (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
+    void on_secondary_button    (ControlState &control_state, Vec2d &pos, Canvas &canvas) override;
     void on_modifier_1          (Canvas &canvas) override;
     void on_modifier_2          (Canvas &canvas) override;
     void on_modifier_3          (Canvas &canvas) override;

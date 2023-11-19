@@ -89,11 +89,10 @@ void Canvas::onMousePressed     (MousePressedEvent &event, EHC &ehc)
                 return;
         }
 
-        Button_state state;
-        state.pressed = true;
-        state.released = false;
+        ControlState control_state;
+        control_state.state = Pressed;
 
-        tool->on_main_button (state, pos_, *this);
+        tool->on_main_button (control_state, pos_, *this);
         is_focused = true;
         ehc.stopped = true;
 
@@ -114,9 +113,8 @@ void Canvas::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
-        Button_state state;
-        state.pressed = false;
-        state.released = true;
+        // ControlState control_state;
+        // control_state.state = Released;
 
         tool->on_confirm (*this);
         if (!(tool->get_widget ())) is_focused = false;
