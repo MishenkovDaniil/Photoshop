@@ -8,8 +8,6 @@
 #include <cassert>
 #include <SFML/Graphics.hpp>
 
-#include "../point/point.h"
-
 // static const int START_CAPACITY = 10;
 // static const double LOAD_FACTOR = 0.7;
 // static const double MULT_COEFF = 1.5;

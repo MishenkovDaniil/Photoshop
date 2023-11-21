@@ -166,7 +166,7 @@ int main ()
     filters.add_button (&black_white_tool_button);
 
     main_window.add_menu_button (&filters);
-
+    
     button_palette.add_tool_button (&brush_button);
     button_palette.add_tool_button (&line_button);
     button_palette.add_tool_button (&circle_button);
@@ -184,9 +184,9 @@ int main ()
     button_palette.add_tool_button (&yellow_button);
     button_palette.add_tool_button (&brown_button);
     button_palette.add_tool_button (&maroon_button);
-    
-    
+        
     widget_manager.add_widget (&button_palette);
+    
 
     plug::String_button file_button (plug::Vec2d (0, 0), 50, 20, "File", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
     plug::String_button save_button (plug::Vec2d (0, 0), 0, 20,  "Save", plug::Purple, plug::Purple, save_file, &main_window, nullptr, PRESS_BUTTON);

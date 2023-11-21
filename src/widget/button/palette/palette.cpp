@@ -10,7 +10,7 @@ plug::Button_palette::~Button_palette ()
     size_t button_num = buttons.get_size ();
     for (int tool_button_idx = 0; tool_button_idx < button_num; ++tool_button_idx)
     {
-        plug::Button *tool_button = buttons[tool_button_idx];
+        plug::Button *tool_button = buttons.top ();
         if (!tool_button)
         {
             fprintf (stderr, "Event error: nil tool_button is detected.\n"
@@ -20,7 +20,11 @@ plug::Button_palette::~Button_palette ()
         }
         assert (tool_button);
 
-        delete (plug::Pair *)(tool_button->arg_);
+        plug::Pair *button_args = (plug::Pair *)tool_button->arg_;
+        tool_button->arg_ = ((plug::Pair *)tool_button->arg_)->arg_2;
+
+        delete button_args;
+        buttons.pop ();
     }
 }
 

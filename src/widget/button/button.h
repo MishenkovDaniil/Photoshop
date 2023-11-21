@@ -8,7 +8,6 @@
 #include "../widget.h"
 #include "../window/window.h"
 #include "../../graphic_structures/color/color.h"
-#include "../../graphic_structures/point/point.h"
 #include "../../graphic_structures/vector/vector.h"
 
 static const int START_CAPACITY = 10;
