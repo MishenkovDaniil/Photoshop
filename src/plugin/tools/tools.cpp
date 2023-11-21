@@ -1,17 +1,17 @@
 #include "tools.h"
 #include "../../widget/texture_widget/texture_widget.h"
 
-Brush::Brush () {};
-Brush::~Brush () {};
+plug::Brush::Brush () {};
+plug::Brush::~Brush () {};
 
-void Brush::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Brush::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
     //TODO make circle class member (maybe)
     if (control_state.state == Pressed)
     {
         sf::IntRect &rect = active_canvas_->get_draw_rect ();
-        pos += Vec2d (rect.left, rect.top);
+        pos += plug::Vec2d (rect.left, rect.top);
 
         sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
@@ -26,27 +26,27 @@ void Brush::on_main_button         (const ControlState &control_state, Vec2d &po
     }
 }
 
-void Brush::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Brush::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;
 }
 
-void Brush::on_modifier_1          (const ControlState &control_state)
+void plug::Brush::on_modifier_1          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Brush::on_modifier_2          (const ControlState &control_state)
+void plug::Brush::on_modifier_2          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Brush::on_modifier_3          (const ControlState &control_state)
+void plug::Brush::on_modifier_3          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Brush::on_move                (Vec2d &pos)
+void plug::Brush::on_move                (plug::Vec2d &pos)
 {
     if (!is_pressed)
         return;
@@ -54,7 +54,7 @@ void Brush::on_move                (Vec2d &pos)
     assert (active_canvas_);
 
     sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    pos += Vec2d (rect.left, rect.top);
+    pos += plug::Vec2d (rect.left, rect.top);
 
     sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
@@ -66,12 +66,12 @@ void Brush::on_move                (Vec2d &pos)
     active_canvas_->canvas_texture.display ();
 }
 
-void Brush::on_confirm             ()
+void plug::Brush::on_confirm             ()
 {
     is_pressed = false;
 }
 
-void Brush::on_cancel              ()
+void plug::Brush::on_cancel              ()
 {
 
     // sf::CircleShape circle (10);
@@ -85,21 +85,21 @@ void Brush::on_cancel              ()
 }  
 
 
-Line::Line () {};
-Line::~Line () {};
+plug::Line::Line () {};
+plug::Line::~Line () {};
 
-void Line::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Line::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
     
     if (control_state.state == Pressed)
     {
-        Vec2d canvas_size = active_canvas_->get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
+        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        widget_ = new plug::M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
         vertex[0] = sf::Vertex (pos, color_palette_->getFGColor ());
-        M_render_texture *draw_texture = (M_render_texture *)widget_;
+        plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
 
         draw_texture->texture_.draw (vertex, 1, sf::Points);
         draw_texture->texture_.display ();
@@ -108,34 +108,34 @@ void Line::on_main_button         (const ControlState &control_state, Vec2d &pos
     }
 }
 
-void Line::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Line::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;   
 }
 
-void Line::on_modifier_1          (const ControlState &control_state)
+void plug::Line::on_modifier_1          (const plug::ControlState &control_state)
 {
     return;   
 }
 
-void Line::on_modifier_2          (const ControlState &control_state)
+void plug::Line::on_modifier_2          (const plug::ControlState &control_state)
 {
     return;   
 }
 
-void Line::on_modifier_3          (const ControlState &control_state)
+void plug::Line::on_modifier_3          (const plug::ControlState &control_state)
 {
     return;   
 }
 
-void Line::on_move                (Vec2d &pos)
+void plug::Line::on_move                (plug::Vec2d &pos)
 {
     if (state_.state == Released)
         return;
 
     assert (active_canvas_);
 
-    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
     
@@ -147,7 +147,7 @@ void Line::on_move                (Vec2d &pos)
     latest_pos_ = pos;
 }
 
-void Line::on_confirm             ()
+void plug::Line::on_confirm             ()
 {
     if (state_.state == Released)
         return;
@@ -155,7 +155,7 @@ void Line::on_confirm             ()
     assert (active_canvas_);
 
     sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    Vec2d draw_rect_offset (rect.left, rect.top);
+    plug::Vec2d draw_rect_offset (rect.left, rect.top);
 
     vertex[1] = sf::Vertex (latest_pos_ + draw_rect_offset, color_palette_->getFGColor ());
     vertex[0].position += sf::Vector2f (draw_rect_offset.get_x (), draw_rect_offset.get_y ());
@@ -166,13 +166,14 @@ void Line::on_confirm             ()
 
     state_.state = Released;
 
-    delete (M_render_texture *)widget_;
+    // delete (M_render_texture *)widget_;
+    delete widget_;
     widget_ = nullptr;
 
     return;   
 }
 
-void Line::on_cancel              ()
+void plug::Line::on_cancel              ()
 {
     if (state_.state == Pressed)
     {
@@ -185,10 +186,10 @@ void Line::on_cancel              ()
 }
 
 
-Circle_shape::Circle_shape () {};
-Circle_shape::~Circle_shape () {};
+plug::Circle_shape::Circle_shape () {};
+plug::Circle_shape::~Circle_shape () {};
 
-void Circle_shape::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Circle_shape::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
 
@@ -196,8 +197,8 @@ void Circle_shape::on_main_button         (const ControlState &control_state, Ve
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        Vec2d canvas_size = active_canvas_->get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
+        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        widget_ = new plug::M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
         
         circle_.setRadius (0);
@@ -210,12 +211,12 @@ void Circle_shape::on_main_button         (const ControlState &control_state, Ve
     }
 }
 
-void Circle_shape::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Circle_shape::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;
 }
 
-void Circle_shape::on_modifier_1          (const ControlState &control_state)
+void plug::Circle_shape::on_modifier_1          (const plug::ControlState &control_state)
 {
     if (state_.state == Released)
         return;
@@ -224,12 +225,12 @@ void Circle_shape::on_modifier_1          (const ControlState &control_state)
     
     is_on_modifier_1_ = true;
 
-    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vec2d pos_offset = latest_pos_ - center_;
+    plug::Vec2d pos_offset = latest_pos_ - center_;
 
     double min = 0;
     if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
@@ -245,11 +246,11 @@ void Circle_shape::on_modifier_1          (const ControlState &control_state)
         
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  -= Vec2d (min, 0);
+        last_center_  -= plug::Vec2d (min, 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  -= Vec2d (0, min);
+        last_center_  -= plug::Vec2d (0, min);
     }
 
     circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -261,17 +262,17 @@ void Circle_shape::on_modifier_1          (const ControlState &control_state)
     draw_texture->texture_.display ();
 }
 
-void Circle_shape::on_modifier_2          (const ControlState &control_state)
+void plug::Circle_shape::on_modifier_2          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Circle_shape::on_modifier_3          (const ControlState &control_state)
+void plug::Circle_shape::on_modifier_3          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Circle_shape::on_move                (Vec2d &pos)
+void plug::Circle_shape::on_move                (plug::Vec2d &pos)
 {
     if (state_.state == Released)
         return;
@@ -282,18 +283,18 @@ void Circle_shape::on_move                (Vec2d &pos)
     
     if (is_on_modifier_1_)
     {
-        ControlState state;
+        plug::ControlState state;
         state.state = Pressed;
         on_modifier_1 (state);
         return;
     }
 
-    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vec2d pos_offset = pos - center_;
+    plug::Vec2d pos_offset = pos - center_;
 
     int min_idx = 0;
     double min = 0;
@@ -326,11 +327,11 @@ void Circle_shape::on_move                (Vec2d &pos)
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  += Vec2d (pos_offset.get_x (), 0);
+        last_center_  += plug::Vec2d (pos_offset.get_x (), 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  += Vec2d (0, pos_offset.get_y ());
+        last_center_  += plug::Vec2d (0, pos_offset.get_y ());
     }
 
     circle_.setOutlineThickness (std::min (DEFAULT_CIRCLE_THICKNESS, MIN_CIRCLE_THICKNESS + min / max));
@@ -341,7 +342,7 @@ void Circle_shape::on_move                (Vec2d &pos)
     draw_texture->texture_.display ();
 }
 
-void Circle_shape::on_confirm             ()
+void plug::Circle_shape::on_confirm             ()
 {
     if (state_.state == Released)
         return;
@@ -349,31 +350,33 @@ void Circle_shape::on_confirm             ()
     assert (active_canvas_);
 
     sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    circle_.setPosition (last_center_ + Vec2d (rect.left, rect.top));
+    circle_.setPosition (last_center_ + plug::Vec2d (rect.left, rect.top));
     active_canvas_->canvas_texture.draw (circle_);
     active_canvas_->canvas_texture.display ();
 
     state_.state = Released;
 
-    delete (M_render_texture *)widget_;
+    // delete (M_render_texture *)widget_;
+    delete widget_;
     widget_ = nullptr;
 }
 
-void Circle_shape::on_cancel              ()
+void plug::Circle_shape::on_cancel              ()
 {
     if (state_.state == Pressed)
     {
-        delete (M_render_texture *)widget_;
+        // delete (plug::M_render_texture *)widget_;
+        delete widget_;
         widget_ = nullptr;
         state_.state = Released;
     }
 }
 
 
-Rect_shape::Rect_shape () {};
-Rect_shape::~Rect_shape () {};
+plug::Rect_shape::Rect_shape () {};
+plug::Rect_shape::~Rect_shape () {};
 
-void Rect_shape::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Rect_shape::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
 
@@ -381,11 +384,11 @@ void Rect_shape::on_main_button         (const ControlState &control_state, Vec2
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        Vec2d canvas_size = active_canvas_->get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
+        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        widget_ = new plug::M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
         
-        rect_.setSize (Vec2d (0, 0));
+        rect_.setSize (plug::Vec2d (0, 0));
         rect_.setPosition (center_);
         rect_.setFillColor (Transparent);
         rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -395,12 +398,12 @@ void Rect_shape::on_main_button         (const ControlState &control_state, Vec2
     }
 }
 
-void Rect_shape::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Rect_shape::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;
 }
 
-void Rect_shape::on_modifier_1          (const ControlState &control_state)
+void plug::Rect_shape::on_modifier_1          (const plug::ControlState &control_state)
 {
     if (state_.state == Released)
         return;
@@ -409,12 +412,12 @@ void Rect_shape::on_modifier_1          (const ControlState &control_state)
 
     is_on_modifier_1_ = true;
 
-    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vec2d pos_offset = latest_pos_ - center_;
+    plug::Vec2d pos_offset = latest_pos_ - center_;
 
     double min = 0;
     if (std::abs (pos_offset.get_x ()) < std::abs(pos_offset.get_y ()))
@@ -426,15 +429,15 @@ void Rect_shape::on_modifier_1          (const ControlState &control_state)
         min = std::abs (pos_offset.get_y ());
     }
 
-    rect_.setSize (Vec2d (min, min));    
+    rect_.setSize (plug::Vec2d (min, min));    
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  -= Vec2d (min, 0);
+        last_center_  -= plug::Vec2d (min, 0);
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  -= Vec2d (0, min);
+        last_center_  -= plug::Vec2d (0, min);
     }
 
     rect_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
@@ -445,17 +448,17 @@ void Rect_shape::on_modifier_1          (const ControlState &control_state)
     draw_texture->texture_.display ();
 }
 
-void Rect_shape::on_modifier_2          (const ControlState &control_state)
+void plug::Rect_shape::on_modifier_2          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Rect_shape::on_modifier_3          (const ControlState &control_state)
+void plug::Rect_shape::on_modifier_3          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Rect_shape::on_move                (Vec2d &pos)
+void plug::Rect_shape::on_move                (plug::Vec2d &pos)
 {
     if (state_.state == Released)
         return;
@@ -466,28 +469,28 @@ void Rect_shape::on_move                (Vec2d &pos)
     
     if (is_on_modifier_1_)
     {
-        ControlState state;
+        plug::ControlState state;
         state.state = Pressed;
         on_modifier_1 (state);
         return;
     }
     
-    M_render_texture *draw_texture = (M_render_texture *)widget_;
+    plug::M_render_texture *draw_texture = (plug::M_render_texture *)widget_;
     assert (draw_texture);
     draw_texture->clear (Transparent);
 
     last_center_ = center_;
-    Vec2d pos_offset = pos - center_;
+    plug::Vec2d pos_offset = pos - center_;
 
     if (pos_offset.get_x () < 0.0)
     {
-        last_center_  += Vec2d (pos_offset.get_x (), 0);
-        pos_offset = Vec2d (std::abs (pos_offset.get_x ()), pos_offset.get_y ());
+        last_center_  += plug::Vec2d (pos_offset.get_x (), 0);
+        pos_offset = plug::Vec2d (std::abs (pos_offset.get_x ()), pos_offset.get_y ());
     }
     if (pos_offset.get_y () < 0.0)
     {
-        last_center_  += Vec2d (0, pos_offset.get_y ());
-        pos_offset = Vec2d (pos_offset.get_x (), std::abs (pos_offset.get_y ()));
+        last_center_  += plug::Vec2d (0, pos_offset.get_y ());
+        pos_offset = plug::Vec2d (pos_offset.get_x (), std::abs (pos_offset.get_y ()));
     }
     
     rect_.setSize (pos_offset);    
@@ -497,7 +500,7 @@ void Rect_shape::on_move                (Vec2d &pos)
     draw_texture->texture_.display ();
 }
 
-void Rect_shape::on_confirm             ()
+void plug::Rect_shape::on_confirm             ()
 {
     if (state_.state == Released)
         return;
@@ -505,18 +508,19 @@ void Rect_shape::on_confirm             ()
     assert (active_canvas_);
 
     sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    rect_.setPosition (last_center_ + Vec2d (rect.left, rect.top));
+    rect_.setPosition (last_center_ + plug::Vec2d (rect.left, rect.top));
     active_canvas_->canvas_texture.draw (rect_);
     active_canvas_->canvas_texture.display ();
 
     state_.state = Released;
     center_ = last_center_;
     
-    delete (M_render_texture *)widget_;
+    // delete (M_render_texture *)widget_;
+    delete widget_;
     widget_ = nullptr;
 }
 
-void Rect_shape::on_cancel              ()
+void plug::Rect_shape::on_cancel              ()
 {
     if (state_.state == Pressed)
     {
@@ -527,24 +531,24 @@ void Rect_shape::on_cancel              ()
 }
 
 
-Fill::Fill () {};
-Fill::~Fill () {};
+plug::Fill::Fill () {};
+plug::Fill::~Fill () {};
 
-void Fill::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Fill::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
 
     if (control_state.state == Pressed)
     {
         rect_ = active_canvas_->get_draw_rect ();
-        Vec2d real_pos = pos + Vec2d (rect_.left, rect_.top);
+        plug::Vec2d real_pos = pos + plug::Vec2d (rect_.left, rect_.top);
 
-        Vec2d canvas_size = active_canvas_->get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
+        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        widget_ = new plug::M_render_texture (canvas_size.get_x (), canvas_size.get_y (), Transparent);
         assert (widget_);
 
         prev_canvas_img_ = active_canvas_->canvas_texture.getTexture ().copyToImage ();
-        size_ = Vec2d (active_canvas_->get_size ().get_x (), active_canvas_->get_size ().get_y ());
+        size_ = plug::Vec2d (active_canvas_->get_size ().get_x (), active_canvas_->get_size ().get_y ());
         fill_color_ = color_palette_->getFGColor ();
         cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
 
@@ -562,8 +566,8 @@ void Fill::on_main_button         (const ControlState &control_state, Vec2d &pos
         draw_sprite_.setTexture (draw_texture_);
         draw_sprite_.setPosition (0, 0);
         
-        ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
-        ((M_render_texture *)widget_)->texture_.display ();
+        ((plug::M_render_texture *)widget_)->texture_.draw (draw_sprite_);
+        ((plug::M_render_texture *)widget_)->texture_.display ();
 
         state_.state = Pressed;
         free (pixel_arr_);
@@ -571,32 +575,32 @@ void Fill::on_main_button         (const ControlState &control_state, Vec2d &pos
 
 }
 
-void Fill::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Fill::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;
 }
 
-void Fill::on_modifier_1          (const ControlState &control_state)
+void plug::Fill::on_modifier_1          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Fill::on_modifier_2          (const ControlState &control_state)
+void plug::Fill::on_modifier_2          (const plug::ControlState &control_state)
 {
 
 }
 
-void Fill::on_modifier_3          (const ControlState &control_state)
+void plug::Fill::on_modifier_3          (const plug::ControlState &control_state)
 {
 
 }
 
-void Fill::on_move                (Vec2d &pos)
+void plug::Fill::on_move                (plug::Vec2d &pos)
 {
     return;
 }
 
-void Fill::on_confirm             ()
+void plug::Fill::on_confirm             ()
 {
     assert (active_canvas_);
 
@@ -609,43 +613,45 @@ void Fill::on_confirm             ()
 
         state_.state = Released;
 
-        delete (M_render_texture *)widget_;
+        // delete (M_render_texture *)widget_;
+        delete widget_;
         widget_ = nullptr;
     }
 }
 
-void Fill::on_cancel              ()
+void plug::Fill::on_cancel              ()
 {
     if (state_.state == Pressed)
     {
         state_.state = Released;
         
-        delete (M_render_texture *)widget_;
+        // delete (plug::M_render_texture *)widget_;
+        delete widget_;
         widget_ = nullptr;
     }
 }
 
-void Fill::fill_pixels (Vec2d &pos)
+void plug::Fill::fill_pixels (plug::Vec2d &pos)
 {
     assert (active_canvas_);
     assert (pixel_arr_);
 
-    M_vector<Vec2d> pixels (Vec2d (0)); // think about init capacity
+    M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
 
-    Vec2d offset (rect_.left, rect_.top);
+    plug::Vec2d offset (rect_.left, rect_.top);
     pixels.push (pos);
 
     while (pixels.get_size ())
     {
-        Vec2d cur_pixel = pixels.top ();
-        Vec2d real_cur_pixel = cur_pixel + offset;
+        plug::Vec2d cur_pixel = pixels.top ();
+        plug::Vec2d real_cur_pixel = cur_pixel + offset;
 
         pixels.pop ();
 
-        Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : Vec2d (-1);
-        Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : Vec2d (-1);
-        Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : Vec2d (-1);
-        Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : Vec2d (-1);
+        plug::Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? plug::Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+        plug::Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? plug::Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+        plug::Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : plug::Vec2d (-1);
+        plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
         
         sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
                                    ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
@@ -660,28 +666,28 @@ void Fill::fill_pixels (Vec2d &pos)
                                    ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
                                    : Transparent;
 
-        if ((int)left.get_x () >= 0 && (((Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
+        if ((int)left.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
         {
             if (cur_color_ == left_color)
             {
                 pixels.push (left);
             }
         }
-        if ((int)right.get_x () >= 0 && (((Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
+        if ((int)right.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
         {
             if (cur_color_ == right_color)
             {
                 pixels.push (right);
             }
         }
-        if ((int)low.get_x () >= 0 && (((Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
+        if ((int)low.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
         {
             if (cur_color_ == low_color)
             {
                 pixels.push (low);
             }
         }
-        if ((int)top.get_x () >= 0 && (((Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
+        if ((int)top.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
         {
             if (cur_color_ == top_color)
             {
@@ -689,57 +695,57 @@ void Fill::fill_pixels (Vec2d &pos)
             }
         }
         
-        ((Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
+        ((plug::Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
     }
 }
 
 
-void Filter_tool::on_main_button         (const ControlState &control_state, Vec2d &pos) 
+void plug::Filter_tool::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) 
 {
     assert (active_canvas_);
     filter_->apply_filter (*active_canvas_);
 }
 
-void Filter_tool::on_secondary_button    (const ControlState &control_state, Vec2d &pos) 
+void plug::Filter_tool::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) 
 {
     return;
 }
 
-void Filter_tool::on_modifier_1          (const ControlState &control_state) 
+void plug::Filter_tool::on_modifier_1          (const plug::ControlState &control_state) 
 {
     return;
 }
 
-void Filter_tool::on_modifier_2          (const ControlState &control_state) 
+void plug::Filter_tool::on_modifier_2          (const plug::ControlState &control_state) 
 {
     return;
 }
 
-void Filter_tool::on_modifier_3          (const ControlState &control_state) 
+void plug::Filter_tool::on_modifier_3          (const plug::ControlState &control_state) 
 {
     return;
 }
 
-void Filter_tool::on_move                (Vec2d &pos) 
+void plug::Filter_tool::on_move                (plug::Vec2d &pos) 
 {
     return;
 }
 
-void Filter_tool::on_confirm             () 
+void plug::Filter_tool::on_confirm             () 
 {
     return;
 }
 
-void Filter_tool::on_cancel              () 
+void plug::Filter_tool::on_cancel              () 
 {
     return;
 }
 
 
-Text_tool::Text_tool () {}
-Text_tool::~Text_tool () {}
+plug::Text_tool::Text_tool () {}
+plug::Text_tool::~Text_tool () {}
 
-void Text_tool::on_main_button         (const ControlState &control_state, Vec2d &pos)
+void plug::Text_tool::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
  
@@ -756,12 +762,12 @@ void Text_tool::on_main_button         (const ControlState &control_state, Vec2d
     // }
 }
 
-void Text_tool::on_secondary_button    (const ControlState &control_state, Vec2d &pos)
+void plug::Text_tool::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     return;
 }
 
-void Text_tool::on_modifier_1          (const ControlState &control_state)
+void plug::Text_tool::on_modifier_1          (const plug::ControlState &control_state)
 {
     assert (active_canvas_);
 
@@ -771,17 +777,17 @@ void Text_tool::on_modifier_1          (const ControlState &control_state)
     }
 }
 
-void Text_tool::on_modifier_2          (const ControlState &control_state)
+void plug::Text_tool::on_modifier_2          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Text_tool::on_modifier_3          (const ControlState &control_state)
+void plug::Text_tool::on_modifier_3          (const plug::ControlState &control_state)
 {
     return;
 }
 
-void Text_tool::on_move                (Vec2d &pos)
+void plug::Text_tool::on_move                (plug::Vec2d &pos)
 {
     assert (active_canvas_);
 
@@ -797,7 +803,7 @@ void Text_tool::on_move                (Vec2d &pos)
     }
 }
 
-void Text_tool::on_confirm             ()
+void plug::Text_tool::on_confirm             ()
 {
     assert (active_canvas_);
 
@@ -807,7 +813,7 @@ void Text_tool::on_confirm             ()
         on_rect_ = false;
         // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
 
-        widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
+        widget_ = new plug::M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
     }
     else 
     {
@@ -816,18 +822,19 @@ void Text_tool::on_confirm             ()
             return;
         }
         
-        Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
+        plug::Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
         if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
             (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
             (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
             (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
         {
-            TransformStack stack;
+            plug::TransformStack stack;
 
             widget_->render (active_canvas_->canvas_texture, stack);
             active_canvas_->canvas_texture.display ();
 
-            delete (M_text *)widget_;
+            // delete (plug::M_text *)widget_;
+            delete widget_;
             widget_ = nullptr;
             
             state_.state = Released;
@@ -835,7 +842,7 @@ void Text_tool::on_confirm             ()
     }
 }
 
-void Text_tool::on_cancel ()
+void plug::Text_tool::on_cancel ()
 {
     assert (active_canvas_);
 
@@ -848,7 +855,9 @@ void Text_tool::on_cancel ()
     else 
     {
         rect_tool.on_cancel ();
-        if (widget_) delete (M_text *)widget_;
+        if (widget_) delete widget_;
+        
+        // delete (plug::M_text *)widget_;
         widget_ = nullptr;
     }
     state_.state = Released;

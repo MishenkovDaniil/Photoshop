@@ -1,16 +1,16 @@
 #include "palette.h"
 
-Button_palette::Button_palette (Vec2d lh_pos, int width, int height, Tool_palette *palette) : 
-    Menu (lh_pos, width, height),
+plug::Button_palette::Button_palette (plug::Vec2d lh_pos, int width, int height, plug::Tool_palette *palette) : 
+    plug::Menu (lh_pos, width, height),
     palette_ (palette)
 {};
 
-Button_palette::~Button_palette () 
+plug::Button_palette::~Button_palette () 
 {
     size_t button_num = buttons.get_size ();
     for (int tool_button_idx = 0; tool_button_idx < button_num; ++tool_button_idx)
     {
-        Button *tool_button = buttons[tool_button_idx];
+        plug::Button *tool_button = buttons[tool_button_idx];
         if (!tool_button)
         {
             fprintf (stderr, "Event error: nil tool_button is detected.\n"
@@ -20,11 +20,11 @@ Button_palette::~Button_palette ()
         }
         assert (tool_button);
 
-        delete (Pair *)(tool_button->arg_);
+        delete (plug::Pair *)(tool_button->arg_);
     }
 }
 
-void Button_palette::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Button_palette::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     switch (event.key_id)
     {
@@ -72,33 +72,33 @@ void Button_palette::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC 
     // return false;
 }
 
-void Button_palette::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Button_palette::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
 
-void Button_palette::add_tool_button (Button *tool_button)
+void plug::Button_palette::add_tool_button (plug::Button *tool_button)
 {
     assert (tool_button);
 
-    Pair *tool_button_args = new Pair((void *)palette_, tool_button->arg_);
+    plug::Pair *tool_button_args = new plug::Pair((void *)palette_, tool_button->arg_);
 
     tool_button->set_arg (tool_button_args);
 
-    Menu::add_button (tool_button);    
+    plug::Menu::add_button (tool_button);    
 }
 
-bool color_button_run_fn (void *widget, void *args) 
+bool plug::color_button_run_fn (void *widget, void *args) 
 {
     assert (widget && args);
 
     static bool is_init = false;
-    Master_window *m_window = (Master_window *)widget;
+    plug::Master_window *m_window = (plug::Master_window *)widget;
 
-    Pair *args_ = (Pair *)args;
-    Tool_palette *palette = (Tool_palette *)args_->arg_1;
-    Color *color = (Color *)args_->arg_2;
+    plug::Pair *args_ = (plug::Pair *)args;
+    plug::Tool_palette *palette = (plug::Tool_palette *)args_->arg_1;
+    plug::Color *color = (plug::Color *)args_->arg_2;
     assert (palette && color);
    
     if (!is_init)
@@ -112,15 +112,15 @@ bool color_button_run_fn (void *widget, void *args)
     return true;
 }
 
-bool tool_run_fn (void *widget, void *args)
+bool plug::tool_run_fn (void *widget, void *args)
 {
     static bool is_init = false;
-    Master_window *m_window = (Master_window *)widget;
+    plug::Master_window *m_window = (plug::Master_window *)widget;
 
-    Pair *args_ = (Pair *)args;
+    plug::Pair *args_ = (plug::Pair *)args;
 
-    Tool_palette *palette = (Tool_palette *)args_->arg_1;
-    Tool *new_active_tool = (Tool *)args_->arg_2;
+    plug::Tool_palette *palette = (plug::Tool_palette *)args_->arg_1;
+    plug::Tool *new_active_tool = (plug::Tool *)args_->arg_2;
     assert (palette && new_active_tool);
 
     if (!is_init)
@@ -134,11 +134,11 @@ bool tool_run_fn (void *widget, void *args)
     return true;
 }
 
-void init_canvases (Master_window *m_window, Tool_palette *palette)
+void plug::init_canvases (plug::Master_window *m_window, plug::Tool_palette *palette)
 {
     for (int i = 0; i < m_window->windows.size; ++i)
     {
-        Window *window = (Window *)list_get (&(m_window->windows), i + 1);
+        plug::Window *window = (plug::Window *)list_get (&(m_window->windows), i + 1);
         if (window->canvas_->palette_ == palette)
             break;
         window->canvas_->palette_ = palette;

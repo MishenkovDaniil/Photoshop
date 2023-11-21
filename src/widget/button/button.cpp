@@ -7,7 +7,7 @@
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
 
-Button::Button (Vec2d lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, Color fill_color, int run_mask) :
+plug::Button::Button (Vec2d lh_corner, int width, int height, Button_run_fn func, void *controlled_widget, void *arg, plug::Color fill_color, int run_mask) :
             width_ (width),
             height_ (height),
             run_fn_ (func),
@@ -15,21 +15,21 @@ Button::Button (Vec2d lh_corner, int width, int height, Button_run_fn func, void
             controlled_widget_ (controlled_widget),
             run_mask_ (run_mask),
             arg_ (arg), 
-            press_pos_ (Vec2d ()) 
+            press_pos_ (plug::Vec2d ()) 
 {
-    layout_ = new Default_layout_box (lh_corner, Vec2d (width, height));
+    layout_ = new plug::Default_layout_box (lh_corner, plug::Vec2d (width, height));
     assert (layout_);
 };
 
-bool Button::contains (double x, double y) const
+bool plug::Button::contains (double x, double y) const
 {
-    Vec2d size = layout_->get_size ();
+    plug::Vec2d size = layout_->get_size ();
 
     return (0 <= x && 0 <= y &&
             x <= size.get_x () && y <= size.get_y ());
 }
 
-bool Button::run ()
+bool plug::Button::run ()
 {
     if (!run_fn_)
     {
@@ -40,12 +40,12 @@ bool Button::run ()
     return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::Button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (transform_stack.top ());
-    Vec2d lh_corner = unite.getOffset ();
-    Vec2d size = layout_->get_size ();
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (transform_stack.top ());
+    plug::Vec2d lh_corner = unite.getOffset ();
+    plug::Vec2d size = layout_->get_size ();
 
     // sf::RectangleShape rect (unite.scale_apply(size));
     sf::RectangleShape rect (size);
@@ -59,11 +59,11 @@ void Button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 }   
 
 
-void Button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -81,11 +81,11 @@ void Button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -106,11 +106,11 @@ void Button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
+    plug::Vec2d pos_ = unite.apply (event.pos);
     
     if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
     {
@@ -124,25 +124,25 @@ void Button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Button::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 } 
 
-void Button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 } 
 
-void Button::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Button::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
 } 
 
 
-Texture_button::Texture_button (Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+plug::Texture_button::Texture_button (Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
                                 Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
-    Button (lh_corner, width, height, func, controlled_widget, arg, Color (), run_mask),
+    plug::Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask),
     pressed_texture_ (pressed),
     released_texture_ (released) 
 {
@@ -150,17 +150,17 @@ Texture_button::Texture_button (Vec2d lh_corner, int width, int height, sf::Text
     sprite_ = new sf::Sprite;
 }
 
-Texture_button::~Texture_button ()
+plug::Texture_button::~Texture_button ()
 {
     if (sprite_)
         delete sprite_;
 }
 
-void Texture_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::Texture_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (transform_stack.top ());
-    Vec2d lh_corner = unite.getOffset ();
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (transform_stack.top ());
+    plug::Vec2d lh_corner = unite.getOffset ();
 
     sprite_->setTexture (*cur_texture_);
     sprite_->setPosition (lh_corner.get_x (), lh_corner.get_y ());
@@ -168,41 +168,41 @@ void Texture_button::render (sf::RenderTarget &target, TransformStack &transform
     target.draw (*sprite_);
 }
 
-void Texture_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Texture_button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    Button::onMousePressed (event, ehc);
+    plug::Button::onMousePressed (event, ehc);
     bool status = ehc.stopped;
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Texture_button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    Button::onMouseReleased (event, ehc);
+    plug::Button::onMouseReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Texture_button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    Button::onMouseMove (event, ehc);
+    plug::Button::onMouseMove (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Texture_button::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
-    Button::onKeyboardPressed (event, ehc);
+    plug::Button::onKeyboardPressed (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Texture_button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
-    Button::onKeyboardReleased (event, ehc);
+    plug::Button::onKeyboardReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
 
-String_button::String_button (Vec2d lh_corner, int width, int height, const char *string, const Color &pressed_color, const Color &released_color, Button_run_fn func, void *controlled_widget,
+plug::String_button::String_button (Vec2d lh_corner, int width, int height, const char *string, const Color &pressed_color, const Color &released_color, Button_run_fn func, void *controlled_widget,
                void *arg, int run_mask) :
-    Button (lh_corner, width, height, func, controlled_widget, arg, Transparent, run_mask),
+    plug::Button (lh_corner, width, height, func, controlled_widget, arg, Transparent, run_mask),
     pressed_color_  (pressed_color), 
     released_color_ (released_color)
 {
@@ -217,20 +217,20 @@ String_button::String_button (Vec2d lh_corner, int width, int height, const char
     std::strcpy (string_, string); 
 }
 
-String_button::~String_button () 
+plug::String_button::~String_button () 
 {
     if (string_) delete[] string_;
 }
 
-void String_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::String_button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     assert (layout_);
 
-    transform_stack.enter (Transform (layout_->get_position ()));
-    Vec2d lh_pos = transform_stack.top ().getOffset ();
+    transform_stack.enter (plug::Transform (layout_->get_position ()));
+    plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    Vec2d size = layout_->get_size ();
-    Vec2d real_size = size;
+    plug::Vec2d size = layout_->get_size ();
+    plug::Vec2d real_size = size;
     // transform_stack.top ().scale_apply (size);
     sf::RectangleShape button (real_size);
                        button.setFillColor (*cur_color_);
@@ -254,64 +254,65 @@ void String_button::render (sf::RenderTarget &target, TransformStack &transform_
 }
 
 
-void String_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::String_button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    Button::onMousePressed (event, ehc);
+    plug::Button::onMousePressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::String_button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    Button::onMouseReleased (event, ehc);
+    plug::Button::onMouseReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::String_button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    Button::onMouseMove (event, ehc);
+    plug::Button::onMouseMove (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::String_button::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
-    Button::onKeyboardPressed (event, ehc);
+    plug::Button::onKeyboardPressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::String_button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
-    Button::onKeyboardReleased (event, ehc);
+    plug::Button::onKeyboardReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
 
 
-List_button::List_button (Button *list_button) :
+plug::List_button::List_button (plug::Button *list_button) :
     list_button_ (list_button)
 {
     assert (list_button);
-    layout_ = new Default_layout_box (Vec2d (list_button->layout_->get_position () + Vec2d (0, list_button->layout_->get_size ().get_y ())), 
-                                              list_button->layout_->get_size ());
+    layout_ = new plug::Default_layout_box (plug::Vec2d (list_button->layout_->get_position () + plug::Vec2d (0, list_button->layout_->get_size ().get_y ())), 
+                                            list_button->layout_->get_size ());
     assert (layout_);
 
 }
 
-List_button::~List_button ()
+plug::List_button::~List_button ()
 {
-    if (layout_) delete (Default_layout_box *)layout_;
+    if (layout_) delete layout_;
     layout_ = nullptr;
 }
 
-void List_button::add_button (Button *button)
+void plug::List_button::add_button (plug::Button *button)
 {
     assert (button);
-    Layout_box *old_layout = button->layout_;
+    plug::Layout_box *old_layout = button->layout_;
     assert (old_layout);
 
     size_t button_height = old_layout->get_size ().get_y ();
     delete old_layout;
     
-    Default_layout_box *new_layout = new Default_layout_box (Vec2d (0, relative_height_), Vec2d (layout_->get_size ().get_x (), button_height));
+    plug::Default_layout_box *new_layout = new plug::Default_layout_box (plug::Vec2d (0, relative_height_), 
+                                                                         plug::Vec2d (layout_->get_size ().get_x (), button_height));
     relative_height_ += button_height;
     button->set_layout_box (*new_layout);
     
@@ -319,18 +320,18 @@ void List_button::add_button (Button *button)
 }
 
 
-void List_button::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::List_button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     list_button_->render (target, transform_stack);
 
     if (is_open_)
     {
-        transform_stack.enter (Transform (layout_->get_position ()));
+        transform_stack.enter (plug::Transform (layout_->get_position ()));
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
         {
-            Button *button = buttons_[button_idx];
+            plug::Button *button = buttons_[button_idx];
             if (!button)
             {
                 fprintf (stderr, "Event error: nil button is detected.\n"
@@ -347,15 +348,15 @@ void List_button::render (sf::RenderTarget &target, TransformStack &transform_st
     }
 }   
 
-void List_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc) // rm status
+void plug::List_button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) // rm status
 {
     assert (layout_);
     
     bool status = false;
 
-    Transform list_button_tr (list_button_->layout_->get_position ());
-    Transform unite = list_button_tr.combine (ehc.stack.top ());
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform list_button_tr (list_button_->layout_->get_position ());
+    plug::Transform unite = list_button_tr.combine (ehc.stack.top ());
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     list_button_->onMousePressed (event, ehc);
     status |= ehc.stopped;
@@ -372,13 +373,13 @@ void List_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc) 
         return;
     }
 
-    ehc.stack.enter (Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->get_position ()));
     
     size_t button_num = buttons_.get_size ();
 
     for (int button_idx = 0; button_idx < button_num; ++button_idx)
     {
-        Button *button = buttons_[button_idx];
+        plug::Button *button = buttons_[button_idx];
         if (!button)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -405,7 +406,7 @@ void List_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc) 
     // return status;
 }
 
-void List_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::List_button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     bool status = false;
     
@@ -416,12 +417,12 @@ void List_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     {
         ehc.stack.enter (Transform (layout_->get_position ()));
 
-        Vec2d lh_pos = ehc.stack.top ().getOffset ();
+        plug::Vec2d lh_pos = ehc.stack.top ().getOffset ();
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
         {
-            Button *button = buttons_[button_idx];
+            plug::Button *button = buttons_[button_idx];
             if (!button)
             {
                 fprintf (stderr, "Event error: nil button is detected.\n"
@@ -444,7 +445,7 @@ void List_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     // return status;
 }
 
-void List_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::List_button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     bool status = false;
     
@@ -453,14 +454,14 @@ void List_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     
     if (is_open_)
     {
-        ehc.stack.enter (Transform (layout_->get_position ()));
+        ehc.stack.enter (plug::Transform (layout_->get_position ()));
 
-        Vec2d lh_pos = ehc.stack.top ().getOffset ();
+        plug::Vec2d lh_pos = ehc.stack.top ().getOffset ();
 
         size_t button_num = buttons_.get_size ();
         for (int button_idx = 0; button_idx < button_num; ++button_idx)
         {
-            Button *button = buttons_[button_idx];
+            plug::Button *button = buttons_[button_idx];
             if (!button)
             {
                 fprintf (stderr, "Event error: nil button is detected.\n"
@@ -483,17 +484,17 @@ void List_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     // return status;
 }
 
-void List_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::List_button::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void List_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::List_button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void List_button::onTick             (const TickEvent &event, EHC &ehc)
+void plug::List_button::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
 }

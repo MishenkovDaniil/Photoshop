@@ -3,28 +3,28 @@
 
 #include "widget_manager.h"
 
-Widget_manager::Widget_manager (int list_capacity)
+plug::Widget_manager::Widget_manager (int list_capacity)
 {
     list_ctor (&widgets, list_capacity);
 }
 
-Widget_manager::~Widget_manager ()
+plug::Widget_manager::~Widget_manager ()
 {
     list_dtor (&widgets);
 }
 
-void Widget_manager::add_widget (Widget *widget)
+void plug::Widget_manager::add_widget (plug::Widget *widget)
 {
     assert (widget && "added widget is nullptr");
     
     list_insert (&widgets, 0, widget);
 }
 
-void Widget_manager::render (sf::RenderTarget &target)
+void plug::Widget_manager::render (sf::RenderTarget &target)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -38,9 +38,9 @@ void Widget_manager::render (sf::RenderTarget &target)
     }
 }
 
-void Widget_manager::onEvent (sf::Event *event, double delta_time)
+void plug::Widget_manager::onEvent (sf::Event *event, double delta_time)
 {
-    EHC ehc (transform_stack_);
+   plug:: EHC ehc (transform_stack_);
     if (event)
     {
         sf::Event cur_event = *event;
@@ -51,7 +51,7 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             {
                 // printf ("KeyPressed\n");
 
-                KeyboardPressedEvent key_event;
+                plug::KeyboardPressedEvent key_event;
                 key_event.key_id = (KeyCode)cur_event.key.code;
                 
                 onKeyboardPressed (key_event, ehc);
@@ -60,7 +60,7 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             case sf::Event::KeyReleased:
             {
                 // printf ("KeyReleased\n");
-                KeyboardReleasedEvent key_event;
+                plug::KeyboardReleasedEvent key_event;
                 key_event.key_id = (KeyCode)cur_event.key.code;
                 
                 onKeyboardReleased (key_event, ehc);
@@ -69,9 +69,9 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             case sf::Event::MouseButtonPressed:
             {
                 // printf ("MouseButtonPressed\n");
-                Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
+                plug::Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
                 
-                MousePressedEvent mouse_event;
+                plug::MousePressedEvent mouse_event;
                 mouse_event.pos = pos;
                 
                 onMousePressed (mouse_event, ehc);
@@ -81,9 +81,9 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             case sf::Event::MouseButtonReleased:
             {
                 // printf ("MouseButtonReleased\n");
-                Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
+                plug::Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
                 
-                MouseReleasedEvent mouse_event;
+                plug::MouseReleasedEvent mouse_event;
                 mouse_event.pos = pos;
                 
                 onMouseReleased (mouse_event, ehc);
@@ -92,9 +92,9 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             case sf::Event::MouseMoved:
             {
                 // printf ("MouseMoved\n");
-                Vec2d pos (cur_event.mouseMove.x, cur_event.mouseMove.y);
+                plug::Vec2d pos (cur_event.mouseMove.x, cur_event.mouseMove.y);
 
-                MouseMoveEvent mouse_event;
+                plug::MouseMoveEvent mouse_event;
                 mouse_event.pos = pos;
                 
                 onMouseMove (mouse_event, ehc);
@@ -107,18 +107,18 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             }
         }
     }
-    TickEvent tick_event;
+    plug::TickEvent tick_event;
     tick_event.delta_time = delta_time;
     ehc.overlapped = ehc.stopped = false;
     onTick (tick_event, ehc);
 }
 
-void Widget_manager::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Widget_manager::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     // bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -137,11 +137,11 @@ void Widget_manager::onMousePressed     (const MousePressedEvent &event, EHC &eh
     // return false;
 }
 
-void Widget_manager::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Widget_manager::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -156,12 +156,12 @@ void Widget_manager::onMouseReleased    (const MouseReleasedEvent &event, EHC &e
     }
 }
 
-void Widget_manager::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Widget_manager::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -180,12 +180,12 @@ void Widget_manager::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     // return false;
 }
 
-void Widget_manager::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Widget_manager::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     bool is_keyboard_pressed = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -204,11 +204,11 @@ void Widget_manager::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC 
     // return false;
 }
 
-void Widget_manager::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Widget_manager::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"
@@ -227,13 +227,13 @@ void Widget_manager::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC
     // return false;
 }
 
-void Widget_manager::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Widget_manager::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     // bool on_time_status = false;
     
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
-        Widget *widget = (Widget *)list_get (&widgets, widget_idx + 1);
+        plug::Widget *widget = (plug::Widget *)list_get (&widgets, widget_idx + 1);
         if (!widget)
         {
             fprintf (stderr, "Event error: nil widget is detected.\n"

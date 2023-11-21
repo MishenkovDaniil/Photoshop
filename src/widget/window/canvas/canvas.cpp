@@ -1,6 +1,6 @@
 #include "canvas.h"
 
-bool SelectionMask::get_pixel (size_t x, size_t y) const
+bool plug::SelectionMask::get_pixel (size_t x, size_t y) const
 {
     assert (mask && "nullptr filter mask\n");
     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
@@ -8,7 +8,7 @@ bool SelectionMask::get_pixel (size_t x, size_t y) const
     return mask[x + y * width_];
 }  
 
-void SelectionMask::set_pixel (size_t x, size_t y, bool flag)
+void plug::SelectionMask::set_pixel (size_t x, size_t y, bool flag)
 {
     assert (mask && "nullptr filter mask\n");
     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
@@ -16,7 +16,7 @@ void SelectionMask::set_pixel (size_t x, size_t y, bool flag)
     mask[x + y * width_] = flag;
 }  
 
-void SelectionMask::fill (bool value)
+void plug::SelectionMask::fill (bool value)
 {
     assert (mask && "nullptr filter mask\n");
     for (size_t idx = 0; idx < width_ * height_; ++idx)
@@ -26,7 +26,7 @@ void SelectionMask::fill (bool value)
 }
 
 
-Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, Tool_palette *palette) :
+plug::Canvas::Canvas (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, plug::Tool_palette *palette) :
     width_ (width),
     height_ (height),
     color_ (color),
@@ -39,7 +39,7 @@ Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, To
         return;
     }
 
-    layout_ = new Default_layout_box (lh_pos, Vec2d (width, height));
+    layout_ = new plug::Default_layout_box (lh_pos, plug::Vec2d (width, height));
     assert (layout_);
 
     canvas_texture.create (width, height * 2);
@@ -54,17 +54,17 @@ Canvas::Canvas (int width, int height, const Color color, const Vec2d lh_pos, To
     selection.fill (true);
 }
 
-Canvas::~Canvas () 
+plug::Canvas::~Canvas () 
 {
     width_  = __INT_MAX__;
     height_ = __INT_MAX__;
     delete layout_;
 };
 
-void Canvas::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::Canvas::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
-    transform_stack.enter (Transform (layout_->get_position ()));
-    Vec2d lh_pos = transform_stack.top ().getOffset ();
+    transform_stack.enter (plug::Transform (layout_->get_position ()));
+    plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     sf::Sprite canvas_sprite (canvas_texture.getTexture ());
     canvas_sprite.setPosition (lh_pos);
@@ -74,10 +74,10 @@ void Canvas::render (sf::RenderTarget &target, TransformStack &transform_stack)
     
     if (palette_ && is_focused)
     {
-        Tool *tool = palette_->get_cur_tool ();
+        plug::Tool *tool = palette_->get_cur_tool ();
         if (tool)
         {
-            Widget *widget = tool->get_widget ();
+            plug::Widget *widget = tool->get_widget ();
             if (widget)
             {
                 widget->render (target, transform_stack);
@@ -88,12 +88,12 @@ void Canvas::render (sf::RenderTarget &target, TransformStack &transform_stack)
     transform_stack.leave ();
 }
 
-void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Canvas::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
     
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Vec2d pos_ = unite.apply (event.pos);
     if (!contains (pos_.get_x (), pos_.get_y ()))
         return;
     
@@ -102,7 +102,7 @@ void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
         return;
     }
     
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
         if (tool->get_widget ())
@@ -118,7 +118,7 @@ void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
                 return;
         }
 
-        ControlState control_state;
+        plug::ControlState control_state;
         control_state.state = Pressed;
 
         tool->setActiveCanvas (*this);
@@ -130,16 +130,16 @@ void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Canvas::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ()); // stack.enter + stack_top.apply
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ()); // stack.enter + stack_top.apply
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (!(palette_ && is_focused))
         return;
     
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
         // ControlState control_state;
@@ -151,17 +151,17 @@ void Canvas::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Canvas::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
 
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (!(palette_ && is_focused))
         return;
     
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
         tool->on_move (pos_);
@@ -171,12 +171,12 @@ void Canvas::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 }   
 
 
-void Canvas::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Canvas::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     if (!palette_)
         return;
     
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
 
     if (tool) 
     {
@@ -206,7 +206,7 @@ void Canvas::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
             case RShift:
             case LShift:
             {
-                ControlState state = {Pressed};
+                plug::ControlState state = {Pressed};
                 tool->on_modifier_1 (state);
                 is_focused = true;
                 ehc.stopped = true;
@@ -220,14 +220,14 @@ void Canvas::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Canvas::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     if (!palette_)
     {
         return;
     }
 
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
     if (!tool)
     {
         return;
@@ -237,14 +237,14 @@ void Canvas::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
     ehc.stopped = true;
 }
 
-void Canvas::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Canvas::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     if (!palette_)
     {
         return;
     }
 
-    Tool *tool = palette_->get_cur_tool ();
+    plug::Tool *tool = palette_->get_cur_tool ();
     if (!(tool && tool->get_widget ()))
     {
         return;
@@ -253,13 +253,13 @@ void Canvas::onTick             (const TickEvent &event, EHC &ehc)
     tool->get_widget ()->onEvent (event, ehc);
 }
 
-bool Canvas::contains (int x, int y)
+bool plug::Canvas::contains (int x, int y)
 {
     return ((x >= 0 && y >= 0) && 
             (x <= width_ && y <= height_));
 }
 
-void Canvas::set_draw_rect_offset (int left, int top)
+void plug::Canvas::set_draw_rect_offset (int left, int top)
 {
     if (left < 0 || top < 0)
     {
@@ -271,7 +271,7 @@ void Canvas::set_draw_rect_offset (int left, int top)
     draw_rect_.top = top;
 }
 
-void Canvas::set_draw_rect_size (int width, int height)
+void plug::Canvas::set_draw_rect_size (int width, int height)
 {
     if (!(width > 0 && height > 0))
     {

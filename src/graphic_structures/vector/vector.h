@@ -34,29 +34,107 @@ namespace plug
         double get_x ()const {return x;};
         double get_y ()const {return y;};
         
-        Vec2d  operator = (const Vec2d &right);
+        Vec2d  operator = (const Vec2d &right) 
+            {
+                x = right.x;
+                y = right.y;
+
+                return *this;
+            }
         
         operator sf::Vector2f() const {return sf::Vector2f (x, y);};
         operator sf::Vector2i() const {return sf::Vector2i (x, y);};
         operator sf::Vector2u() const {return sf::Vector2u (x, y);};
     };
 
-    inline Vec2d operator + (const Vec2d &left, const Vec2d &right); 
-    inline Vec2d operator - (const Vec2d &left, const Vec2d &right);
-    inline Vec2d operator * (const Vec2d &left, const Vec2d &right);  
-    inline Vec2d operator / (const Vec2d &left, const Vec2d &right);  
-    inline Vec2d operator - (const Vec2d &vec);
-    inline Vec2d operator * (const Vec2d &vec, const double val);     
-    inline Vec2d operator / (const Vec2d &vec, const double val);     
-    inline Vec2d operator * (const double val, const Vec2d &vec); 
 
-    inline Vec2d& operator *= (Vec2d &vec,	 const double val); 
-    inline Vec2d& operator /= (Vec2d &left, const double val);
-    inline Vec2d& operator += (Vec2d &left, const Vec2d &right);
-    inline Vec2d& operator -= (Vec2d &left, const Vec2d &right);     
-    inline Vec2d& operator *= (Vec2d &left, const Vec2d &right); // покоординатное умножение
-    inline Vec2d& operator /= (Vec2d &left, const Vec2d &right); // покоординатное деление
+    inline Vec2d operator + (const Vec2d &left, const Vec2d &right)
+    {
+        return Vec2d (left.x + right.x, left.y + right.y);
+    }
 
+    inline Vec2d operator - (const Vec2d &left, const Vec2d &right)
+    {
+        return Vec2d (left.x - right.x, left.y - right.y);
+    } 
+
+    inline Vec2d operator / (const Vec2d &vec, const double val)
+    {
+        return Vec2d (vec.x / val, vec.y / val);
+    }   
+
+    inline Vec2d operator - (const Vec2d &vec)
+    {
+        return Vec2d (-vec.x, -vec.y);
+    }
+
+    inline Vec2d operator * (const Vec2d &vec, const double val)
+    {
+        return Vec2d (vec.x * val, vec.y * val);
+    }
+
+    inline Vec2d operator * (const double val, const Vec2d &vec)
+    {
+        return vec * val;
+    }
+
+    inline Vec2d operator / (const Vec2d &left, const Vec2d &right)
+    {
+        return Vec2d (left.x / right.x, left.y / right.y);
+    }  
+
+    inline Vec2d operator * (const Vec2d &left, const Vec2d &right)
+    {
+        return Vec2d (left.x * right.x, left.y * right.y);
+    }
+
+    inline Vec2d& operator *= (Vec2d &vec,	 const double val)
+    {
+        vec.x *= val;
+        vec.y *= val;
+
+        return vec;
+    } 
+
+    inline Vec2d& operator /= (Vec2d &vec, const double val)
+    {
+        vec.x /= val;
+        vec.y /= val;
+
+        return vec;
+    }
+
+    inline Vec2d& operator += (Vec2d &left, const Vec2d &right)
+    {
+        left.x += right.x;
+        left.y += right.y;
+
+        return left;
+    }
+
+    inline Vec2d& operator -= (Vec2d &left, const Vec2d &right)
+    {
+        left.x -= right.x;
+        left.y -= right.y;
+
+        return left;
+    }   
+
+    inline Vec2d& operator *= (Vec2d &left, const Vec2d &right)
+    {
+        left.x *= right.x;
+        left.y *= right.y;
+
+        return left;
+    } 
+
+    inline Vec2d& operator /= (Vec2d &left, const Vec2d &right)
+    {
+        left.x /= right.x;
+        left.y /= right.y;
+
+        return left;
+    } 
     inline double dot (Vec2d &left, Vec2d &right);	  // скалярное произведение
     inline double cross (Vec2d &left, Vec2d &right); // ориентированная площадь, порожденная векторами          
     inline Vec2d normalize (const Vec2d &vec);

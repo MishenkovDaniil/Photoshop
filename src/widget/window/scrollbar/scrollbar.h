@@ -15,37 +15,39 @@ static const double UP_BUTTON_CHANGE = 0.1;
 static const double SPACE_BUTTON_CHANGE = 0.2;
 static const int UP_DOWN_CANVAS_CHANGE = 10;
 
-class Scrollbar : public Button
+namespace plug
 {
-    M_vector<Button *> buttons = M_vector<Button *> ((Button *)nullptr);
-    Button *up_    = nullptr;
-    Button *down_  = nullptr;
-    Button *mid_   = nullptr;
+    class Scrollbar : public Button
+    {
+        M_vector<Button *> buttons = M_vector<Button *> ((Button *)nullptr);
+        Button *up_    = nullptr;
+        Button *down_  = nullptr;
+        Button *mid_   = nullptr;
 
 
-    int scrollbar_height_ = 0;
-    double shift = 0;
+        int scrollbar_height_ = 0;
+        double shift = 0;
 
-public: 
-    Scrollbar (Vec2d lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
-    ~Scrollbar ();
+    public: 
+        Scrollbar (Vec2d lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
+        ~Scrollbar ();
 
-    void render (sf::RenderTarget &target, TransformStack &transform_stack)    override;
-    void onTick             (const TickEvent &event, EHC &ehc) override;
-    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
+        void render (sf::RenderTarget &target, TransformStack &transform_stack)    override;
+        void onTick             (const TickEvent &event, EHC &ehc) override;
+        void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+        void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+        void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+        void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+        void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 
+        friend Window;
+    };
 
-    friend Window;
-};
-
-bool change_canvas_rect_up_down (void *window, void *arg);
-bool change_canvas_rect_mid     (void *window, void *arg);
-bool change_canvas_rect_space   (void *window, void *arg);
-bool change_canvas_rect_up      (void *window, void *arg);
-bool change_canvas_rect_down    (void *window, void *arg);
+    bool change_canvas_rect_up_down (void *window, void *arg);
+    bool change_canvas_rect_mid     (void *window, void *arg);
+    bool change_canvas_rect_space   (void *window, void *arg);
+    bool change_canvas_rect_up      (void *window, void *arg);
+    bool change_canvas_rect_down    (void *window, void *arg);
+}
 
 #endif /* SCROLLBAR_H */

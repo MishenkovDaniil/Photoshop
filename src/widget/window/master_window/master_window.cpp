@@ -1,36 +1,36 @@
 #include "master_window.h"
 
-Master_window::Master_window (int width, int height, Vec2d lh_pos, const char *w_name, int list_capacity) :
-    Window (width, height, lh_pos, w_name, false)
+plug::Master_window::Master_window (int width, int height, plug::Vec2d lh_pos, const char *w_name, int list_capacity) :
+    plug::Window (width, height, lh_pos, w_name, false)
 {   
-    menu_ = new Menu(Vec2d (0, HEADER_HEIGHT), width);
+    menu_ = new plug::Menu(Vec2d (0, HEADER_HEIGHT), width);
     assert (menu_);
     list_ctor (&windows, 10);
 }
 
-Master_window::~Master_window ()
+plug::Master_window::~Master_window ()
 {
     delete menu_;
     list_dtor (&windows);
 }
 
-void Master_window::add_menu_button (Button *button)
+void plug::Master_window::add_menu_button (plug::Button *button)
 {
     menu_->add_button (button);
 }
 
-void Master_window::add_window (Window *window)
+void plug::Master_window::add_window (plug::Window *window)
 {
     assert (window && "incorrect window pointer in add_window()");
 
     last_ = list_insert (&windows, last_, window);
 }
 
-void Master_window::render (sf::RenderTarget &target, TransformStack &transform_stack) 
+void plug::Master_window::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
 {
-    Window::render (target, transform_stack);
+    plug::Window::render (target, transform_stack);
     
-    transform_stack.enter (Transform (layout_->get_position ()));
+    transform_stack.enter (plug::Transform (layout_->get_position ()));
     menu_->render (target, transform_stack);
     transform_stack.leave ();
 
@@ -38,7 +38,7 @@ void Master_window::render (sf::RenderTarget &target, TransformStack &transform_
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         window_list_pos = windows.elems[window_list_pos].next;
 
         if (!window)
@@ -54,13 +54,13 @@ void Master_window::render (sf::RenderTarget &target, TransformStack &transform_
     }
 }
 
-void Master_window::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Master_window::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     size_t window_list_pos = last_;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
 
         if (!window)
         {
@@ -93,23 +93,23 @@ void Master_window::onMousePressed     (const MousePressedEvent &event, EHC &ehc
         window_list_pos = windows.elems[window_list_pos].prev;
     }
     
-    Window::onMousePressed (event, ehc);
+    plug::Window::onMousePressed (event, ehc);
     if (ehc.stopped)
         return;
 
-    ehc.stack.enter (Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->get_position ()));
     
     menu_->onMousePressed (event, ehc);
     ehc.stack.leave ();
 }   
 
-void Master_window::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Master_window::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     size_t window_list_pos = last_;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -125,23 +125,23 @@ void Master_window::onMouseReleased    (const MouseReleasedEvent &event, EHC &eh
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    Window::onMouseReleased (event, ehc);
+    plug::Window::onMouseReleased (event, ehc);
 
-    ehc.stack.enter (Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->get_position ()));
     menu_->onMouseReleased (event, ehc);
     ehc.stack.leave ();
 }
 
-void Master_window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Master_window::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Vec2d pos_ = tr.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Vec2d pos_ = tr.apply (event.pos);
 
     size_t window_list_pos = last_;
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -161,7 +161,7 @@ void Master_window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    Window::onMouseMove (event, ehc);
+    plug::Window::onMouseMove (event, ehc);
     if (ehc.stopped)
         return;
 
@@ -173,7 +173,7 @@ void Master_window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Master_window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Master_window::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     bool status = false;
 
@@ -181,7 +181,7 @@ void Master_window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &
 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -198,19 +198,19 @@ void Master_window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    Window::onKeyboardPressed (event, ehc);
+    plug::Window::onKeyboardPressed (event, ehc);
     if (ehc.stopped)
         return;
 
     menu_->onKeyboardPressed (event, ehc);
 }
 
-void Master_window::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Master_window::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     size_t window_list_pos = last_;
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -225,16 +225,16 @@ void Master_window::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC 
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    Window::onKeyboardReleased (event, ehc);
+    plug::Window::onKeyboardReleased (event, ehc);
     menu_->onKeyboardReleased (event, ehc);
 }
 
-void Master_window::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Master_window::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     size_t window_list_pos = last_;
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
-        Window *window = (Window *)list_get (&windows, window_list_pos);
+        plug::Window *window = (plug::Window *)list_get (&windows, window_list_pos);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -249,6 +249,6 @@ void Master_window::onTick             (const TickEvent &event, EHC &ehc)
         window_list_pos = windows.elems[window_list_pos].prev;
     }
 
-    Window::onTick (event, ehc);
+    plug::Window::onTick (event, ehc);
     menu_->onTick (event, ehc);
 }

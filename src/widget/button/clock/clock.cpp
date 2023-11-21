@@ -3,20 +3,20 @@
 #include <string.h>
 #include <cstring>
 
-Clock::Clock (Vec2d lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, float hours, float minutes, float seconds, void *arg, Color fill_color, int run_mask) :
-    Button (lh_corner, width, height, func, controlled_window, arg, fill_color ,run_mask),
+plug::Clock::Clock (plug::Vec2d lh_corner, int width, int height, Button_run_fn func, plug::Window *controlled_window, float hours, float minutes, float seconds, void *arg, plug::Color fill_color, int run_mask) :
+    plug::Button (lh_corner, width, height, func, controlled_window, arg, fill_color ,run_mask),
     hours_ (hours),
     minutes_ (minutes), 
     seconds_ (seconds) 
 {};
 
-void Clock::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::Clock::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
-    Button::render (target, transform_stack);
+    plug::Button::render (target, transform_stack);
     
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (transform_stack.top ());
-    Vec2d lh_pos = unite.getOffset ();
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (transform_stack.top ());
+    plug::Vec2d lh_pos = unite.getOffset ();
 
     sprintf (hrs, "%d", (int)hours_);
     sprintf (min, "%d", (int)minutes_);
@@ -38,32 +38,32 @@ void Clock::render (sf::RenderTarget &target, TransformStack &transform_stack)
     target.draw (text);
 }   
 
-void Clock::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Clock::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Clock::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Clock::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Clock::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Clock::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Clock::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Clock::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Clock::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Clock::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Clock::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Clock::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     seconds_ += event.delta_time;
     if ((int)seconds_ > 59)
@@ -87,7 +87,7 @@ void Clock::onTick             (const TickEvent &event, EHC &ehc)
     // return true;
 }
 
-void Clock::change_time (float seconds, float minutes, float hours)
+void plug::Clock::change_time (float seconds, float minutes, float hours)
 {   
     if (seconds < 0 || (int)seconds > 59)
     {

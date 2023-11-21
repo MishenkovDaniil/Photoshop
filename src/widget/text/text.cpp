@@ -1,18 +1,18 @@
 #include "text.h"
 
-M_text::M_text (Vec2d lh_pos, int width, int height, Color color) :
+plug::M_text::M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color) :
     text_color_ (color),
     capacity_ (START_TEXT_CAPACITY),
     string_size_ ((double)width / TEXT_CHARACTER_WIDTH),
     cur_height (TEXT_CHARACTER_SIZE)
 {
-    layout_ = new Default_layout_box (lh_pos, Vec2d (width, height));
+    layout_ = new plug::Default_layout_box (lh_pos, plug::Vec2d (width, height));
     assert (layout_ );
     buf_ = (char *)calloc (capacity_, sizeof (char));
     assert (buf_);
 }
 
-M_text::~M_text ()
+plug::M_text::~M_text ()
 {
     if (layout_) delete (layout_);
     if (buf_)    free (buf_);
@@ -21,7 +21,7 @@ M_text::~M_text ()
     buf_ = nullptr;
 }
 
-void M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
 {
     static size_t a = 0;
     static char b = '|';
@@ -34,11 +34,11 @@ void M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
     }
     a++;   
     
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (transform_stack.top ());
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (transform_stack.top ());
 
-    Vec2d lh_pos = unite.getOffset ();
-    Vec2d size   = layout_->get_size ();
+    plug::Vec2d lh_pos = unite.getOffset ();
+    plug::Vec2d size   = layout_->get_size ();
     // size = unite.scale_apply (size);
     
     sf::RectangleShape  text_rect (layout_->get_size ());
@@ -61,7 +61,7 @@ void M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
     target.draw (text);
 }   
 
-void M_text::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::M_text::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     is_pressed = true; // check containing
 
@@ -77,7 +77,7 @@ void M_text::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
     return;
 }
 
-void M_text::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::M_text::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     if (is_pressed)
     {
@@ -86,12 +86,12 @@ void M_text::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     }
 }
 
-void M_text::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::M_text::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void M_text::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::M_text::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     // if (!is_pressed)
     //     return false;
@@ -114,12 +114,12 @@ void M_text::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
     ehc.stopped = true;
 }
 
-void M_text::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::M_text::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void M_text::onTick             (const TickEvent &event, EHC &ehc)
+void plug::M_text::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     static size_t a = 0;
     static char b = '|';
@@ -137,7 +137,7 @@ void M_text::onTick             (const TickEvent &event, EHC &ehc)
 
 
 
-char M_text::convert_key_to_char (KeyCode key, KeyCode latest_key_)
+char plug::M_text::convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_)
 {
     if (key >= A && key <= Z)
     {
@@ -180,7 +180,7 @@ char M_text::convert_key_to_char (KeyCode key, KeyCode latest_key_)
     }
 }
 
-void M_text::check_string ()
+void plug::M_text::check_string ()
 {
     if (letters_in_string_ > string_size_)
     {

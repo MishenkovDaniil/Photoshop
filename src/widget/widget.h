@@ -13,8 +13,8 @@ static const double TRANSFORM_HEIGHT = 100;
 static const double TRANSFORM_WIDTH  = 100;
 
 
-// namespace plug
-// {
+namespace plug
+{
     class Transform 
     {
         Vec2d offset;
@@ -75,6 +75,6 @@ static const double TRANSFORM_WIDTH  = 100;
         virtual void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) = 0;
         virtual void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) = 0;    
     };
-// }
+}
 
 #endif /* WIDGET_H */

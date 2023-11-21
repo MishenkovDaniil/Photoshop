@@ -2,13 +2,13 @@
 
 #include <cstring>
 
-Header::Header (Vec2d lh_pos, int width, const char *string, Window *window, Color background) : 
+plug::Header::Header (plug::Vec2d lh_pos, int width, const char *string, plug::Window *window, plug::Color background) : 
     // transform_ (Transform (lh_pos)),
     width_ (width),
     parent_window_ (window),
     background_color (background)
 {
-    layout_ = new Default_layout_box (lh_pos, Vec2d (width, HEADER_HEIGHT));
+    layout_ = new plug::Default_layout_box (lh_pos, plug::Vec2d (width, HEADER_HEIGHT));
     assert (layout_);
 
     if (string)
@@ -22,7 +22,7 @@ Header::Header (Vec2d lh_pos, int width, const char *string, Window *window, Col
     }
 }
 
-Header::~Header ()
+plug::Header::~Header ()
 {
     if (string_) 
     {
@@ -32,15 +32,15 @@ Header::~Header ()
     delete layout_;
 }
 
-void Header::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void plug::Header::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
-    transform_stack.enter (Transform (layout_->get_position ()));
+    transform_stack.enter (plug::Transform (layout_->get_position ()));
 
-    Vec2d lh_pos = transform_stack.top ().getOffset ();
+    plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     sf::RectangleShape header (sf::Vector2f (width_, HEADER_HEIGHT));
                        header.setFillColor((sf::Color)background_color); 
-                       header.setOutlineColor (Color (50, 50, 50));
+                       header.setOutlineColor (plug::Color (50, 50, 50));
                        header.setOutlineThickness (-1);
                        header.setPosition (lh_pos);
     
@@ -62,11 +62,11 @@ void Header::render (sf::RenderTarget &target, TransformStack &transform_stack)
 }
 
 
-void Header::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
+void plug::Header::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
-    Vec2d pos_ = unite.apply (event.pos);
+    plug::Transform tr (layout_->get_position ());
+    plug::Transform unite = tr.combine (ehc.stack.top ());
+    plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (contains (pos_.get_x (), pos_.get_y ()))
     {
@@ -76,7 +76,7 @@ void Header::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
     }
 }
 
-void Header::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
+void plug::Header::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     if (is_moving_)
     {
@@ -84,13 +84,13 @@ void Header::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     }
 }   
 
-void Header::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
+void plug::Header::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     if (is_moving_)
     {
-        Vec2d move = event.pos - move_start_;
+        plug::Vec2d move = event.pos - move_start_;
         // parent_window_->get_transform ().offset_ += move;
-        Layout_box &layout = parent_window_->get_layout_box ();
+        plug::Layout_box &layout = parent_window_->get_layout_box ();
         layout.set_position (layout.get_position () + move);
         parent_window_->set_layout_box (layout);
         move_start_ = event.pos;
@@ -99,23 +99,23 @@ void Header::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     }
 }
 
-void Header::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
+void plug::Header::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Header::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
+void plug::Header::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void Header::onTick             (const TickEvent &event, EHC &ehc)
+void plug::Header::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
 
-bool Header::contains (int x, int y)
+bool plug::Header::contains (int x, int y)
 {
     if ((x >= 0 && x <= width_) &&
         (y >= 0 && y <= HEADER_HEIGHT))
