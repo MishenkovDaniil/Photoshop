@@ -10,6 +10,7 @@
 #include "../../widget/window/window.h"
 #include "../filter/filter.h"
 #include "../../widget/text/text.h"
+#include "../plugin.h"
 //sf::RTX --> canvas 
 
 
@@ -23,7 +24,7 @@ namespace plug
     class Tool;
     class ColorPalette;
     class Canvas;
-    
+
     enum State
     {
         Pressed, 
@@ -35,7 +36,7 @@ namespace plug
         State state = Released;
     };
 
-    class Tool 
+    class Tool : public Plugin
     {    
     protected:
         Widget *widget_ = nullptr;
@@ -61,6 +62,11 @@ namespace plug
         virtual void on_released_key        () = 0;
 
         Widget *get_widget () {return widget_;};
+
+        virtual Plugin *tryGetInterface (size_t) override {return nullptr;};	
+        virtual void addReference (Plugin *) override {};
+        virtual void release (Plugin *) override {};
+        virtual const PluginData *getPluginData () const override {return nullptr;};
     };
 
     class Brush : public Tool

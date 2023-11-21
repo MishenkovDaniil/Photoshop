@@ -3,6 +3,7 @@
 
 #include "../../widget/widget.h"
 #include "../../widget/window/canvas/canvas.h"
+#include "../plugin.h"
 
 static const double MIN_SATURATION_VAL = 0.05;
 static const double MIN_LIGHT_VAL = 0.05;
@@ -18,7 +19,7 @@ namespace plug
         Light_decr    
     };
 
-    class Filter
+    class Filter : public Plugin
     {
         Widget *filter_widget = nullptr;
     public:
@@ -27,6 +28,11 @@ namespace plug
 
         virtual void apply_filter (Canvas &canvas) const = 0;
         Widget *getWidget () {return filter_widget;};
+
+        Plugin *tryGetInterface (size_t) override {return nullptr;};	
+        void addReference (Plugin *) override {};
+        void release (Plugin *) override {};
+        const PluginData *getPluginData () const override {return nullptr;};
     };
 
     class Light_filter : public Filter
