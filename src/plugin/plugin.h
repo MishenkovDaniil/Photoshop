@@ -5,6 +5,14 @@
 
 namespace plug
 {
+    class PluginData 
+    {
+        virtual const char *getName () const = 0;
+        virtual const char *getTexturePath () const = 0;
+
+        virtual ~PluginData () = 0;
+    };
+
     class Plugin 
     {
         virtual Plugin *tryGetInterface (size_t) = 0;	// аналог  QueryInterface
@@ -12,13 +20,7 @@ namespace plug
         virtual void release (Plugin *) = 0;
         virtual const PluginData *getPluginData () const = 0;
     };
-
-    class PluginData 
-    {
-        const char *getName () const;
-        const char *getTexturePath () const;
-    };
-        
+    
     enum class PluginGuid
     {
         Plugin 	= 0,
