@@ -37,12 +37,12 @@ public:
     Canvas *get_canvas () {return canvas_;};
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack)  override;
-    void onTick             (TickEvent &event, EHC &ehc) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onTick             (const TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 
 
     bool contains (const Vec2d &pos);

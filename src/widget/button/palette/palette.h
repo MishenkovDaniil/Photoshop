@@ -35,8 +35,8 @@ public:
     Button_palette (Vec2d lh_pos, int width, int height, Tool_palette *palette);
     ~Button_palette ();
 
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
     void add_tool_button (Button *tool_button);
 };
 

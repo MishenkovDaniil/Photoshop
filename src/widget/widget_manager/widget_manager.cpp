@@ -113,7 +113,7 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
     onTick (tick_event, ehc);
 }
 
-void Widget_manager::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Widget_manager::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     // bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -137,7 +137,7 @@ void Widget_manager::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     // return false;
 }
 
-void Widget_manager::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Widget_manager::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -156,7 +156,7 @@ void Widget_manager::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     }
 }
 
-void Widget_manager::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Widget_manager::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -180,7 +180,7 @@ void Widget_manager::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     // return false;
 }
 
-void Widget_manager::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Widget_manager::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     bool is_keyboard_pressed = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -204,7 +204,7 @@ void Widget_manager::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
     // return false;
 }
 
-void Widget_manager::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Widget_manager::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -227,7 +227,7 @@ void Widget_manager::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
     // return false;
 }
 
-void Widget_manager::onTick             (TickEvent &event, EHC &ehc)
+void Widget_manager::onTick             (const TickEvent &event, EHC &ehc)
 {
     // bool on_time_status = false;
     

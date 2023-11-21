@@ -74,7 +74,7 @@ void Window::render (sf::RenderTarget &target, TransformStack &transform_stack)
 
 
 
-void Window::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
+void Window::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -96,7 +96,7 @@ void Window::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Window::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
+void Window::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -110,7 +110,7 @@ void Window::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Window::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
+void Window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -131,7 +131,7 @@ void Window::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Window::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+void Window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
 
@@ -146,7 +146,7 @@ void Window::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
     }
 } 
 
-void Window::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+void Window::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
     
@@ -157,7 +157,7 @@ void Window::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
     }
 }
 
-void Window::onTick             ( TickEvent &event, EHC &ehc)
+void Window::onTick             (const TickEvent &event, EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)

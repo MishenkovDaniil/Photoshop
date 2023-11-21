@@ -59,7 +59,7 @@ void Button::render (sf::RenderTarget &target, TransformStack &transform_stack)
 }   
 
 
-void Button::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -81,7 +81,7 @@ void Button::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -106,7 +106,7 @@ void Button::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -124,17 +124,17 @@ void Button::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     // return false;
 } 
 
-void Button::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 } 
 
-void Button::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 } 
 
-void Button::onTick             (TickEvent &event, EHC &ehc)
+void Button::onTick             (const TickEvent &event, EHC &ehc)
 {
     return;
 } 
@@ -168,32 +168,32 @@ void Texture_button::render (sf::RenderTarget &target, TransformStack &transform
     target.draw (*sprite_);
 }
 
-void Texture_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
+void Texture_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     Button::onMousePressed (event, ehc);
     bool status = ehc.stopped;
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
+void Texture_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     Button::onMouseReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
+void Texture_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     Button::onMouseMove (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+void Texture_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     Button::onKeyboardPressed (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
 }
 
-void Texture_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+void Texture_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     Button::onKeyboardReleased (event, ehc);
     cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
@@ -254,31 +254,31 @@ void String_button::render (sf::RenderTarget &target, TransformStack &transform_
 }
 
 
-void String_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc)
+void String_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     Button::onMousePressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
+void String_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     Button::onMouseReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
+void String_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     Button::onMouseMove (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+void String_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     Button::onKeyboardPressed (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
 
-void String_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+void String_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     Button::onKeyboardReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
@@ -347,7 +347,7 @@ void List_button::render (sf::RenderTarget &target, TransformStack &transform_st
     }
 }   
 
-void List_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc) // rm status
+void List_button::onMousePressed     (const MousePressedEvent &event, EHC &ehc) // rm status
 {
     assert (layout_);
     
@@ -405,7 +405,7 @@ void List_button::onMousePressed     ( MousePressedEvent &event, EHC &ehc) // rm
     // return status;
 }
 
-void List_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
+void List_button::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     bool status = false;
     
@@ -432,7 +432,7 @@ void List_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
             }
             assert (button);
 
-            event.pos = lh_pos; ///
+            // event.pos = lh_pos; ///
             button->onMouseReleased (event, ehc);
             status |= ehc.stopped;
         }
@@ -444,7 +444,7 @@ void List_button::onMouseReleased    ( MouseReleasedEvent &event, EHC &ehc)
     // return status;
 }
 
-void List_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
+void List_button::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     bool status = false;
     
@@ -471,7 +471,7 @@ void List_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
             }
             assert (button);
 
-            event.pos = lh_pos; ///
+            // event.pos = lh_pos; ///
             button->onMouseMove (event, ehc);
             status |= ehc.stopped;
         }
@@ -483,17 +483,17 @@ void List_button::onMouseMove        ( MouseMoveEvent &event, EHC &ehc)
     // return status;
 }
 
-void List_button::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+void List_button::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void List_button::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+void List_button::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void List_button::onTick             ( TickEvent &event, EHC &ehc)
+void List_button::onTick             (const TickEvent &event, EHC &ehc)
 {
     return;
 }

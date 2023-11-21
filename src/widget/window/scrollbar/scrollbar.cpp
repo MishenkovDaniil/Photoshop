@@ -64,7 +64,7 @@ void Scrollbar::render (sf::RenderTarget &target, TransformStack &transform_stac
 }
 
 
-void Scrollbar::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Scrollbar::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -81,7 +81,7 @@ void Scrollbar::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Scrollbar::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Scrollbar::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -93,7 +93,7 @@ void Scrollbar::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Scrollbar::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Scrollbar::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
    
@@ -142,17 +142,17 @@ void Scrollbar::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Scrollbar::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Scrollbar::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Scrollbar::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Scrollbar::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Scrollbar::onTick             (TickEvent &event, EHC &ehc)
+void Scrollbar::onTick             (const TickEvent &event, EHC &ehc)
 {
     return;
 }

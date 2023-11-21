@@ -54,14 +54,14 @@ public:
     virtual ~Widget () = default;
     virtual void render (sf::RenderTarget &target, TransformStack &transform_stack) = 0;
     
-    virtual void onEvent (Event &event, EHC &ehc);
+    virtual void onEvent (const Event &event, EHC &ehc);
 
-    virtual void onTick             (TickEvent &event, EHC &ehc) = 0;
-    virtual void onMouseMove        (MouseMoveEvent &event, EHC &ehc) = 0;
-    virtual void onMousePressed     (MousePressedEvent &event, EHC &ehc) = 0;
-    virtual void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) = 0;
-    virtual void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) = 0;
-    virtual void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) = 0;
+    virtual void onTick             (const TickEvent &event, EHC &ehc) = 0;
+    virtual void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) = 0;
+    virtual void onMousePressed     (const MousePressedEvent &event, EHC &ehc) = 0;
+    virtual void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) = 0;
+    virtual void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) = 0;
+    virtual void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) = 0;
     
     Layout_box &get_layout_box () {return *layout_;};
     void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};

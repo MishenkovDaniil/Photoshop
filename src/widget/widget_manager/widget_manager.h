@@ -21,12 +21,12 @@ public:
     void render (sf::RenderTarget &target);
 
     void onEvent (sf::Event *event, double delta_time);
-    void onTick             (TickEvent &event, EHC &ehc);
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc);
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc);
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc);
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc);
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc);
+    void onTick             (const TickEvent &event, EHC &ehc);
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc);
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc);
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc);
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc);
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc);
 };
 
 #endif /* WIDGET_MANAGER_H */

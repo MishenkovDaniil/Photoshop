@@ -68,12 +68,12 @@ public:
     
     bool run ();
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override;
-    void onTick             (TickEvent &event, EHC &ehc) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onTick             (const TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 
     friend Scrollbar;
     friend Menu;
@@ -95,11 +95,11 @@ public:
     ~Texture_button () override;
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 class String_button : public Button
@@ -119,11 +119,11 @@ public:
     ~String_button ();
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 class List_button : public Button
@@ -140,12 +140,12 @@ public:
     void add_button (Button *button); /// can change button layout
     
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                        override;
-    void onTick             (TickEvent &event, EHC &ehc) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onTick             (const TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 };
 
 #endif /* BUTTON_H */

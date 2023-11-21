@@ -57,38 +57,38 @@ Vec2d TransformStack::restore (const Vec2d &vector) const
     return top ().restore (vector);
 }
 
-void Widget::onEvent (Event &event, EHC &ehc)
+void Widget::onEvent (const Event &event, EHC &ehc)
 {
     switch (event.getType ())
     {
         case Tick:
         {
-            onTick ((TickEvent &)event, ehc);
+            onTick ((const TickEvent &)event, ehc);
             break;
         }
         case MouseMove:
         {
-            onMouseMove ((MouseMoveEvent &)event, ehc);
+            onMouseMove ((const MouseMoveEvent &)event, ehc);
             break;
         }
         case MousePressed:
         {
-            onMousePressed ((MousePressedEvent &)event, ehc);
+            onMousePressed ((const MousePressedEvent &)event, ehc);
             break;
         }
         case MouseReleased:
         {
-            onMouseReleased ((MouseReleasedEvent &)event, ehc);
+            onMouseReleased ((const MouseReleasedEvent &)event, ehc);
             break;
         }
         case KeyboardPressed:
         {
-            onKeyboardPressed ((KeyboardPressedEvent &)event, ehc);
+            onKeyboardPressed ((const KeyboardPressedEvent &)event, ehc);
             break;
         }
         case KeyboardReleased:
         {
-            onKeyboardReleased ((KeyboardReleasedEvent &)event, ehc);
+            onKeyboardReleased ((const KeyboardReleasedEvent &)event, ehc);
             break;
         }
         default:

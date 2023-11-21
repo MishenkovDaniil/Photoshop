@@ -32,12 +32,12 @@ public:
     const char *get_string () {assert (buf_); buf_[len_] = '\0'; return buf_;}
 
     void render (sf::RenderTarget &target, TransformStack &transform_stack)                    override; 
-    void onTick             (TickEvent &event, EHC &ehc) override;
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) override;
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) override;
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) override;
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) override;
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) override;
+    void onTick             (const TickEvent &event, EHC &ehc) override;
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) override;
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) override;
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) override;
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) override;
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) override;
 
     char convert_key_to_char (KeyCode key, KeyCode latest_key_);
     void check_string ();

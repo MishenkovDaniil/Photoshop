@@ -38,32 +38,32 @@ void Clock::render (sf::RenderTarget &target, TransformStack &transform_stack)
     target.draw (text);
 }   
 
-void Clock::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Clock::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Clock::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Clock::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Clock::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Clock::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Clock::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Clock::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Clock::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Clock::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Clock::onTick             (TickEvent &event, EHC &ehc)
+void Clock::onTick             (const TickEvent &event, EHC &ehc)
 {
     seconds_ += event.delta_time;
     if ((int)seconds_ > 59)

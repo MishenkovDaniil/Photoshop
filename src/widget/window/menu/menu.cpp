@@ -55,7 +55,7 @@ void Menu::render (sf::RenderTarget &target, TransformStack &transform_stack)
     transform_stack.leave ();
 }
 
-void Menu::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Menu::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
     size_t button_num = buttons.get_size ();
@@ -78,7 +78,7 @@ void Menu::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Menu::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Menu::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -102,7 +102,7 @@ void Menu::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Menu::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Menu::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     ehc.stack.enter (Transform (layout_->get_position ()));
 
@@ -126,17 +126,17 @@ void Menu::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Menu::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Menu::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Menu::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Menu::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Menu::onTick             (TickEvent &event, EHC &ehc)
+void Menu::onTick             (const TickEvent &event, EHC &ehc)
 {
     return;
 }

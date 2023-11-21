@@ -62,7 +62,7 @@ void Header::render (sf::RenderTarget &target, TransformStack &transform_stack)
 }
 
 
-void Header::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Header::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -76,7 +76,7 @@ void Header::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     }
 }
 
-void Header::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Header::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     if (is_moving_)
     {
@@ -84,7 +84,7 @@ void Header::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     }
 }   
 
-void Header::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Header::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     if (is_moving_)
     {
@@ -99,17 +99,17 @@ void Header::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     }
 }
 
-void Header::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Header::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Header::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Header::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void Header::onTick             (TickEvent &event, EHC &ehc)
+void Header::onTick             (const TickEvent &event, EHC &ehc)
 {
     return;
 }

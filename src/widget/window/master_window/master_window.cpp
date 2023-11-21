@@ -54,7 +54,7 @@ void Master_window::render (sf::RenderTarget &target, TransformStack &transform_
     }
 }
 
-void Master_window::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Master_window::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     size_t window_list_pos = last_;
 
@@ -103,7 +103,7 @@ void Master_window::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }   
 
-void Master_window::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Master_window::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     size_t window_list_pos = last_;
 
@@ -132,7 +132,7 @@ void Master_window::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     ehc.stack.leave ();
 }
 
-void Master_window::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Master_window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Vec2d pos_ = tr.apply (event.pos);
@@ -165,11 +165,15 @@ void Master_window::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
     if (ehc.stopped)
         return;
 
-    event.pos = pos_; // should do pos_ through transformStack
+    // event.pos = pos_; // should do pos_ through transformStack
+    ehc.stack.enter (layout_->get_position ());
+
     menu_->onMouseMove (event, ehc);
+
+    ehc.stack.leave ();
 }
 
-void Master_window::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Master_window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     bool status = false;
 
@@ -201,7 +205,7 @@ void Master_window::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
     menu_->onKeyboardPressed (event, ehc);
 }
 
-void Master_window::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Master_window::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     size_t window_list_pos = last_;
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
@@ -225,7 +229,7 @@ void Master_window::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
     menu_->onKeyboardReleased (event, ehc);
 }
 
-void Master_window::onTick             (TickEvent &event, EHC &ehc)
+void Master_window::onTick             (const TickEvent &event, EHC &ehc)
 {
     size_t window_list_pos = last_;
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)

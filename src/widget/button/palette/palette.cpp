@@ -24,7 +24,7 @@ Button_palette::~Button_palette ()
     }
 }
 
-void Button_palette::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
+void Button_palette::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     switch (event.key_id)
     {
@@ -72,7 +72,7 @@ void Button_palette::onKeyboardPressed  ( KeyboardPressedEvent &event, EHC &ehc)
     // return false;
 }
 
-void Button_palette::onKeyboardReleased ( KeyboardReleasedEvent &event, EHC &ehc)
+void Button_palette::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }

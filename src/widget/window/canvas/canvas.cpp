@@ -88,7 +88,7 @@ void Canvas::render (sf::RenderTarget &target, TransformStack &transform_stack)
     transform_stack.leave ();
 }
 
-void Canvas::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -130,11 +130,10 @@ void Canvas::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void Canvas::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
-    Transform unite = tr.combine (ehc.stack.top ());
-
+    Transform unite = tr.combine (ehc.stack.top ()); // stack.enter + stack_top.apply
     Vec2d pos_ = unite.apply (event.pos);
 
     if (!(palette_ && is_focused))
@@ -152,7 +151,7 @@ void Canvas::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void Canvas::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     Transform tr (layout_->get_position ());
     Transform unite = tr.combine (ehc.stack.top ());
@@ -172,7 +171,7 @@ void Canvas::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
 }   
 
 
-void Canvas::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void Canvas::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     if (!palette_)
         return;
@@ -221,7 +220,7 @@ void Canvas::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
     }
 }
 
-void Canvas::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void Canvas::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     if (!palette_)
     {
@@ -238,7 +237,7 @@ void Canvas::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
     ehc.stopped = true;
 }
 
-void Canvas::onTick             (TickEvent &event, EHC &ehc)
+void Canvas::onTick             (const TickEvent &event, EHC &ehc)
 {
     if (!palette_)
     {

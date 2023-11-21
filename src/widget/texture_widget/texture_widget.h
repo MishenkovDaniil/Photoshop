@@ -12,12 +12,12 @@ public:
 
     void clear (Color color) {texture_.clear (color);};
     void render (sf::RenderTarget &target, TransformStack &transform_stack); 
-    void onTick             (TickEvent &event, EHC &ehc) {return;};
-    void onMouseMove        (MouseMoveEvent &event, EHC &ehc) {return;};
-    void onMousePressed     (MousePressedEvent &event, EHC &ehc) {return;};
-    void onMouseReleased    (MouseReleasedEvent &event, EHC &ehc) {return;};
-    void onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc) {return;};
-    void onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc) {return;};
+    void onTick             (const TickEvent &event, EHC &ehc) {return;};
+    void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) {return;};
+    void onMousePressed     (const MousePressedEvent &event, EHC &ehc) {return;};
+    void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) {return;};
+    void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) {return;};
+    void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) {return;};
 };
 
 #endif /* TEXTURE_WIDGET_H */

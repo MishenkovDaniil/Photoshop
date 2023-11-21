@@ -61,7 +61,7 @@ void M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
     target.draw (text);
 }   
 
-void M_text::onMousePressed     (MousePressedEvent &event, EHC &ehc)
+void M_text::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
 {
     is_pressed = true; // check containing
 
@@ -77,7 +77,7 @@ void M_text::onMousePressed     (MousePressedEvent &event, EHC &ehc)
     return;
 }
 
-void M_text::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
+void M_text::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
 {
     if (is_pressed)
     {
@@ -86,12 +86,12 @@ void M_text::onMouseReleased    (MouseReleasedEvent &event, EHC &ehc)
     }
 }
 
-void M_text::onMouseMove        (MouseMoveEvent &event, EHC &ehc)
+void M_text::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
 {
     return;
 }
 
-void M_text::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
+void M_text::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
 {
     // if (!is_pressed)
     //     return false;
@@ -114,12 +114,12 @@ void M_text::onKeyboardPressed  (KeyboardPressedEvent &event, EHC &ehc)
     ehc.stopped = true;
 }
 
-void M_text::onKeyboardReleased (KeyboardReleasedEvent &event, EHC &ehc)
+void M_text::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
 {
     return;
 }
 
-void M_text::onTick             (TickEvent &event, EHC &ehc)
+void M_text::onTick             (const TickEvent &event, EHC &ehc)
 {
     static size_t a = 0;
     static char b = '|';
