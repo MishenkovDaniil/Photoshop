@@ -84,7 +84,7 @@ void Window::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
     {
         if (contained_widgets[window_widget_idx])
         {
-            contained_widgets[window_widget_idx]->onMousePressed (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
             if (ehc.stopped == true)
             {
                 ehc.stack.leave ();
@@ -104,7 +104,7 @@ void Window::onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc)
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
         if (contained_widgets[window_widget_idx]) 
-            contained_widgets[window_widget_idx]->onMouseReleased (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
     }
 
     ehc.stack.leave ();
@@ -119,7 +119,7 @@ void Window::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
     {
         if (contained_widgets[window_widget_idx]) 
         {
-            contained_widgets[window_widget_idx]->onMouseMove (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
             if (ehc.stopped == true)
             {
                 ehc.stack.leave ();
@@ -139,7 +139,7 @@ void Window::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
     {
         if (contained_widgets[window_widget_idx])
         {
-            contained_widgets[window_widget_idx]->onKeyboardPressed (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
             if (ehc.stopped)
                 return;
         }
@@ -153,7 +153,7 @@ void Window::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc)
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
     {
         if (contained_widgets[window_widget_idx])
-            contained_widgets[window_widget_idx]->onKeyboardReleased (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
     }
 }
 
@@ -164,7 +164,7 @@ void Window::onTick             (const TickEvent &event, EHC &ehc)
     {
         if (contained_widgets[window_widget_idx])
         {
-            contained_widgets[window_widget_idx]->onTick (event, ehc);
+            contained_widgets[window_widget_idx]->onEvent (event, ehc);
         }
     }
 }

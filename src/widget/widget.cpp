@@ -2,20 +2,20 @@
 
 Transform Transform::combine(const Transform &parent_transform) const 
 {
-    Vec2d new_offset = Vec2d (offset_.get_x () * parent_transform.scale_.get_x (), offset_.get_y () * parent_transform.scale_.get_y ()) + parent_transform.offset_;
-    return Transform (new_offset, Vec2d (scale_.get_x () * parent_transform.scale_.get_x (), scale_.get_y ()  * parent_transform.scale_.get_y ()));
+    Vec2d new_offset = Vec2d (offset.get_x () * parent_transform.scale.get_x (), offset.get_y () * parent_transform.scale.get_y ()) + parent_transform.offset;
+    return Transform (new_offset, Vec2d (scale.get_x () * parent_transform.scale.get_x (), scale.get_y ()  * parent_transform.scale.get_y ()));
 }
 
 Vec2d Transform::apply (const Vec2d &vector)
 {
-    return Vec2d ((vector.get_x () - offset_.get_x ()) * scale_.get_x (), 
-                  (vector.get_y () - offset_.get_y ()) * scale_.get_y ());
+    return Vec2d ((vector.get_x () - offset.get_x ()) * scale.get_x (), 
+                  (vector.get_y () - offset.get_y ()) * scale.get_y ());
 }
 
 Vec2d Transform::restore (const Vec2d &vector)
 {
-    return Vec2d (vector.get_x () + offset_.get_x (),
-                  vector.get_y () + offset_.get_y ());
+    return Vec2d (vector.get_x () + offset.get_x (),
+                  vector.get_y () + offset.get_y ());
 }
 
 

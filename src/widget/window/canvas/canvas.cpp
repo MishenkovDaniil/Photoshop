@@ -110,7 +110,7 @@ void Canvas::onMousePressed     (const MousePressedEvent &event, EHC &ehc)
             // if (tool->get_widget ()->get_layout_box ().get_position ())
             // transform_stack.enter (unite);
             
-            tool->get_widget ()->onMousePressed (event, ehc);
+            tool->get_widget ()->onEvent (event, ehc);
             bool status = ehc.stopped;
             is_focused = status;
             // transform_stack.leave ();
@@ -182,7 +182,7 @@ void Canvas::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc)
     {
         if (tool->get_widget ())
         {
-            tool->get_widget ()->onKeyboardPressed (event, ehc);
+            tool->get_widget ()->onEvent (event, ehc);
             bool status = ehc.stopped;
             is_focused = status;
             if (status) 
@@ -250,7 +250,7 @@ void Canvas::onTick             (const TickEvent &event, EHC &ehc)
         return;
     }
 
-    tool->get_widget ()->onTick (event, ehc);
+    tool->get_widget ()->onEvent (event, ehc);
 }
 
 bool Canvas::contains (int x, int y)

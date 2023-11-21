@@ -129,7 +129,7 @@ void Widget_manager::onMousePressed     (const MousePressedEvent &event, EHC &eh
         }
         assert (widget);
 
-        widget->onMousePressed (event, ehc);
+        widget->onEvent (event, ehc);
         if (ehc.stopped == true)
             return;
     }
@@ -152,7 +152,7 @@ void Widget_manager::onMouseReleased    (const MouseReleasedEvent &event, EHC &e
         }
         assert (widget);
 
-        widget->onMouseReleased (event, ehc);
+        widget->onEvent (event, ehc);
     }
 }
 
@@ -172,7 +172,7 @@ void Widget_manager::onMouseMove        (const MouseMoveEvent &event, EHC &ehc)
         }
         assert (widget);
 
-        widget->onMouseMove (event, ehc);
+        widget->onEvent (event, ehc);
         if (ehc.stopped)
             return;
     }
@@ -196,7 +196,7 @@ void Widget_manager::onKeyboardPressed  (const KeyboardPressedEvent &event, EHC 
         }
         assert (widget);
 
-        widget->onKeyboardPressed (event, ehc);
+        widget->onEvent (event, ehc);
         if (ehc.stopped)
             return;
     }
@@ -219,7 +219,7 @@ void Widget_manager::onKeyboardReleased (const KeyboardReleasedEvent &event, EHC
         }
         assert (widget);
 
-        widget->onKeyboardReleased (event, ehc);
+        widget->onEvent (event, ehc);
         if (ehc.stopped)
             return;
     }
@@ -244,7 +244,7 @@ void Widget_manager::onTick             (const TickEvent &event, EHC &ehc)
         }
         assert (widget);
 
-        widget->onTick (event, ehc);
+        widget->onEvent (event, ehc);
     }
 
     // return on_time_status;
