@@ -1,47 +1,47 @@
 #include "vector.h"
 
 
-Vec2d operator + (const Vec2d &left, const Vec2d &right)
+inline plug::Vec2d plug::operator + (const plug::Vec2d &left, const plug::Vec2d &right)
 {
-    return Vec2d (left.x + right.x, left.y + right.y);
+    return plug::Vec2d (left.x + right.x, left.y + right.y);
 }
 
-Vec2d operator - (const Vec2d &left, const Vec2d &right)
+inline plug::Vec2d plug::operator - (const plug::Vec2d &left, const plug::Vec2d &right)
 {
-    return Vec2d (left.x - right.x, left.y - right.y);
+    return plug::Vec2d (left.x - right.x, left.y - right.y);
 } 
 
-Vec2d operator / (const Vec2d &vec, const double val)
+inline plug::Vec2d plug::operator / (const plug::Vec2d &vec, const double val)
 {
-    return Vec2d (vec.x / val, vec.y / val);
+    return plug::Vec2d (vec.x / val, vec.y / val);
 }   
 
-Vec2d operator - (const Vec2d &vec)
+inline plug::Vec2d plug::operator - (const plug::Vec2d &vec)
 {
-    return Vec2d (-vec.x, -vec.y);
+    return plug::Vec2d (-vec.x, -vec.y);
 }
 
-Vec2d operator * (const Vec2d &vec, const double val)
+inline plug::Vec2d plug::operator * (const plug::Vec2d &vec, const double val)
 {
-    return Vec2d (vec.x * val, vec.y * val);
+    return plug::Vec2d (vec.x * val, vec.y * val);
 }
 
-Vec2d operator * (const double val, const Vec2d &vec)
+inline plug::Vec2d plug::operator * (const double val, const plug::Vec2d &vec)
 {
     return vec * val;
 }
 
-Vec2d operator / (const Vec2d &left, const Vec2d &right)
+inline plug::Vec2d plug::operator / (const plug::Vec2d &left, const plug::Vec2d &right)
 {
-    return Vec2d (left.x / right.x, left.y / right.y);
+    return plug::Vec2d (left.x / right.x, left.y / right.y);
 }  
 
-Vec2d operator * (const Vec2d &left, const Vec2d &right)
+inline plug::Vec2d plug::operator * (const plug::Vec2d &left, const plug::Vec2d &right)
 {
-    return Vec2d (left.x * right.x, left.y * right.y);
+    return plug::Vec2d (left.x * right.x, left.y * right.y);
 }
 
-Vec2d Vec2d::operator =  (const Vec2d &right)
+plug::Vec2d plug::Vec2d::operator =  (const plug::Vec2d &right)
 {
     x = right.x;
     y = right.y;
@@ -50,7 +50,7 @@ Vec2d Vec2d::operator =  (const Vec2d &right)
 }
 
 
-Vec2d& operator *= (Vec2d &vec,	 const double val)
+inline plug::Vec2d& plug::operator *= (plug::Vec2d &vec,	 const double val)
 {
     vec.x *= val;
     vec.y *= val;
@@ -58,7 +58,7 @@ Vec2d& operator *= (Vec2d &vec,	 const double val)
     return vec;
 } 
 
-Vec2d& operator /= (Vec2d &vec, const double val)
+inline plug::Vec2d& plug::operator /= (plug::Vec2d &vec, const double val)
 {
     vec.x /= val;
     vec.y /= val;
@@ -66,7 +66,7 @@ Vec2d& operator /= (Vec2d &vec, const double val)
     return vec;
 }
 
-Vec2d& operator += (Vec2d &left, const Vec2d &right)
+inline plug::Vec2d& plug::operator += (plug::Vec2d &left, const plug::Vec2d &right)
 {
     left.x += right.x;
     left.y += right.y;
@@ -74,7 +74,7 @@ Vec2d& operator += (Vec2d &left, const Vec2d &right)
     return left;
 }
 
-Vec2d& operator -= (Vec2d &left, const Vec2d &right)
+inline plug::Vec2d& plug::operator -= (plug::Vec2d &left, const plug::Vec2d &right)
 {
     left.x -= right.x;
     left.y -= right.y;
@@ -82,7 +82,7 @@ Vec2d& operator -= (Vec2d &left, const Vec2d &right)
     return left;
 }   
 
-Vec2d& operator *= (Vec2d &left, const Vec2d &right)
+inline plug::Vec2d& plug::operator *= (plug::Vec2d &left, const plug::Vec2d &right)
 {
     left.x *= right.x;
     left.y *= right.y;
@@ -90,7 +90,7 @@ Vec2d& operator *= (Vec2d &left, const Vec2d &right)
     return left;
 } 
 
-Vec2d& operator /= (Vec2d &left, const Vec2d &right)
+inline plug::Vec2d& plug::operator /= (plug::Vec2d &left, const plug::Vec2d &right)
 {
     left.x /= right.x;
     left.y /= right.y;
@@ -99,25 +99,25 @@ Vec2d& operator /= (Vec2d &left, const Vec2d &right)
 } 
 
 
-double dot (Vec2d &left, Vec2d &right)
+inline double plug::dot (plug::Vec2d &left, plug::Vec2d &right)
 {
     return left.x * right.x + left.y * right.y;
 }	
 
-double cross (Vec2d &left, Vec2d &right)
+inline double plug::cross (plug::Vec2d &left, plug::Vec2d &right)
 {
     return left.x * right.y - left.y * right.x;
 } 
 
-Vec2d normalize (const Vec2d &vec)
+inline plug::Vec2d plug::normalize (const plug::Vec2d &vec)
 {
     double module = sqrt (vec.x * vec.x + vec.y * vec.y);
 
-    return Vec2d (vec.x / module, vec.y / module);
+    return plug::Vec2d (vec.x / module, vec.y / module);
 }
 
 
-void Vec2d::rotate (double deg)
+void plug::Vec2d::rotate (double deg)
 {  
     double radians = deg * PI / 180.0;
     
