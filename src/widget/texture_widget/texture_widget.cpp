@@ -1,6 +1,6 @@
 #include "texture_widget.h"
 
-void plug::M_render_texture::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void M_render_texture::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 

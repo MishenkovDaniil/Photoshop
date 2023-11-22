@@ -1,39 +1,39 @@
 #include "scrollbar.h"
 
-plug::Scrollbar::Scrollbar (plug::Vec2d rh_pos, int height, int obj_height, int obj_allowed_height, plug::Window *window) :
-    plug::Button (rh_pos + plug::Vec2d (-SCROLLBAR_WIDTH, SCROLLBAR_BUTTON_H), 
+Scrollbar::Scrollbar (plug::Vec2d rh_pos, int height, int obj_height, int obj_allowed_height, Window *window) :
+    Button (rh_pos + plug::Vec2d (-SCROLLBAR_WIDTH, SCROLLBAR_BUTTON_H), 
                          SCROLLBAR_WIDTH -2 , 
                          height - 2 * SCROLLBAR_BUTTON_H, 
                          change_canvas_rect_space, 
                          window, 
                          nullptr, 
-                         Color (150, 150, 150)),
+                         plug::Color (150, 150, 150)),
     scrollbar_height_ (height)
 {
-    up_    = new plug::Button ( plug::Vec2d (0, -SCROLLBAR_BUTTON_H), 
-                                SCROLLBAR_WIDTH - 2, 
-                                SCROLLBAR_BUTTON_H, 
-                                change_canvas_rect_up, 
-                                window,
-                                nullptr, 
-                                plug::Color (50, 50, 50));
+    up_    = new Button (plug::Vec2d (0, -SCROLLBAR_BUTTON_H), 
+                        SCROLLBAR_WIDTH - 2, 
+                        SCROLLBAR_BUTTON_H, 
+                        change_canvas_rect_up, 
+                        window,
+                        nullptr, 
+                        plug::Color (50, 50, 50));
 
-    down_  = new plug::Button ( plug::Vec2d (0, height - 2 * SCROLLBAR_BUTTON_H),
-                                SCROLLBAR_WIDTH - 2, 
-                                SCROLLBAR_BUTTON_H, 
-                                change_canvas_rect_down, 
-                                window, 
-                                nullptr, 
-                                plug::Color (50, 50, 50));
+    down_  = new Button (plug::Vec2d (0, height - 2 * SCROLLBAR_BUTTON_H),
+                        SCROLLBAR_WIDTH - 2, 
+                        SCROLLBAR_BUTTON_H, 
+                        change_canvas_rect_down, 
+                        window, 
+                        nullptr, 
+                        plug::Color (50, 50, 50));
 
-    mid_   = new plug::Button ( plug::Vec2d (0, 0), 
-                                SCROLLBAR_WIDTH - 2, 
-                                100, 
-                                change_canvas_rect_mid,
-                                window,
-                                nullptr, 
-                                Black,
-                                MOVE_BUTTON);
+    mid_   = new Button (plug::Vec2d (0, 0), 
+                        SCROLLBAR_WIDTH - 2, 
+                        100, 
+                        change_canvas_rect_mid,
+                        window,
+                        nullptr, 
+                        plug::Black,
+                        MOVE_BUTTON);
     
     buttons.add (up_);
     buttons.add (down_);
@@ -42,7 +42,7 @@ plug::Scrollbar::Scrollbar (plug::Vec2d rh_pos, int height, int obj_height, int 
     assert (up_ && down_ && mid_ && "failed to allocate scrollbar");
 }
 
-plug::Scrollbar::~Scrollbar ()
+Scrollbar::~Scrollbar ()
 {
     delete mid_;    
     delete down_;    
@@ -50,11 +50,11 @@ plug::Scrollbar::~Scrollbar ()
 };
 
 
-void plug::Scrollbar::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Scrollbar::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
 {
-    plug::Button::render  (target, transform_stack);
+    Button::render  (target, transform_stack);
 
-    transform_stack.enter (plug::Transform (layout_->get_position ()));
+    transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
@@ -66,9 +66,9 @@ void plug::Scrollbar::render (sf::RenderTarget &target, plug::TransformStack &tr
 }
 
 
-void plug::Scrollbar::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
+void Scrollbar::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
@@ -83,9 +83,9 @@ void plug::Scrollbar::onMousePressed     (const plug::MousePressedEvent &event, 
     ehc.stack.leave ();
 }
 
-void plug::Scrollbar::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
+void Scrollbar::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
@@ -95,9 +95,9 @@ void plug::Scrollbar::onMouseReleased    (const plug::MouseReleasedEvent &event,
     ehc.stack.leave ();
 }
 
-void plug::Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
+void Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
    
     plug::Vec2d new_pos_ = ehc.stack.top ().apply (event.pos);
     plug::Vec2d mid_pos = event.pos;
@@ -116,7 +116,7 @@ void plug::Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plu
     }
 
     // Vec2d mid_offset = mid_->transform_.offset_;
-    plug::Vec2d mid_offset = mid_->layout_->get_position ();
+    plug::Vec2d mid_offset = mid_->layout_->getPosition ();
 
     double new_y = new_pos_.get_y();
     double old_y = mid_->press_pos_.get_y () + mid_offset.get_y ();
@@ -135,7 +135,7 @@ void plug::Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plu
     if (ehc.stopped) 
     {
         // double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
-        double arg = (double)(mid_->layout_->get_position ().get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
+        double arg = (double)(mid_->layout_->getPosition ().get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
 
         mid_->set_arg ((void *)&arg);
         mid_->run ();
@@ -144,40 +144,40 @@ void plug::Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plu
     ehc.stack.leave ();
 }
 
-void plug::Scrollbar::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void Scrollbar::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::Scrollbar::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void Scrollbar::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::Scrollbar::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
+void Scrollbar::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
 
-bool plug::change_canvas_rect_up (void *window, void *arg)
+bool change_canvas_rect_up (void *window, void *arg)
 {
     sf::Keyboard::Key key = sf::Keyboard::Key::Up;
 
     return change_canvas_rect_up_down (window, &key);
 }
 
-bool plug::change_canvas_rect_down (void *window, void *arg)
+bool change_canvas_rect_down (void *window, void *arg)
 {
     sf::Keyboard::Key key = sf::Keyboard::Key::Down;
 
     return change_canvas_rect_up_down (window, &key);
 }
 
-bool plug::change_canvas_rect_up_down (void *window_, void *arg)
+bool change_canvas_rect_up_down (void *window_, void *arg)
 {
     assert (window_);
-    plug::Window *window = (plug::Window *)window_;
+    Window *window = (Window *)window_;
     assert (window->canvas_);
 
     int top = 0;
@@ -192,7 +192,7 @@ bool plug::change_canvas_rect_up_down (void *window_, void *arg)
         }
         case sf::Keyboard::Key::Down:
         {
-            top = std::min ((unsigned int)(rect.top + UP_DOWN_CANVAS_CHANGE), window->canvas_->canvas_texture.getSize ().y - window->canvas_->height_);
+            top = std::min ((unsigned int)(rect.top + UP_DOWN_CANVAS_CHANGE), window->canvas_->getRenderTexture ().getSize ().y - (unsigned int)window->canvas_->get_size ().y);
             break;
         }
         default:
@@ -205,13 +205,13 @@ bool plug::change_canvas_rect_up_down (void *window_, void *arg)
     return true;
 } 
 
-bool plug::change_canvas_rect_mid (void *window_, void *arg)
+bool change_canvas_rect_mid (void *window_, void *arg)
 {
-    plug::Window *window = (plug::Window *)window_;
+    Window *window = (Window *)window_;
     double val = *(double *)arg;
 
-    int texture_height = window->canvas_->canvas_texture.getSize ().y;
-    int real_height = window->canvas_->height_;
+    int texture_height = window->canvas_->getRenderTexture ().getSize ().y;
+    int real_height = window->canvas_->get_size ().y;
 
     sf::IntRect &rect = window->canvas_->get_draw_rect ();
 
@@ -227,7 +227,7 @@ bool plug::change_canvas_rect_mid (void *window_, void *arg)
     return true;
 }
 
-bool plug::change_canvas_rect_space (void *window, void *arg)
+bool change_canvas_rect_space (void *window, void *arg)
 {
     return true;
 }

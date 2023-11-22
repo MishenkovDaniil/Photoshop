@@ -3,24 +3,24 @@
 
 #include "widget_manager.h"
 
-plug::Widget_manager::Widget_manager (int list_capacity)
+Widget_manager::Widget_manager (int list_capacity)
 {
     list_ctor (&widgets, list_capacity);
 }
 
-plug::Widget_manager::~Widget_manager ()
+Widget_manager::~Widget_manager ()
 {
     list_dtor (&widgets);
 }
 
-void plug::Widget_manager::add_widget (plug::Widget *widget)
+void Widget_manager::add_widget (plug::Widget *widget)
 {
     assert (widget && "added widget is nullptr");
     
     list_insert (&widgets, 0, widget);
 }
 
-void plug::Widget_manager::render (sf::RenderTarget &target)
+void Widget_manager::render (sf::RenderTarget &target)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -38,9 +38,9 @@ void plug::Widget_manager::render (sf::RenderTarget &target)
     }
 }
 
-void plug::Widget_manager::onEvent (sf::Event *event, double delta_time)
+void Widget_manager::onEvent (sf::Event *event, double delta_time)
 {
-   plug:: EHC ehc (transform_stack_);
+   plug::EHC ehc (transform_stack_);
     if (event)
     {
         sf::Event cur_event = *event;
@@ -52,7 +52,7 @@ void plug::Widget_manager::onEvent (sf::Event *event, double delta_time)
                 // printf ("KeyPressed\n");
 
                 plug::KeyboardPressedEvent key_event;
-                key_event.key_id = (KeyCode)cur_event.key.code;
+                key_event.key_id = (plug::KeyCode)cur_event.key.code;
                 
                 onKeyboardPressed (key_event, ehc);
                 break;
@@ -61,7 +61,7 @@ void plug::Widget_manager::onEvent (sf::Event *event, double delta_time)
             {
                 // printf ("KeyReleased\n");
                 plug::KeyboardReleasedEvent key_event;
-                key_event.key_id = (KeyCode)cur_event.key.code;
+                key_event.key_id = (plug::KeyCode)cur_event.key.code;
                 
                 onKeyboardReleased (key_event, ehc);
                 break;
@@ -113,7 +113,7 @@ void plug::Widget_manager::onEvent (sf::Event *event, double delta_time)
     onTick (tick_event, ehc);
 }
 
-void plug::Widget_manager::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
+void Widget_manager::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     // bool is_pressed_on_child = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -137,7 +137,7 @@ void plug::Widget_manager::onMousePressed     (const plug::MousePressedEvent &ev
     // return false;
 }
 
-void plug::Widget_manager::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
+void Widget_manager::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -156,7 +156,7 @@ void plug::Widget_manager::onMouseReleased    (const plug::MouseReleasedEvent &e
     }
 }
 
-void plug::Widget_manager::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
+void Widget_manager::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     bool is_moved = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -180,7 +180,7 @@ void plug::Widget_manager::onMouseMove        (const plug::MouseMoveEvent &event
     // return false;
 }
 
-void plug::Widget_manager::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void Widget_manager::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     bool is_keyboard_pressed = false;
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
@@ -204,7 +204,7 @@ void plug::Widget_manager::onKeyboardPressed  (const plug::KeyboardPressedEvent 
     // return false;
 }
 
-void plug::Widget_manager::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void Widget_manager::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {
@@ -227,7 +227,7 @@ void plug::Widget_manager::onKeyboardReleased (const plug::KeyboardReleasedEvent
     // return false;
 }
 
-void plug::Widget_manager::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
+void Widget_manager::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     // bool on_time_status = false;
     

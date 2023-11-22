@@ -1,36 +1,36 @@
 #include "filter.h"
 
-plug::Filter *plug::Filter_palette::get_last_filter () 
+plug::Filter *Filter_palette::get_last_filter () 
 {
     return last_filter_;
 }
 
-void plug::Filter_palette::set_last_filter (plug::Filter *filter) 
+void Filter_palette::set_last_filter (plug::Filter *filter) 
 {
     last_filter_ = filter;
 }   
 
-plug::Filter *plug::Filter_palette::get_filter      (size_t filter_idx) 
+plug::Filter *Filter_palette::get_filter      (size_t filter_idx) 
 {
     return filters[filter_idx];
 }
 
-void plug::Filter_palette::add_filter (plug::Filter *filter) 
+void Filter_palette::add_filter (plug::Filter *filter) 
 {
     filters.add (filter);
 } 
 
-size_t plug::Filter_palette::get_filter_count () 
+size_t Filter_palette::get_filter_count () 
 {
     return filters.get_size ();
 }   
 
 
-void plug::Light_filter::apply_filter (plug::Canvas &canvas) const
+void Light_filter::apply_filter (plug::Canvas &canvas) const
 {
-    const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
+    const SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 
-    sf::Texture texture = canvas.canvas_texture.getTexture ();
+    sf::Texture texture = canvas.getRenderTexture ().getTexture ();
     unsigned int width  = canvas.get_size ().get_x ();
     unsigned int height = canvas.get_size ().get_y ();
 
@@ -58,16 +58,16 @@ void plug::Light_filter::apply_filter (plug::Canvas &canvas) const
     sf::Sprite sprite;
     sprite.setTexture (texture);
 
-    canvas.canvas_texture.draw (sprite);
-    canvas.canvas_texture.display ();
+    canvas.getRenderTexture ().draw (sprite);
+    canvas.getRenderTexture ().display ();
 
     free (pixels);
 }
 
-void plug::Saturation_filter::apply_filter (plug::Canvas &canvas) const
+void Saturation_filter::apply_filter (plug::Canvas &canvas) const
 {
-    const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
-    sf::Texture texture = canvas.canvas_texture.getTexture ();
+    const SelectionMask *filter_mask = &(canvas.getSelectionMask ());
+    sf::Texture texture = canvas.getRenderTexture ().getTexture ();
     unsigned int width  = canvas.get_size ().get_x ();
     unsigned int height = canvas.get_size ().get_y ();
     
@@ -95,17 +95,17 @@ void plug::Saturation_filter::apply_filter (plug::Canvas &canvas) const
     sf::Sprite sprite;
     sprite.setTexture (texture);
 
-    canvas.canvas_texture.draw (sprite);
-    canvas.canvas_texture.display ();
+    canvas.getRenderTexture ().draw (sprite);
+    canvas.getRenderTexture ().display ();
 
     free (pixels);
 }
 
-void plug::White_black_filter::apply_filter (plug::Canvas &canvas) const
+void White_black_filter::apply_filter (plug::Canvas &canvas) const
 {
-    const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
+    const SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 
-    sf::Texture texture = canvas.canvas_texture.getTexture ();
+    sf::Texture texture = canvas.getRenderTexture ().getTexture ();
     unsigned int width  = canvas.get_size ().get_x ();
     unsigned int height = canvas.get_size ().get_y ();
     
@@ -131,8 +131,8 @@ void plug::White_black_filter::apply_filter (plug::Canvas &canvas) const
     sf::Sprite sprite;
     sprite.setTexture (texture);
 
-    canvas.canvas_texture.draw (sprite);
-    canvas.canvas_texture.display ();
+    canvas.getRenderTexture ().draw (sprite);
+    canvas.getRenderTexture ().display ();
 
     free (pixels);
 }

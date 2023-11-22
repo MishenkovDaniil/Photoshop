@@ -1,18 +1,18 @@
 #include "text.h"
 
-plug::M_text::M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color) :
+M_text::M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color) :
     text_color_ (color),
     capacity_ (START_TEXT_CAPACITY),
     string_size_ ((double)width / TEXT_CHARACTER_WIDTH),
     cur_height (TEXT_CHARACTER_SIZE)
 {
-    layout_ = new plug::Default_layout_box (lh_pos, plug::Vec2d (width, height));
+    layout_ = new Default_layout_box (lh_pos, plug::Vec2d (width, height));
     assert (layout_ );
     buf_ = (char *)calloc (capacity_, sizeof (char));
     assert (buf_);
 }
 
-plug::M_text::~M_text ()
+M_text::~M_text ()
 {
     if (layout_) delete (layout_);
     if (buf_)    free (buf_);
@@ -21,7 +21,7 @@ plug::M_text::~M_text ()
     buf_ = nullptr;
 }
 
-void plug::M_text::render (sf::RenderTarget &target, TransformStack &transform_stack)
+void M_text::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     static size_t a = 0;
     static char b = '|';
@@ -34,16 +34,16 @@ void plug::M_text::render (sf::RenderTarget &target, TransformStack &transform_s
     }
     a++;   
     
-    plug::Transform tr (layout_->get_position ());
+    plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());
 
     plug::Vec2d lh_pos = unite.getOffset ();
-    plug::Vec2d size   = layout_->get_size ();
+    plug::Vec2d size   = layout_->getSize ();
     // size = unite.scale_apply (size);
     
-    sf::RectangleShape  text_rect (layout_->get_size ());
-                        text_rect.setFillColor (Transparent);
-                        text_rect.setOutlineColor (Black);
+    sf::RectangleShape  text_rect (layout_->getSize ());
+                        text_rect.setFillColor (plug::Transparent);
+                        text_rect.setOutlineColor (plug::Black);
                         text_rect.setPosition (unite.getOffset ());
                         text_rect.setOutlineThickness (1);
     
@@ -61,11 +61,11 @@ void plug::M_text::render (sf::RenderTarget &target, TransformStack &transform_s
     target.draw (text);
 }   
 
-void plug::M_text::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
+void M_text::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     is_pressed = true; // check containing
 
-    // Transform unite = Transform (layout_->get_position ()).unite (transform_stack.top ());
+    // Transform unite = Transform (layout_->getPosition ()).unite (transform_stack.top ());
 
     // Vec2d pos_ = unite.apply_transform (pos);
     // printf ("pos = %lf, %lf\n", pos.get_x (), pos.get_y ());
@@ -77,7 +77,7 @@ void plug::M_text::onMousePressed     (const plug::MousePressedEvent &event, plu
     return;
 }
 
-void plug::M_text::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
+void M_text::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     if (is_pressed)
     {
@@ -86,12 +86,12 @@ void plug::M_text::onMouseReleased    (const plug::MouseReleasedEvent &event, pl
     }
 }
 
-void plug::M_text::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
+void M_text::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::M_text::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void M_text::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     // if (!is_pressed)
     //     return false;
@@ -114,12 +114,12 @@ void plug::M_text::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, 
     ehc.stopped = true;
 }
 
-void plug::M_text::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void M_text::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::M_text::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
+void M_text::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     static size_t a = 0;
     static char b = '|';
@@ -137,41 +137,42 @@ void plug::M_text::onTick             (const plug::TickEvent &event, plug::EHC &
 
 
 
-char plug::M_text::convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_)
+char M_text::convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_)
 {
-    if (key >= A && key <= Z)
+    if (key >= plug::KeyCode::A && key <= plug::KeyCode::Z)
     {
-        if (latest_key_ == LShift || latest_key_ == RShift)
-            return 'A' + key - A;
+        if (latest_key_ == plug::KeyCode::LShift || 
+            latest_key_ == plug::KeyCode::RShift)
+            return 'A' + ((int)key - (int)plug::KeyCode::A);
         else 
-            return 'a' + key - A;
+            return 'a' + ((int)key - (int)plug::KeyCode::A);
     }
-    else if (key >= Num0 && key <= Num9)
+    else if (key >= plug::KeyCode::Num0 && key <= plug::KeyCode::Num9)
     {
-        if (!(latest_key_ == LShift || latest_key_ == RShift))
-            return '0' + key - Num0;
+        if (!(latest_key_ == plug::KeyCode::LShift || latest_key_ == plug::KeyCode::RShift))
+            return '0' + ((int)key - (int)plug::KeyCode::Num0);
     }
 
     switch (key)
     {
-        case Enter:
+        case plug::KeyCode::Enter:
         {
             letters_in_string_ = 0;
             return '\n';
         }
-        case Backslash:
+        case plug::KeyCode::Backslash:
             return '\\';
-        case Comma:
+        case plug::KeyCode::Comma:
             return ',';
-        case Period:
+        case plug::KeyCode::Period:
             return '.';
-        case Backspace:
+        case plug::KeyCode::Backspace:
         {
             letters_in_string_ = letters_in_string_ ? --letters_in_string_: letters_in_string_;
             len_ = len_ ? --len_ : len_;
             *(buf_ + len_) = '\0';
         }
-        case Space:
+        case plug::KeyCode::Space:
         {
             return ' ';
         }
@@ -180,7 +181,7 @@ char plug::M_text::convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_
     }
 }
 
-void plug::M_text::check_string ()
+void M_text::check_string ()
 {
     if (letters_in_string_ > string_size_)
     {
@@ -195,7 +196,7 @@ void plug::M_text::check_string ()
         cur_height += TEXT_CHARACTER_SIZE;
     }
 
-    if (is_filled_ == false && cur_height > layout_->get_size ().get_y ())
+    if (is_filled_ == false && cur_height > layout_->getSize ().get_y ())
     {
         buf_[len_ - 1] = '\0';
         len_++;

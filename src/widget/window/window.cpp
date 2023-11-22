@@ -9,33 +9,33 @@
 #include "canvas/canvas.h"
 #include "scrollbar/scrollbar.h"
 
-plug::Window::Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
+Window::Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
     width_ (width),
     height_ (height),
     contained_widgets (nullptr, 3)
 {
-    layout_= new plug::Default_layout_box (lh_pos, Vec2d (width, height));
+    layout_= new Default_layout_box (lh_pos, plug::Vec2d (width, height));
 
-    header_ = new plug::Header (Vec2d (0, 0), width, w_name, this);
-    canvas_ = new plug::Canvas (width, height - HEADER_HEIGHT, Color (255, 255, 255, 255), Vec2d (0, HEADER_HEIGHT), palette);
+    header_ = new Header (plug::Vec2d (0, 0), width, w_name, this);
+    canvas_ = new CanvasView (width, height - HEADER_HEIGHT, plug::White, plug::Vec2d (0, HEADER_HEIGHT), palette);
     assert (header_ && canvas_ && "failed to allocate window canvas and header\n");
 
     if (need_scrollbar)
     {
-        scrollbar_ = new plug::Scrollbar (Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->height_, height - HEADER_HEIGHT, this);
+        scrollbar_ = new Scrollbar (plug::Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->view.height_, height - HEADER_HEIGHT, this);
         assert (scrollbar_ && "failed to allocate window scrollbar \n");
 
-        plug::Widget *scrollbar = scrollbar_;
+        Widget *scrollbar = scrollbar_;
         contained_widgets.add (scrollbar);
     }
 
-    plug::Widget *header = header_;
-    plug::Widget *canvas = canvas_;
+    Widget *header = header_;
+    Widget *canvas = canvas_;
     contained_widgets.add (header);
     contained_widgets.add (canvas);
 }
 
-plug::Window::~Window ()
+Window::~Window ()
 {
     width_  = __INT_MAX__; 
     height_ = __INT_MAX__;
@@ -46,9 +46,9 @@ plug::Window::~Window ()
     delete layout_;
 }
 
-void plug::Window::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Window::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
 {
-    transform_stack.enter (plug::Transform (layout_->get_position ()));
+    transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
@@ -74,9 +74,9 @@ void plug::Window::render (sf::RenderTarget &target, plug::TransformStack &trans
 
 
 
-void plug::Window::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
+void Window::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     size_t widgets_num = contained_widgets.get_size ();
 
@@ -96,9 +96,9 @@ void plug::Window::onMousePressed     (const plug::MousePressedEvent &event, plu
     ehc.stack.leave ();
 }
 
-void plug::Window::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
+void Window::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     size_t widgets_num = contained_widgets.get_size ();
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
@@ -110,9 +110,9 @@ void plug::Window::onMouseReleased    (const plug::MouseReleasedEvent &event, pl
     ehc.stack.leave ();
 }
 
-void plug::Window::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
+void Window::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     size_t widgets_num = contained_widgets.get_size ();
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
@@ -131,7 +131,7 @@ void plug::Window::onMouseMove        (const plug::MouseMoveEvent &event, plug::
     ehc.stack.leave ();
 }
 
-void plug::Window::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void Window::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
 
@@ -146,7 +146,7 @@ void plug::Window::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, 
     }
 } 
 
-void plug::Window::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void Window::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
     
@@ -157,7 +157,7 @@ void plug::Window::onKeyboardReleased (const plug::KeyboardReleasedEvent &event,
     }
 }
 
-void plug::Window::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
+void Window::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     size_t widgets_num = contained_widgets.get_size ();
     for (size_t window_widget_idx = 0; window_widget_idx < widgets_num; ++window_widget_idx)
@@ -169,9 +169,9 @@ void plug::Window::onTick             (const plug::TickEvent &event, plug::EHC &
     }
 }
 
-bool plug::Window::contains (const plug::Vec2d &pos)
+bool Window::contains (const plug::Vec2d &pos)
 {   
-    plug::Vec2d pos_ = pos - layout_->get_position ();
+    plug::Vec2d pos_ = pos - layout_->getPosition ();
 
     double x = pos_.get_x ();
     double y = pos_.get_y ();

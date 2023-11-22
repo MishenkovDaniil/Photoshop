@@ -43,17 +43,17 @@ int main ()
 
     plug::Vec2d pos (50, 50);
 
-    plug::Widget_manager widget_manager; 
+    Widget_manager widget_manager; 
 
-    plug::Tool_palette palette;
-    plug::Master_window main_window (window_size.x, window_size.y, plug::Vec2d (0, 0), "master");
+    Tool_palette palette;
+    Master_window main_window (window_size.x, window_size.y, plug::Vec2d (0, 0), "master");
     
-    plug::Clock clock_button (plug::Vec2d (0, 0), 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
+    Clock clock_button (plug::Vec2d (0, 0), 100, 30, nullptr, &main_window, 10, 10, 55, nullptr);
     widget_manager.add_widget (&main_window);
     widget_manager.add_widget (&clock_button);
 
-    plug::Window child_window (600, 600, plug::Vec2d (200, 200), "window_1");
-    plug::Window child_window_2 (600, 600, plug::Vec2d (600, 600), "window_2");
+    Window child_window (600, 600, plug::Vec2d (200, 200), "window_1");
+    Window child_window_2 (600, 600, plug::Vec2d (600, 600), "window_2");
     main_window.add_window (&child_window);
     main_window.add_window (&child_window_2);
 
@@ -71,12 +71,12 @@ int main ()
     clock_button.change_time (time_info->tm_sec, time_info->tm_min, time_info->tm_hour);
 
     
-    class plug::Brush brush_tool; 
-    plug::Line line_tool; 
-    plug::Circle_shape circle_tool; 
-    plug::Rect_shape rect_tool; 
-    plug::Fill fill_tool; 
-    plug::Text_tool text_tool;
+    class Brush brush_tool; 
+    Line line_tool; 
+    Circle_shape circle_tool; 
+    Rect_shape rect_tool; 
+    Fill fill_tool; 
+    Text_tool text_tool;
 
     palette.add_tool (&brush_tool);
     palette.add_tool (&line_tool);
@@ -85,19 +85,19 @@ int main ()
     palette.add_tool (&fill_tool);
     palette.add_tool (&text_tool);
 
-    plug::Button_palette button_palette (plug::Vec2d (1650, 50), 200, 200, &palette);
+    Button_palette button_palette (plug::Vec2d (1650, 50), 200, 200, &palette);
     
-    plug::Light_filter light_incr (LIGHT_DELTA_CHANGE);
-    plug::Light_filter light_decr (-LIGHT_DELTA_CHANGE);
-    plug::Saturation_filter saturation_incr (SATURATION_DELTA_CHANGE);
-    plug::Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
-    plug::White_black_filter black_white;
+    Light_filter light_incr (LIGHT_DELTA_CHANGE);
+    Light_filter light_decr (-LIGHT_DELTA_CHANGE);
+    Saturation_filter saturation_incr (SATURATION_DELTA_CHANGE);
+    Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
+    White_black_filter black_white;
 
-    plug::Filter_tool light_incr_tool (&light_incr);
-    plug::Filter_tool light_decr_tool (&light_decr);
-    plug::Filter_tool saturation_incr_tool (&saturation_incr);
-    plug::Filter_tool saturation_decr_tool (&saturation_decr);
-    plug::Filter_tool black_white_tool (&black_white);
+    Filter_tool light_incr_tool (&light_incr);
+    Filter_tool light_decr_tool (&light_decr);
+    Filter_tool saturation_incr_tool (&saturation_incr);
+    Filter_tool saturation_decr_tool (&saturation_decr);
+    Filter_tool black_white_tool (&black_white);
 
     sf::Texture circle_pressed_texture;
     sf::Texture  brush_pressed_texture;
@@ -125,40 +125,40 @@ int main ()
        rect_pressed_texture.loadFromFile (rect_img);
        fill_pressed_texture.loadFromFile (fill_img);
 
-    plug::Pair light_incr_args      = plug::Pair((void *)&palette, &light_incr_tool);
-    plug::Pair light_decr_args      = plug::Pair((void *)&palette, &light_decr_tool);
-    plug::Pair saturation_incr_args = plug::Pair((void *)&palette, &saturation_incr_tool);
-    plug::Pair saturation_decr_args = plug::Pair((void *)&palette, &saturation_decr_tool);
-    plug::Pair black_white_args     = plug::Pair((void *)&palette, &black_white_tool);
+    Pair light_incr_args      = Pair((void *)&palette, &light_incr_tool);
+    Pair light_decr_args      = Pair((void *)&palette, &light_decr_tool);
+    Pair saturation_incr_args = Pair((void *)&palette, &saturation_incr_tool);
+    Pair saturation_decr_args = Pair((void *)&palette, &saturation_decr_tool);
+    Pair black_white_args     = Pair((void *)&palette, &black_white_tool);
 
-    plug::Button red_button    (plug::Vec2d (0, 160),  20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Red,    plug::Red,    PRESS_BUTTON);
-    plug::Button blue_button   (plug::Vec2d (20, 160), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Blue,   plug::Blue,   PRESS_BUTTON);
-    plug::Button green_button  (plug::Vec2d (40, 160), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Green,  plug::Green,  PRESS_BUTTON);
-    plug::Button white_button  (plug::Vec2d (60, 160), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::White,  plug::White,  PRESS_BUTTON);
-    plug::Button black_button  (plug::Vec2d (80, 160), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Black,  plug::Black,  PRESS_BUTTON);
-    plug::Button cyan_button   (plug::Vec2d (0, 180),  20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Cyan,   plug::Cyan,   PRESS_BUTTON);
-    plug::Button purple_button (plug::Vec2d (20, 180), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Purple, plug::Purple, PRESS_BUTTON);
-    plug::Button yellow_button (plug::Vec2d (40, 180), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Yellow, plug::Yellow, PRESS_BUTTON);
-    plug::Button brown_button  (plug::Vec2d (60, 180), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Brown,  plug::Brown,  PRESS_BUTTON);
-    plug::Button maroon_button (plug::Vec2d (80, 180), 20, 20, plug::color_button_run_fn, (void *)&main_window, (void *)&plug::Maroon, plug::Maroon, PRESS_BUTTON);
+    Button red_button    (plug::Vec2d (0, 160),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Red,    plug::Red,    PRESS_BUTTON);
+    Button blue_button   (plug::Vec2d (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Blue,   plug::Blue,   PRESS_BUTTON);
+    Button green_button  (plug::Vec2d (40, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Green,  plug::Green,  PRESS_BUTTON);
+    Button white_button  (plug::Vec2d (60, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::White,  plug::White,  PRESS_BUTTON);
+    Button black_button  (plug::Vec2d (80, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Black,  plug::Black,  PRESS_BUTTON);
+    Button cyan_button   (plug::Vec2d (0, 180),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Cyan,   plug::Cyan,   PRESS_BUTTON);
+    Button purple_button (plug::Vec2d (20, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Purple, plug::Purple, PRESS_BUTTON);
+    Button yellow_button (plug::Vec2d (40, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Yellow, plug::Yellow, PRESS_BUTTON);
+    Button brown_button  (plug::Vec2d (60, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Brown,  plug::Brown,  PRESS_BUTTON);
+    Button maroon_button (plug::Vec2d (80, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Maroon, plug::Maroon, PRESS_BUTTON);
     
-    plug::Texture_button brush_button  (plug::Vec2d (0, 0),   50, 50, brush_pressed_texture,  brush_released_texture,  plug::tool_run_fn, (void *)&main_window, (void *)&brush_tool,  PRESS_BUTTON);
-    plug::Texture_button line_button   (plug::Vec2d (50, 0),  50, 50, line_pressed_texture,   line_released_texture,   plug::tool_run_fn, (void *)&main_window, (void *)&line_tool,   PRESS_BUTTON);
-    plug::Texture_button circle_button (plug::Vec2d (100, 0), 50, 50, circle_pressed_texture, circle_released_texture, plug::tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
-    plug::Texture_button rect_button   (plug::Vec2d (150, 0), 50, 50, rect_pressed_texture,   rect_released_texture,   plug::tool_run_fn, (void *)&main_window, (void *)&rect_tool,   PRESS_BUTTON);
-    plug::Texture_button fill_button   (plug::Vec2d (0, 50),  50, 50, fill_released_texture,  fill_released_texture,   plug::tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
-    plug::Texture_button text_button   (plug::Vec2d (50, 50), 50, 50, text_released_texture,  text_released_texture,   plug::tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
+    Texture_button brush_button  (plug::Vec2d (0, 0),   50, 50, brush_pressed_texture,  brush_released_texture,  tool_run_fn, (void *)&main_window, (void *)&brush_tool,  PRESS_BUTTON);
+    Texture_button line_button   (plug::Vec2d (50, 0),  50, 50, line_pressed_texture,   line_released_texture,   tool_run_fn, (void *)&main_window, (void *)&line_tool,   PRESS_BUTTON);
+    Texture_button circle_button (plug::Vec2d (100, 0), 50, 50, circle_pressed_texture, circle_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
+    Texture_button rect_button   (plug::Vec2d (150, 0), 50, 50, rect_pressed_texture,   rect_released_texture,   tool_run_fn, (void *)&main_window, (void *)&rect_tool,   PRESS_BUTTON);
+    Texture_button fill_button   (plug::Vec2d (0, 50),  50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
+    Texture_button text_button   (plug::Vec2d (50, 50), 50, 50, text_released_texture,  text_released_texture,   tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
     
-    plug::String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++", plug::Purple, plug::Purple, plug::tool_run_fn, (void *)&main_window, (void *)&light_incr_args,      PRESS_BUTTON);
-    plug::String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--", plug::Purple, plug::Purple, plug::tool_run_fn, (void *)&main_window, (void *)&light_decr_args,      PRESS_BUTTON);
-    plug::String_button saturation_incr_tool_button (plug::Vec2d (120, 0), 60, 20, "satur++", plug::Purple, plug::Purple, plug::tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args, PRESS_BUTTON);
-    plug::String_button saturation_decr_tool_button (plug::Vec2d (180, 0), 60, 20, "satur--", plug::Purple, plug::Purple, plug::tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
-    plug::String_button black_white_tool_button     (plug::Vec2d (240, 0), 60, 20, "black-white", plug::Purple, plug::Purple, plug::tool_run_fn, (void *)&main_window, (void *)&black_white_args, PRESS_BUTTON);
+    String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,      PRESS_BUTTON);
+    String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,      PRESS_BUTTON);
+    String_button saturation_incr_tool_button (plug::Vec2d (120, 0), 60, 20, "satur++", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args, PRESS_BUTTON);
+    String_button saturation_decr_tool_button (plug::Vec2d (180, 0), 60, 20, "satur--", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
+    String_button black_white_tool_button     (plug::Vec2d (240, 0), 60, 20, "black-white", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&black_white_args, PRESS_BUTTON);
     
     // main_window.add_menu_button (&filter_tool_button);
-    plug::String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
+    String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
     
-    plug::List_button filters (&filter_button);
+    List_button filters (&filter_button);
     filters.add_button (&light_incr_tool_button);
     filters.add_button (&light_decr_tool_button);
     filters.add_button (&saturation_incr_tool_button);
@@ -188,10 +188,10 @@ int main ()
     widget_manager.add_widget (&button_palette);
     
 
-    plug::String_button file_button (plug::Vec2d (0, 0), 50, 20, "File", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
-    plug::String_button save_button (plug::Vec2d (0, 0), 0, 20,  "Save", plug::Purple, plug::Purple, save_file, &main_window, nullptr, PRESS_BUTTON);
+    String_button file_button (plug::Vec2d (0, 0), 50, 20, "File", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
+    String_button save_button (plug::Vec2d (0, 0), 0, 20,  "Save", plug::Purple, plug::Purple, save_file, &main_window, nullptr, PRESS_BUTTON);
 
-    plug::List_button file_list (&file_button);
+    List_button file_list (&file_button);
     file_list.add_button (&save_button);
     main_window.add_menu_button (&file_list);
 
@@ -243,7 +243,7 @@ bool save_file (void *widget, void *arg)
 {
     assert (widget);
 
-    plug::Master_window *m_window = (plug::Master_window *)widget;
+    Master_window *m_window = (Master_window *)widget;
     static sf::String enter_request_string("Enter filename:");
     static sf::Font text_font;
     text_font.loadFromFile (DEFAULT_FONT_FILE);
@@ -253,12 +253,12 @@ bool save_file (void *widget, void *arg)
     char buf[512] = {};
     scanf ("%s", buf);
 
-    plug::Window *cur_window = m_window->get_list_elem (1);
+    Window *cur_window = m_window->get_list_elem (1);
     assert (cur_window);
-    plug::Canvas *cur_canvas = cur_window->get_canvas ();
+    CanvasView *cur_canvas = cur_window->get_canvas ();
     assert (cur_canvas);
 
-    sf::Texture texture (cur_canvas->canvas_texture.getTexture ());
+    sf::Texture texture (cur_canvas->getRenderTexture ().getTexture ());
     bool status = texture.copyToImage ().saveToFile (buf);
 
     return status;

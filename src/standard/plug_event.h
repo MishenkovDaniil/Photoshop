@@ -1,10 +1,10 @@
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef PLUG_EVENT_H
+#define PLUG_EVENT_H
 
 #include <iostream>
 #include "../graphic_structures/vector/vector.h"
-#include "constants.h"
-
+#include "plug_mouse_button.h"
+#include "plug_key_code.h"
 
 namespace plug
 {
@@ -88,4 +88,4 @@ namespace plug
     };
 }
 
-#endif /* EVENT_H */
+#endif /* PLUG_EVENT_H */

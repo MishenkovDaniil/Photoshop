@@ -1,30 +1,30 @@
 #include "menu.h"
 
 
-plug::Menu::Menu (plug::Vec2d lh_pos, int width, int height) :
+Menu::Menu (plug::Vec2d lh_pos, int width, int height) :
     width_ (width),
     height_ (height)
 {
-    layout_ = new plug::Default_layout_box (lh_pos, plug::Vec2d (width, height));
+    layout_ = new Default_layout_box (lh_pos, plug::Vec2d (width, height));
     assert (layout_);
 }
 
-plug::Menu::~Menu ()
+Menu::~Menu ()
 {
     delete layout_;
 }
 
 
-void plug::Menu::add_button (Button *button)
+void Menu::add_button (Button *button)
 {
     assert (button && "nullptr button added to menu");
     
     buttons.add (button);
 }
 
-void plug::Menu::render (sf::RenderTarget &target, TransformStack &transform_stack) 
+void Menu::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
 {
-    transform_stack.enter (plug::Transform (layout_->get_position ()));
+    transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
@@ -39,7 +39,7 @@ void plug::Menu::render (sf::RenderTarget &target, TransformStack &transform_sta
     size_t button_num = buttons.get_size ();
     for (int button_idx = 0; button_idx < button_num; ++button_idx)
     {
-        plug::Button *button = buttons[button_idx];
+        Button *button = buttons[button_idx];
         if (!button)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -55,13 +55,13 @@ void plug::Menu::render (sf::RenderTarget &target, TransformStack &transform_sta
     transform_stack.leave ();
 }
 
-void plug::Menu::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
+void Menu::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
     size_t button_num = buttons.get_size ();
     for (int button_idx = 0; button_idx < button_num; ++button_idx)
     {
-        plug::Button *button = buttons[button_idx];
+        Button *button = buttons[button_idx];
         if (!button)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -78,14 +78,14 @@ void plug::Menu::onMousePressed     (const plug::MousePressedEvent &event, plug:
     ehc.stack.leave ();
 }
 
-void plug::Menu::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
+void Menu::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     size_t button_num = buttons.get_size ();
     for (int button_idx = 0; button_idx < button_num; ++button_idx)
     {
-        plug::Button *button = buttons[button_idx];
+        Button *button = buttons[button_idx];
         if (!button)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"
@@ -102,9 +102,9 @@ void plug::Menu::onMouseReleased    (const plug::MouseReleasedEvent &event, plug
     ehc.stack.leave ();
 }
 
-void plug::Menu::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
+void Menu::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
-    ehc.stack.enter (plug::Transform (layout_->get_position ()));
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     size_t button_num = buttons.get_size ();
     for (int button_idx = 0; button_idx < button_num; ++button_idx)
@@ -126,17 +126,17 @@ void plug::Menu::onMouseMove        (const plug::MouseMoveEvent &event, plug::EH
     ehc.stack.leave ();
 }
 
-void plug::Menu::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void Menu::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::Menu::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void Menu::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
-void plug::Menu::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
+void Menu::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
 }

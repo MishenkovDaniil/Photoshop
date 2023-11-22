@@ -10,236 +10,220 @@
 #include "../../widget/window/window.h"
 #include "../filter/filter.h"
 #include "../../widget/text/text.h"
-#include "../plugin.h"
 //sf::RTX --> canvas 
 
+#include "../../standard/plug_tool.h"
+#include "../../standard/plug_plugin.h"
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
 static const double DEFAULT_BRUSH_THICKNESS     = 10.0;
 
-namespace plug
+class Filter;
+class ColorPalette;
+class Tool : public plug::Tool
+{    
+protected:
+    Widget *widget_ = nullptr;
+    plug::ControlState state_;
+    plug::ColorPalette *color_palette_ = nullptr;
+    plug::Canvas *active_canvas_ = nullptr;
+
+public:
+    virtual ~Tool () = default;
+
+    void setColorPalette (plug::ColorPalette &palette) override {color_palette_ = &palette;};
+    void setActiveCanvas (plug::Canvas &canvas) override {active_canvas_ = (plug::Canvas *)&canvas;};
+
+    virtual void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) = 0;
+    virtual void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) = 0;
+    virtual void on_modifier_1          (const plug::ControlState &control_state) = 0;
+    virtual void on_modifier_2          (const plug::ControlState &control_state) = 0;
+    virtual void on_modifier_3          (const plug::ControlState &control_state) = 0;
+
+    virtual void on_move                (plug::Vec2d &pos) = 0;
+    virtual void on_confirm             () = 0;
+    virtual void on_cancel              () = 0;
+    virtual void on_released_key        () = 0;
+
+    Widget *get_widget () {return widget_;};
+
+    virtual plug::Plugin *tryGetInterface (size_t) override {return (plug::Plugin *)nullptr;};	
+    virtual void addReference (plug::Plugin *) override {};
+    virtual void release (plug::Plugin *) override {};
+    virtual const plug::PluginData *getPluginData () const override {return nullptr;};
+};
+
+class Brush : public Tool
 {
-    class Filter;
-    class Tool;
-    class ColorPalette;
-    class Canvas;
+    plug::Vec2d prev_pos = 0;
+    bool is_pressed = false;
 
-    enum State
-    {
-        Pressed, 
-        Released
-    };
+public:
+    Brush ();
+    ~Brush ();
 
-    struct ControlState 
-    {
-        State state = Released;
-    };
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-    class Tool : public Plugin
-    {    
-    protected:
-        Widget *widget_ = nullptr;
-        ControlState state_;
-        ColorPalette *color_palette_ = nullptr;
-        Canvas *active_canvas_ = nullptr;
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {};
+};
 
-    public:
-        virtual ~Tool () = default;
+class Line : public Tool 
+{
+    sf::Vertex vertex[2];
+    plug::Vec2d latest_pos_ = plug::Vec2d ();
 
-        virtual void setColorPalette (ColorPalette &palette) {color_palette_ = &palette;};
-        void setActiveCanvas (Canvas &canvas) {active_canvas_ = &canvas;}; 	// храним канвас в самом туле чтобы не передавать его все время в качестве параметра и для того чтобы реагировать на изменение активного канваса.
+public:
+    Line ();
+    ~Line ();
 
-        virtual void on_main_button         (const ControlState &control_state, Vec2d &pos) = 0;
-        virtual void on_secondary_button    (const ControlState &control_state, Vec2d &pos) = 0;
-        virtual void on_modifier_1          (const ControlState &control_state) = 0;
-        virtual void on_modifier_2          (const ControlState &control_state) = 0;
-        virtual void on_modifier_3          (const ControlState &control_state) = 0;
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-        virtual void on_move                (Vec2d &pos) = 0;
-        virtual void on_confirm             () = 0;
-        virtual void on_cancel              () = 0;
-        virtual void on_released_key        () = 0;
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {};
+};
 
-        Widget *get_widget () {return widget_;};
+// class Polygon : public Tool
 
-        virtual Plugin *tryGetInterface (size_t) override {return nullptr;};	
-        virtual void addReference (Plugin *) override {};
-        virtual void release (Plugin *) override {};
-        virtual const PluginData *getPluginData () const override {return nullptr;};
-    };
+class Circle_shape : public Tool
+{
+    plug::Vec2d center_;
+    plug::Vec2d last_center_;
+    sf::CircleShape circle_ = sf::CircleShape ();
+    plug::Vec2d latest_pos_ = plug::Vec2d ();
+    bool is_on_modifier_1_ = false;
 
-    class Brush : public Tool
-    {
-        Vec2d prev_pos = 0;
-        bool is_pressed = false;
+public:
+    Circle_shape ();
+    ~Circle_shape ();
 
-    public:
-        Brush ();
-        ~Brush ();
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {is_on_modifier_1_ = false;};
+};
 
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {};
-    };
+class Rect_shape : public Tool 
+{
+    plug::Vec2d center_;
+    plug::Vec2d last_center_;
+    sf::RectangleShape rect_ = sf::RectangleShape ();
+    plug::Color canvas_bg_color = plug::Transparent;
+    plug::Vec2d latest_pos_ = plug::Vec2d ();
+    bool is_on_modifier_1_ = false;
 
-    class Line : public Tool 
-    {
-        sf::Vertex vertex[2];
-        Vec2d latest_pos_ = Vec2d ();
+public:
+    Rect_shape ();
+    ~Rect_shape ();
 
-    public:
-        Line ();
-        ~Line ();
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {is_on_modifier_1_ = false;};
 
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {};
-    };
+    friend class Text_tool;
+};
 
-    // class Polygon : public Tool
+class Fill : public Tool
+{
+    uint8_t *pixel_arr_ = 0;
+    plug::Vec2d size_;
 
-    class Circle_shape : public Tool
-    {
-        Vec2d center_;
-        Vec2d last_center_;
-        sf::CircleShape circle_ = sf::CircleShape ();
-        Vec2d latest_pos_ = Vec2d ();
-        bool is_on_modifier_1_ = false;
+    plug::Color fill_color_;
+    plug::Color cur_color_;
 
-    public:
-        Circle_shape ();
-        ~Circle_shape ();
+    sf::Image prev_canvas_img_;
+    sf::Texture draw_texture_;
+    sf::Sprite draw_sprite_;
+    sf::IntRect rect_;
 
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
+public:
+    Fill ();
+    ~Fill ();
 
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {is_on_modifier_1_ = false;};
-    };
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-    class Rect_shape : public Tool 
-    {
-        Vec2d center_;
-        Vec2d last_center_;
-        sf::RectangleShape rect_ = sf::RectangleShape ();
-        Color canvas_bg_color = Transparent;
-        Vec2d latest_pos_ = Vec2d ();
-        bool is_on_modifier_1_ = false;
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {};
 
-    public:
-        Rect_shape ();
-        ~Rect_shape ();
-
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
-
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {is_on_modifier_1_ = false;};
-
-        friend class Text_tool;
-    };
-
-    class Fill : public Tool
-    {
-        uint8_t *pixel_arr_ = 0;
-        Vec2d size_;
-
-        Color fill_color_;
-        Color cur_color_;
-
-        sf::Image prev_canvas_img_;
-        sf::Texture draw_texture_;
-        sf::Sprite draw_sprite_;
-        sf::IntRect rect_;
-
-    public:
-        Fill ();
-        ~Fill ();
-
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
-
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {};
-
-    private:
-        void fill_pixels (Vec2d &pos);
-    };
+private:
+    void fill_pixels (plug::Vec2d &pos);
+};
 
 
-    class Filter_tool : public Tool 
-    {
-        Filter *filter_ = nullptr;
+class Filter_tool : public Tool 
+{
+    Filter *filter_ = nullptr;
 
-    public:
-        Filter_tool (Filter *filter) : filter_(filter) {};
-        ~Filter_tool () = default;
-        
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
+public:
+    Filter_tool (Filter *filter) : filter_(filter) {};
+    ~Filter_tool () = default;
+    
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {};
-    };
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {};
+};
 
-    class Text_tool : public Tool
-    {
-        const char buf[512] = {};
-        Rect_shape rect_tool = Rect_shape ();
-        bool on_rect_ = false;
-        Vec2d latest_pos_ = Vec2d (0, 0);
+class Text_tool : public Tool
+{
+    const char buf[512] = {};
+    Rect_shape rect_tool = Rect_shape ();
+    bool on_rect_ = false;
+    plug::Vec2d latest_pos_ = plug::Vec2d (0, 0);
 
-    public:
-        Text_tool ();
-        ~Text_tool ();
+public:
+    Text_tool ();
+    ~Text_tool ();
 
-        void setColorPalette (ColorPalette &palette) override {color_palette_ = &palette; rect_tool.color_palette_ = &palette;};
-        void on_main_button         (const ControlState &control_state, Vec2d &pos) override;
-        void on_secondary_button    (const ControlState &control_state, Vec2d &pos) override;
-        void on_modifier_1          (const ControlState &control_state) override;
-        void on_modifier_2          (const ControlState &control_state) override;
-        void on_modifier_3          (const ControlState &control_state) override;
+    void setColorPalette (plug::ColorPalette &palette) override {color_palette_ = &palette; rect_tool.color_palette_ = &palette;};
+    void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) override;
+    void on_modifier_1          (const plug::ControlState &control_state) override;
+    void on_modifier_2          (const plug::ControlState &control_state) override;
+    void on_modifier_3          (const plug::ControlState &control_state) override;
 
-        void on_move                (Vec2d &pos) override;
-        void on_confirm             () override;
-        void on_cancel              () override;
-        void on_released_key        () override {if (on_rect_) rect_tool.on_released_key ();};
-    };
-}
+    void on_move                (plug::Vec2d &pos) override;
+    void on_confirm             () override;
+    void on_cancel              () override;
+    void on_released_key        () override {if (on_rect_) rect_tool.on_released_key ();};
+};
 
 #endif /* TOOLS_H */

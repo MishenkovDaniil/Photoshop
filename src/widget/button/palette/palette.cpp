@@ -1,16 +1,16 @@
 #include "palette.h"
 
-plug::Button_palette::Button_palette (plug::Vec2d lh_pos, int width, int height, plug::Tool_palette *palette) : 
-    plug::Menu (lh_pos, width, height),
+Button_palette::Button_palette (plug::Vec2d lh_pos, int width, int height, Tool_palette *palette) : 
+    Menu (lh_pos, width, height),
     palette_ (palette)
 {};
 
-plug::Button_palette::~Button_palette () 
+Button_palette::~Button_palette () 
 {
     size_t button_num = buttons.get_size ();
     for (int tool_button_idx = 0; tool_button_idx < button_num; ++tool_button_idx)
     {
-        plug::Button *tool_button = buttons.top ();
+        Button *tool_button = buttons.top ();
         if (!tool_button)
         {
             fprintf (stderr, "Event error: nil tool_button is detected.\n"
@@ -20,49 +20,49 @@ plug::Button_palette::~Button_palette ()
         }
         assert (tool_button);
 
-        plug::Pair *button_args = (plug::Pair *)tool_button->arg_;
-        tool_button->arg_ = ((plug::Pair *)tool_button->arg_)->arg_2;
+        Pair *button_args = (Pair *)tool_button->arg_;
+        tool_button->arg_ = ((Pair *)tool_button->arg_)->arg_2;
 
         delete button_args;
         buttons.pop ();
     }
 }
 
-void plug::Button_palette::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
+void Button_palette::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     switch (event.key_id)
     {
-        case B:
+        case plug::KeyCode::B:
         {
             buttons[Brush_idx]->run ();
             ehc.stopped = true;
             return;
         }
-        case L:
+        case plug::KeyCode::L:
         {
             buttons[Line_idx]->run ();
             ehc.stopped = true;
             return;
         }
-        case C:
+        case plug::KeyCode::C:
         {
             buttons[Circle_shape_idx]->run ();
             ehc.stopped = true;
             return;
         }
-        case R:
+        case plug::KeyCode::R:
         {
             buttons[Rect_shape_idx]->run ();
             ehc.stopped = true;
             return;
         }
-        case F:
+        case plug::KeyCode::F:
         {
             buttons[Fill_idx]->run ();
             ehc.stopped = true;
             return;
         }
-        case T:
+        case plug::KeyCode::T:
         {
             buttons[Text_idx]->run ();
             ehc.stopped = true;
@@ -76,32 +76,32 @@ void plug::Button_palette::onKeyboardPressed  (const plug::KeyboardPressedEvent 
     // return false;
 }
 
-void plug::Button_palette::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
+void Button_palette::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     return;
 }
 
 
-void plug::Button_palette::add_tool_button (plug::Button *tool_button)
+void Button_palette::add_tool_button (Button *tool_button)
 {
     assert (tool_button);
 
-    plug::Pair *tool_button_args = new plug::Pair((void *)palette_, tool_button->arg_);
+    Pair *tool_button_args = new Pair((void *)palette_, tool_button->arg_);
 
     tool_button->set_arg (tool_button_args);
 
-    plug::Menu::add_button (tool_button);    
+    Menu::add_button (tool_button);    
 }
 
-bool plug::color_button_run_fn (void *widget, void *args) 
+bool color_button_run_fn (void *widget, void *args) 
 {
     assert (widget && args);
 
     static bool is_init = false;
-    plug::Master_window *m_window = (plug::Master_window *)widget;
+    Master_window *m_window = (Master_window *)widget;
 
-    plug::Pair *args_ = (plug::Pair *)args;
-    plug::Tool_palette *palette = (plug::Tool_palette *)args_->arg_1;
+    Pair *args_ = (Pair *)args;
+    Tool_palette *palette = (Tool_palette *)args_->arg_1;
     plug::Color *color = (plug::Color *)args_->arg_2;
     assert (palette && color);
    
@@ -116,14 +116,15 @@ bool plug::color_button_run_fn (void *widget, void *args)
     return true;
 }
 
-bool plug::tool_run_fn (void *widget, void *args)
+bool tool_run_fn (void *widget, void *args)
 {
     static bool is_init = false;
-    plug::Master_window *m_window = (plug::Master_window *)widget;
 
-    plug::Pair *args_ = (plug::Pair *)args;
+    Master_window *m_window = (Master_window *)widget;
 
-    plug::Tool_palette *palette = (plug::Tool_palette *)args_->arg_1;
+    Pair *args_ = (Pair *)args;
+
+    Tool_palette *palette = (Tool_palette *)args_->arg_1;
     plug::Tool *new_active_tool = (plug::Tool *)args_->arg_2;
     assert (palette && new_active_tool);
 
@@ -138,11 +139,11 @@ bool plug::tool_run_fn (void *widget, void *args)
     return true;
 }
 
-void plug::init_canvases (plug::Master_window *m_window, plug::Tool_palette *palette)
+void init_canvases (Master_window *m_window, Tool_palette *palette)
 {
     for (int i = 0; i < m_window->windows.size; ++i)
     {
-        plug::Window *window = (plug::Window *)list_get (&(m_window->windows), i + 1);
+        Window *window = (Window *)list_get (&(m_window->windows), i + 1);
         if (window->canvas_->palette_ == palette)
             break;
         window->canvas_->palette_ = palette;

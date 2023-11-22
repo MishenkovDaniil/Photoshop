@@ -2,79 +2,55 @@
 #define WIDGET_H
 
 #include <SFML/Graphics.hpp>
-#include "constants.h"
-#include "event.h"
+
 #include "../graphic_structures/vector/vector.h"
-#include "../graphic_structures/color/color.h"
 #include "../vector.h"
 #include "layout/layout.h"
 
-static const double TRANSFORM_HEIGHT = 100;
-static const double TRANSFORM_WIDTH  = 100;
+#include "../standard/plug_event.h"
+#include "../standard/plug_widget.h"
+#include "../standard/plug_transform_stack.h"
+#include "../standard/plug_transform.h"
 
-
-namespace plug
+class TransformStack : public plug::TransformStack
 {
-    class Transform 
-    {
-        Vec2d offset;
-        Vec2d scale;
+    M_vector<plug::Transform> transform_stack = M_vector<plug::Transform> (plug::Transform (-1, -1));
+public:
+    ~TransformStack () = default;
+    void enter (const plug::Transform &transform) override;
+    void leave  () override;
+    plug::Transform top () const override;
+    int get_size () const override;
+    plug::Vec2d apply (const plug::Vec2d &vector) const override; 
+    plug::Vec2d restore (const plug::Vec2d &vector) const override;
+};
 
-    public:
-        Transform () {};
-        Transform (const Vec2d offset_, const Vec2d scale_ = Vec2d (1, 1)) : offset (offset_), scale (scale_) {};//
-        // Transform (Vec2d lh_pos, Vec2d size)  : offset_ (lh_pos), scale_ (Vec2d (1, 1)) {}; //scale_ (TRANSFORM_WIDTH / size.get_x (), TRANSFORM_HEIGHT / size.get_y ()) {};
-        Transform (const Transform &transform) : offset (transform.offset), scale (transform.scale) {};
+class Widget :public plug::Widget
+{
+protected:
+    plug::LayoutBox *layout_ = nullptr;
+public:
+    virtual ~Widget () = default;
+    virtual void render (sf::RenderTarget &target, plug::TransformStack &transform_stack) = 0;
+    
+    virtual void onEvent (const plug::Event &event, plug::EHC &ehc);
 
-        Vec2d getOffset () const {return offset;};
-        Vec2d getScale () const {return scale;};
-        void setOffset (const Vec2d &new_offset) {offset = new_offset;};
-        void setScale (const Vec2d &new_scale) {scale = new_scale;};
+    // virtual LayoutBox&       getLayoutBox()                     = 0;
+    // virtual const LayoutBox& getLayoutBox() const               = 0;
+    // virtual void             setLayoutBox(const LayoutBox& box) = 0;
+    // virtual bool covers(TransformStack& stack, const Vec2d& position) const = 0;
+    // virtual void onParentUpdate(const LayoutBox& parent_box) = 0;
 
-        Transform combine(const Transform &parent_transform) const;
-        Vec2d apply (const Vec2d &vector);
-        Vec2d restore (const Vec2d &vector);
-    };
+    plug::LayoutBox &getLayoutBox () {return *layout_;};
+    void setLayoutBox (plug::LayoutBox &new_layout) {layout_ = &new_layout;};
 
-    class TransformStack 
-    {
-        M_vector<Transform> transform_stack = M_vector<Transform> (Transform (-1, -1));
-    public:
-        void enter (const Transform &transform);
-        void leave  ();
-        Transform top () const;
-        int get_size () const;
-        Vec2d apply (const Vec2d &vector) const; 
-        Vec2d restore (const Vec2d &vector) const;
-    };
-
-    class Widget 
-    {
-    protected:
-        Layout_box *layout_ = nullptr;
-    public:
-        virtual ~Widget () = default;
-        virtual void render (sf::RenderTarget &target, TransformStack &transform_stack) = 0;
-        
-        virtual void onEvent (const Event &event, EHC &ehc);
-
-        // virtual LayoutBox&       getLayoutBox()                     = 0;
-        // virtual const LayoutBox& getLayoutBox() const               = 0;
-        // virtual void             setLayoutBox(const LayoutBox& box) = 0;
-        // virtual bool covers(TransformStack& stack, const Vec2d& position) const = 0;
-        // virtual void onParentUpdate(const LayoutBox& parent_box) = 0;
-
-        Layout_box &get_layout_box () {return *layout_;};
-        void set_layout_box (Layout_box &new_layout) {layout_ = &new_layout;};
-
-    protected:
-        virtual void onTick             (const TickEvent &event, EHC &ehc) = 0;
-        virtual void onMouseMove        (const MouseMoveEvent &event, EHC &ehc) = 0;
-        virtual void onMousePressed     (const MousePressedEvent &event, EHC &ehc) = 0;
-        virtual void onMouseReleased    (const MouseReleasedEvent &event, EHC &ehc) = 0;
-        virtual void onKeyboardPressed  (const KeyboardPressedEvent &event, EHC &ehc) = 0;
-        virtual void onKeyboardReleased (const KeyboardReleasedEvent &event, EHC &ehc) = 0;    
-    };
-}
+protected:
+    virtual void onTick             (const plug::TickEvent &event, plug::EHC &ehc) = 0;
+    virtual void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) = 0;
+    virtual void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) = 0;
+    virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) = 0;
+    virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) = 0;
+    virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) = 0;    
+};
 
 #endif /* WIDGET_H */
