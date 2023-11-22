@@ -111,12 +111,11 @@ void Button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &e
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (ehc.stack.top ());
     plug::Vec2d pos_ = unite.apply (event.pos);
+    plug::Vec2d change (0, pos_.get_y () - press_pos_.get_y ());
     
-    if ((run_mask_ & MOVE_BUTTON) && is_pressed_)
+    if ((run_mask_ & MOVE_BUTTON) && is_pressed_ && change.length ())
     {
-        plug::Vec2d change (0, pos_.get_y () - press_pos_.get_y ());
         layout_->setPosition (layout_->getPosition () + change);
-
         ehc.stopped = true;
         return;
     }

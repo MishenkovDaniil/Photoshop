@@ -98,7 +98,7 @@ void Scrollbar::onMouseReleased    (const plug::MouseReleasedEvent &event, plug:
 void Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     ehc.stack.enter (plug::Transform (layout_->getPosition ()));
-   
+    int leave_num = 1;
     plug::Vec2d new_pos_ = ehc.stack.top ().apply (event.pos);
     plug::Vec2d mid_pos = event.pos;
 
@@ -119,16 +119,20 @@ void Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC
     plug::Vec2d mid_offset = mid_->layout_->getPosition ();
 
     double new_y = new_pos_.get_y();
-    double old_y = mid_->press_pos_.get_y () + mid_offset.get_y ();
+    double old_y = mid_->press_pos_.get_y () + mid_offset.get_y (); 
     double delta = std::abs (new_y - old_y);
 
     if (new_y < old_y && delta > mid_offset.get_y()) 
     {
         mid_pos += plug::Vec2d (0, delta - mid_offset.get_y());
+        ehc.stack.enter (plug::Transform (plug::Vec2d (0, -(delta - mid_offset.get_y()))));
+        leave_num++;
     }
     else if (new_y > old_y && delta > (height_ - mid_offset.get_y () - mid_->height_))
     {
         mid_pos += plug::Vec2d (0, -delta + height_ - mid_offset.get_y () - mid_->height_);
+        ehc.stack.enter (plug::Transform (plug::Vec2d (0, -(-delta + height_ - mid_offset.get_y () - mid_->height_))));
+        leave_num++;
     }
     
     mid_->onMouseMove (event, ehc);
@@ -136,12 +140,12 @@ void Scrollbar::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC
     {
         // double arg = (double)(mid_->transform_.offset_.get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
         double arg = (double)(mid_->layout_->getPosition ().get_y () - mid_offset.get_y ()) / (((double)(height_ - mid_->height_))); 
-
         mid_->set_arg ((void *)&arg);
         mid_->run ();
     }
 
-    ehc.stack.leave ();
+    while (leave_num--)
+        ehc.stack.leave ();
 }
 
 void Scrollbar::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
@@ -209,20 +213,28 @@ bool change_canvas_rect_mid (void *window_, void *arg)
 {
     Window *window = (Window *)window_;
     double val = *(double *)arg;
+    static double good_top = 0;
 
     int texture_height = window->canvas_->getRenderTexture ().getSize ().y;
     int real_height = window->canvas_->get_size ().y;
 
     sf::IntRect &rect = window->canvas_->get_draw_rect ();
 
-    int top = rect.top;
-    
-    top += val * (double)(texture_height - real_height);
-    top = std::min (top, texture_height - real_height);
+    // int top = rect.top;
+    if (rect.top != (int)good_top)
+        good_top = rect.top;
+    good_top += val * (double)(texture_height - real_height);
+    // top = std::min (top, texture_height - real_height);
+    if (good_top > texture_height - real_height)
+    {
+        good_top = texture_height - real_height;
+    }
+    if (good_top < 0) 
+    {
+        good_top = 0;
+    }
 
-    if (top < 0) top = 0;
-
-    window->canvas_->set_draw_rect_offset (rect.left, top);
+    window->canvas_->set_draw_rect_offset (rect.left, good_top);
 
     return true;
 }
