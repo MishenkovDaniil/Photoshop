@@ -53,7 +53,7 @@ plug::Color plug::Color::operator = (const sf::Color &other)
 }
 
 
-plug::Luma_color plug::rgb_to_luma (const plug::Color &color)
+Luma_color rgb_to_luma (const plug::Color &color)
 {
        double r = (double)color.r / MAX_COLOR_VAL;
        double g = (double)color.g / MAX_COLOR_VAL;
@@ -91,10 +91,10 @@ plug::Luma_color plug::rgb_to_luma (const plug::Color &color)
                      hue = 60 * (segment + shift);  
               }
        }
-       return plug::Luma_color (hue, chroma_, luma);
+       return Luma_color (hue, chroma_, luma);
 }
 
-plug::Color plug::luma_to_rgb (plug::Luma_color &luma_color)
+plug::Color luma_to_rgb (Luma_color &luma_color)
 {
        double h_ = luma_color.hue_ / 60.0;
        double h_temp = h_;
@@ -169,7 +169,7 @@ plug::Color plug::luma_to_rgb (plug::Luma_color &luma_color)
 }
 
 
-plug::Hsl_color  plug::rgb_to_hsl  (const plug::Color &color)
+Hsl_color  rgb_to_hsl  (const plug::Color &color)
 {
        double r = (double)color.r / MAX_COLOR_VAL;
        double g = (double)color.g / MAX_COLOR_VAL;
@@ -209,10 +209,10 @@ plug::Hsl_color  plug::rgb_to_hsl  (const plug::Color &color)
                      hue = 60 * (segment + shift);  
               }
        }
-       return plug::Hsl_color (hue, saturation, light);
+       return Hsl_color (hue, saturation, light);
 }
 
-plug::Color plug::hsl_to_rgb (plug::Hsl_color &hsl_color)
+plug::Color hsl_to_rgb (Hsl_color &hsl_color)
 {
        double chroma = (1 - std::abs (2.0 * hsl_color.light_ - 1.0)) * hsl_color.saturation_;
 
