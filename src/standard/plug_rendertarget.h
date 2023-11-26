@@ -9,11 +9,13 @@ namespace plug
 {
     class RenderTarget
     {
+    public:
         virtual ~RenderTarget(void) = default;
         virtual void draw(const VertexArray& array) = 0;
         virtual void draw(const VertexArray& array, const Texture& texture) = 0;
         virtual void clear(Color color) = 0;
         virtual unsigned getNativeHandle(void) const = 0;
+        virtual void setActive (bool active) = 0;
     };
 }
 
