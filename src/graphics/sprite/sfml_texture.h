@@ -4,35 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 #include "../drawable.h"
-
-
-// struct SFMLTexture
-// {
-//     sf::Texture texture;
-//     SFMLTexture () = default;
-//     SFMLTexture (const SFMLTexture &other) : texture (other.texture) {};
-    
-//     ~SFMLTexture () = default;
-
-//     bool loadFromFile (const char *pathname) {return texture.loadFromFile (pathname);};
-// };
-// struct SFMLTexture : public plug::Texture
-// {
-//     sf::Texture texture;
-
-//     SFMLTexture () = default; //
-    
-//     SFMLTexture (const SFMLTexture &other) : texture (other.texture) {}; // 
-//     SFMLTexture(size_t width, size_t height, const Color* data) :
-//             plug::Texture (width, height, data) {};
-
-//     SFMLTexture(size_t width, size_t height) :
-//             plug::Texture (width, height) {};
-
-//     ~SFMLTexture () = default;
-
-//     bool loadFromFile (const char *pathname) {return texture.loadFromFile (pathname);};
-// };
+#include "../../standard/plug_texture.h"
+#include "../intrect/intrect.h"
 
 class Sprite : public Drawable
 {
@@ -45,6 +18,7 @@ public:
     ~Sprite ();
 
     void setTexture (const plug::Texture &texture);
+    void setTextureRect (IntRect &rect);
     void setPosition (double x, double y);
     void setPosition (const plug::Vec2d &pos);
     const plug::Texture *getTexture () const;

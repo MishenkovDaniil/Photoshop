@@ -9,11 +9,13 @@ Sprite::Sprite ()
 
 Sprite::Sprite (const plug::Texture &texture)
 {
+    sprite_texture.create (texture.width, texture.height);
     copyToSFMLTexture (sprite_texture, texture);
-    
+
     drawable = new sf::Sprite (sprite_texture);
     assert (drawable);
-  
+    
+    ((sf::Sprite *)drawable)->setTexture (sprite_texture);
     plug_texture = &texture;
 }
 
@@ -29,6 +31,7 @@ Sprite::~Sprite ()
 
 void Sprite::setTexture (const plug::Texture &texture)
 {
+    sprite_texture.create (texture.width, texture.height);
     copyToSFMLTexture (sprite_texture, texture);
     ((sf::Sprite *)drawable)->setTexture (sprite_texture);
     
@@ -54,4 +57,10 @@ void Sprite::loadFromFile (const char *pathname)
 {
     sprite_texture.loadFromFile (pathname);
     ((sf::Sprite *)drawable)->setTexture (sprite_texture);
+}
+
+void Sprite::setTextureRect (IntRect &rect)
+{
+    sf::IntRect sfml_rect (rect.getLeftCorner (), rect.getTopCorner (), rect.getWidth (), rect.getHeight ());
+    ((sf::Sprite *)drawable)->setTextureRect (sfml_rect);
 }
