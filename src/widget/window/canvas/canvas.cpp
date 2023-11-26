@@ -29,7 +29,8 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     width_ (width),
     height_ (height),
     color_ (color),
-    selection (width, height)
+    selection (width, height),
+    canvas_img (width, height * 2)
 {
     if (width <= 0 || height <= 0)
     {
@@ -38,15 +39,17 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     }
 
     canvas_texture.create (width, height * 2);
-    draw_rect_  = sf::IntRect (0, 0, width, height);
+    draw_rect_  = IntRect (0, 0, width, height);
 
-    sf::RectangleShape rect (sf::Vector2f (width, height));
+    RectangleShape rect (plug::Vec2d (width, height));
     rect.setFillColor (color);
     
-    canvas_texture.draw (rect);
+    canvas_texture.draw (rect, canvas_sprite);
     canvas_texture.display ();
     
-    selection.fill (true);  
+    selection.fill (true); 
+    plug::Texture texture = canvas_texture.getTexture ();
+    memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
 }
 
 bool Canvas::contains (int x, int y)
@@ -56,7 +59,7 @@ bool Canvas::contains (int x, int y)
 }
 
 
-void Canvas::set_draw_rect_offset (int left, int top)
+void Canvas::setDrawRectOffset (int left, int top)
 {
     if (left < 0 || top < 0)
     {
@@ -64,10 +67,11 @@ void Canvas::set_draw_rect_offset (int left, int top)
         return;
     }
 
-    draw_rect_.left  = left;
-    draw_rect_.top = top;
+    draw_rect_.setLeftCorner (left);
+    draw_rect_.setTopCorner (top);
 }
-void Canvas::set_draw_rect_size   (int width, int height)
+
+void Canvas::setDrawRectSize   (int width, int height)
 {
     if (!(width > 0 && height > 0))
     {
@@ -75,8 +79,64 @@ void Canvas::set_draw_rect_size   (int width, int height)
         return;
     }
 
-    draw_rect_.width  = width;
-    draw_rect_.height = height;
+    draw_rect_.setWidth (width);
+    draw_rect_.setHeight (height);
+}
+
+plug::Color Canvas::getPixel(size_t x, size_t y) const
+{
+    x += draw_rect_.getLeftCorner ();
+    y += draw_rect_.getTopCorner ();
+
+    return canvas_img.data[x + y * width_];
+}
+
+void Canvas::setPixel(size_t x, size_t y, const plug::Color& color)
+{
+    x += draw_rect_.getLeftCorner ();
+    y += draw_rect_.getTopCorner ();
+
+    canvas_img.data[x + y * width_] = color;
+}
+
+const plug::Texture& Canvas::getTexture(void) const
+{
+    // plug::Texture texture = canvas_texture.getTexture ();
+    if (is_changed_img)
+    {
+        plug::Texture texture = canvas_texture.getTexture ();
+        memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
+        // is_changed_img = false;
+    }
+
+    return canvas_img;
+}
+
+unsigned int Canvas::getNativeHandle(void) const
+{
+    //TODO;
+    return 0;
+}               
+
+void Canvas::draw (const plug::VertexArray& vertex_array)                        
+{
+    canvas_texture.draw (vertex_array, canvas_sprite);
+    canvas_texture.display ();
+    is_changed_img = true;
+}   
+
+void Canvas::draw (const plug::VertexArray& vertex_array, const plug::Texture &texture)
+{
+    canvas_texture.draw (vertex_array, texture, canvas_sprite);
+    canvas_texture.display ();
+    is_changed_img = true;
+}
+
+void Canvas::draw (const Drawable &drawable)
+{
+    canvas_texture.draw (drawable, canvas_sprite);
+    canvas_texture.display ();
+    is_changed_img = true;
 }
 
 CanvasView::CanvasView (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, Tool_palette *palette) :
@@ -85,7 +145,7 @@ CanvasView::CanvasView (int width, int height, const plug::Color color, const pl
 {
     if (width <= 0 || height <= 0)
     {
-        // fprintf (stderr, "Error: incorrect size of canvas.\n");
+        fprintf (stderr, "Error: incorrect size of canvas.\n");
         return;
     }
 
@@ -100,16 +160,16 @@ CanvasView::~CanvasView ()
     delete layout_;
 };
 
-void CanvasView::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void CanvasView::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    sf::Sprite canvas_sprite (view.canvas_texture.getTexture ());
+    Sprite &canvas_sprite = view.canvas_sprite;
     canvas_sprite.setPosition (lh_pos);
     canvas_sprite.setTextureRect (view.draw_rect_);
      
-    target.draw (canvas_sprite);
+    ((RenderTexture &)target).draw (canvas_sprite);
     
     if (palette_ && is_focused)
     {
@@ -209,7 +269,6 @@ void CanvasView::onMouseMove        (const plug::MouseMoveEvent &event, plug::EH
     }
 }   
 
-
 void CanvasView::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     if (!palette_)
@@ -299,7 +358,7 @@ bool CanvasView::contains (int x, int y)
     return view.contains (x, y);
 }
 
-void CanvasView::set_draw_rect_offset (int left, int top)
+void CanvasView::setDrawRectOffset (int left, int top)
 {
     // if (left < 0 || top < 0)
     // {
@@ -309,10 +368,10 @@ void CanvasView::set_draw_rect_offset (int left, int top)
 
     // draw_rect_.left  = left;
     // draw_rect_.top = top;
-    view.set_draw_rect_offset (left, top);
+    view.setDrawRectOffset (left, top);
 }
 
-void CanvasView::set_draw_rect_size (int width, int height)
+void CanvasView::setDrawRectSize (int width, int height)
 {
     // if (!(width > 0 && height > 0))
     // {
@@ -322,5 +381,5 @@ void CanvasView::set_draw_rect_size (int width, int height)
 
     // draw_rect_.width  = width;
     // draw_rect_.height = height;
-    view.set_draw_rect_size (width, height);
+    view.setDrawRectSize (width, height);
 }

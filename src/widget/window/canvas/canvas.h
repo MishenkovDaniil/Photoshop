@@ -7,6 +7,10 @@
 #include "../../../plugin/tools/palette/palette.h"
 // #include "../../../standard/plug_canvas.h"
 
+#include "../../../graphics/rendertexture/rendertexture.h"
+#include "../../../graphics/intrect/intrect.h"
+#include "../../../graphics/sprite/sfml_texture.h"
+
 class Tool;
 class Tool_palette;
 class Master_window;
@@ -40,26 +44,39 @@ class Canvas : public plug::Canvas
 
     plug::Color color_;
 
-    sf::IntRect draw_rect_;
+    IntRect draw_rect_;
     SelectionMask selection;
+    plug::Texture canvas_img;
+    Sprite canvas_sprite;
 
 public:
-    sf::RenderTexture canvas_texture;
+    bool is_changed_img = false;
+    RenderTexture canvas_texture;
 
 public:
     Canvas (int width, int height, const plug::Color color);
     ~Canvas () = default;
     bool contains (int x, int y) override;
 
+    plug::Vec2d getSize () const                                                    override 
+        {return plug::Vec2d (width_, height_);};
+    const SelectionMask &getSelectionMask ()                                        override 
+        {return selection;};
+    void setSize(const plug::Vec2d &size)                                           override 
+        {width_ = size.x; height_ = size.y;};
+    unsigned int getNativeHandle(void) const                                        override;                
+    plug::Color getPixel(size_t x, size_t y) const                                  override;                
+    const plug::Texture& getTexture(void) const                                     override;
+    void setPixel(size_t x, size_t y, const plug::Color& color)                     override;   
+    void draw (const plug::VertexArray& vertex_array)                               override;             
+    void draw (const plug::VertexArray& vertex_array, const plug::Texture &texture) override;
+    void draw (const Drawable &drawable);
     
-    plug::Vec2d get_size () override {return plug::Vec2d (width_, height_);};
-    sf::IntRect &get_draw_rect () override {return draw_rect_;};
-    void set_draw_rect_offset (int left, int top) override;
-    void set_draw_rect_size   (int width, int height) override;
-    void setSelectionMask (SelectionMask &new_selection) override {selection = new_selection;};
-    const SelectionMask &getSelectionMask () override{return selection;};
+    plug::Vec2d getFullSize () const {return canvas_texture.getSize ();};
+    IntRect &getDrawRect () {return draw_rect_;};
+    void setDrawRectOffset (int left, int top);
+    void setDrawRectSize   (int width, int height);
 
-    sf::RenderTexture &getRenderTexture () override {return canvas_texture;};
     friend CanvasView;
     friend Window;
     friend Tool;
@@ -67,24 +84,15 @@ public:
 
 class CanvasView : public Widget
 {
-    // int width_ = 0;
-    // int height_ = 0;
-
-    // plug::Color color_;
-
     Tool_palette *palette_;
-    // sf::IntRect draw_rect_;
     bool is_focused = false;
-    // SelectionMask selection;
 
-// public:
-    // sf::RenderTexture canvas_texture;
     Canvas view;
 public: 
     CanvasView (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, Tool_palette *palette = nullptr);
     ~CanvasView ();
 
-    void render             (sf::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void render             (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
@@ -99,13 +107,17 @@ public:
 
     bool contains (int x, int y);
     
-    sf::RenderTexture &getRenderTexture () {return view.getRenderTexture ();};
-    plug::Vec2d get_size () {return view.get_size ();};
-    sf::IntRect &get_draw_rect () {return view.get_draw_rect ();};
-    void set_draw_rect_offset (int left, int top);
-    void set_draw_rect_size   (int width, int height);
-    void setSelectionMask (SelectionMask &new_selection) {view.setSelectionMask (new_selection);};
+    // sf::RenderTexture &getRenderTexture () {return view.getRenderTexture ();};
+    plug::Vec2d getSize () const {return view.getSize ();};
+    plug::Vec2d getFullSize () const {return view.getFullSize ();};
+    void setSize (const plug::Vec2d &size) {layout_->setSize (size); view.setSize (size);};
+
+
+    IntRect &getDrawRect () {return view.getDrawRect ();};
+    void setDrawRectOffset (int left, int top);
+    void setDrawRectSize   (int width, int height);
     const SelectionMask &getSelectionMask () {return view.getSelectionMask ();};
+    const plug::Texture& getTexture(void) const {return view.getTexture ();};
 
     friend bool change_canvas_rect_up_down  (void *window, void *arg);
     friend bool change_canvas_rect_mid      (void *window, void *arg);
