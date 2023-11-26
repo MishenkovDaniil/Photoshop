@@ -11,15 +11,16 @@
 class RectangleShape : public Shape
 {
 public:
-    sf::RectangleShape sfml_rect;
+    // sf::RectangleShape sfml_rect;
     RectangleShape (const plug::Vec2d &size = plug::Vec2d (0, 0));
-    ~RectangleShape () = default;
+    ~RectangleShape ();
 
     void setSize (const plug::Vec2d &size);
     void setFillColor (const plug::Color color);
     void setOutlineColor (const plug::Color color);
     void setOutlineThickness (double thickness);
     void setPosition (double x, double y);
+    void setPosition (plug::Vec2d pos);
     void setScale (const plug::Vec2d factors);
 
     plug::Vec2d getSize () const;

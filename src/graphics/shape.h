@@ -4,13 +4,17 @@
 #include "../graphic_structures/vector/vector.h"
 #include "../graphic_structures/color/color.h"
 
+#include "drawable.h"
+
+class RenderTexture;
+
 enum class Shapes
 {
     Rectangle,
     Circle
 };
 
-class Shape
+class Shape : public Drawable
 {
     size_t shape;
 public:
@@ -22,6 +26,7 @@ public:
     virtual void setOutlineColor (const plug::Color color) = 0;
     virtual void setOutlineThickness (double thickness) = 0;
     virtual void setPosition (double x, double y) = 0;
+    virtual void setPosition (plug::Vec2d pos) = 0;
     virtual void setScale (const plug::Vec2d factors) = 0;
 
     virtual plug::Color getFillColor () const = 0;
@@ -29,6 +34,8 @@ public:
     virtual double getOutlineThickness () const = 0;
     virtual plug::Vec2d getPosition () const = 0;
     virtual plug::Vec2d getScale () const = 0;
+
+    friend RenderTexture;
 };
 
 

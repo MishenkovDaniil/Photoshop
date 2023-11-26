@@ -12,15 +12,15 @@
 class CircleShape : public Shape
 {
 public:
-    sf::CircleShape sfml_circle;
     CircleShape (double radius = 0, size_t point_count = 30);
-    ~CircleShape () = default;
+    ~CircleShape ();
 
     void setRadius (double radius);
     void setFillColor (const plug::Color color);
     void setOutlineColor (const plug::Color color);
     void setOutlineThickness (double thickness);
     void setPosition (double x, double y);
+    void setPosition (plug::Vec2d pos);
     void setScale (const plug::Vec2d factors);
     void setPointCount (size_t point_count);
 

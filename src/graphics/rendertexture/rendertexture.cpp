@@ -33,22 +33,23 @@ void RenderTexture::setActive (bool active)
     render_texture_.setActive (active);
 }
 
-void RenderTexture::draw (const Shape &shape)
+void RenderTexture::draw (const Drawable &drawable)
 {
-    switch ((enum class Shapes)shape.getType ())
-    {
-        case Shapes::Rectangle:
-        {
-            render_texture_.draw (((RectangleShape &)shape).sfml_rect);
-        }
-        case Shapes::Circle:
-        {
-            render_texture_.draw (((CircleShape &)shape).sfml_circle);
-        }
-        default:
-        {
-            fprintf (stderr, "Error: unknown shape type.\n");
-            break;
-        }
-    }
+    assert (drawable.drawable);
+    render_texture_.draw (*(drawable.drawable));
+}
+
+plug::Texture RenderTexture::getTexture () const
+{
+    sf::Texture sf_texture = render_texture_.getTexture ();
+    sf::Image img = sf_texture.copyToImage ();
+    plug::Texture texture (img.getSize ().x, img.getSize ().y, (plug::Color *)(img.getPixelsPtr ()));
+
+    return texture;
+}
+
+plug::Vec2d RenderTexture::getSize () const
+{
+    sf::Vector2u size = render_texture_.getSize ();
+    return plug::Vec2d (size.x, size.y);
 }
