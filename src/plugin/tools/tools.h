@@ -4,7 +4,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-
 #include "../../widget/widget.h"
 #include "../../widget/window/canvas/canvas.h"
 #include "../../widget/window/window.h"
@@ -14,6 +13,10 @@
 
 #include "../../standard/plug_tool.h"
 #include "../../standard/plug_plugin.h"
+#include "../../graphics/intrect/intrect.h"
+#include "../../graphics/circleshape/circleshape.h"
+#include "../../graphics/rectangleshape/rectangleshape.h"
+
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
@@ -77,7 +80,7 @@ public:
 
 class Line : public Tool 
 {
-    sf::Vertex vertex[2];
+    plug::VertexArray vertex = plug::VertexArray (plug::Lines, 2);
     plug::Vec2d latest_pos_ = plug::Vec2d ();
 
 public:
@@ -102,7 +105,7 @@ class Circle_shape : public Tool
 {
     plug::Vec2d center_;
     plug::Vec2d last_center_;
-    sf::CircleShape circle_ = sf::CircleShape ();
+    CircleShape circle_;
     plug::Vec2d latest_pos_ = plug::Vec2d ();
     bool is_on_modifier_1_ = false;
 
@@ -126,7 +129,7 @@ class Rect_shape : public Tool
 {
     plug::Vec2d center_;
     plug::Vec2d last_center_;
-    sf::RectangleShape rect_ = sf::RectangleShape ();
+    RectangleShape rect_;
     plug::Color canvas_bg_color = plug::Transparent;
     plug::Vec2d latest_pos_ = plug::Vec2d ();
     bool is_on_modifier_1_ = false;
@@ -160,7 +163,7 @@ class Fill : public Tool
     sf::Image prev_canvas_img_;
     sf::Texture draw_texture_;
     sf::Sprite draw_sprite_;
-    sf::IntRect rect_;
+    IntRect rect_;
 
 public:
     Fill ();

@@ -7,21 +7,17 @@ Brush::~Brush () {};
 void Brush::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
 {
     assert (active_canvas_);
-    //TODO make circle class member (maybe)
+
     if (control_state.state == plug::Pressed)
     {
-        sf::IntRect &rect = active_canvas_->get_draw_rect ();
-        pos += plug::Vec2d (rect.left, rect.top);
-
-        sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
+        CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
 
         circle.setFillColor (color_palette_->getFGColor ());
 
         prev_pos = pos;
 
-        active_canvas_->getRenderTexture ().draw (circle);//fg_color
-        active_canvas_->getRenderTexture ().display ();
+        ((Canvas *)active_canvas_)->draw (circle); //fg_color
         is_pressed = true;
     }
 }
@@ -53,17 +49,12 @@ void Brush::on_move                (plug::Vec2d &pos)
 
     assert (active_canvas_);
 
-    sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    pos += plug::Vec2d (rect.left, rect.top);
-
-    sf::CircleShape circle (DEFAULT_BRUSH_THICKNESS);
+    CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
     circle.setFillColor (color_palette_->getFGColor ());   //fg_color
-    
     prev_pos = pos;
 
-    active_canvas_->getRenderTexture ().draw (circle);
-    active_canvas_->getRenderTexture ().display ();
+    ((Canvas *)active_canvas_)->draw (circle); //fg_color
 }
 
 void Brush::on_confirm             ()
@@ -94,15 +85,14 @@ void Line::on_main_button         (const plug::ControlState &control_state, plug
     
     if (control_state.state == plug::Pressed)
     {
-        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
 
-        vertex[0] = sf::Vertex (pos, color_palette_->getFGColor ());
+        vertex[0] = vertex[1] = {pos, color_palette_->getFGColor (), plug::Vec2d ()};
         M_render_texture *draw_texture = (M_render_texture *)widget_;
 
-        draw_texture->texture_.draw (vertex, 1, sf::Points);
-        draw_texture->texture_.display ();
+        draw_texture->draw (vertex);
         state_.state = plug::Pressed;
         latest_pos_ = pos;
     }
@@ -139,10 +129,18 @@ void Line::on_move                (plug::Vec2d &pos)
     assert (draw_texture);
     draw_texture->clear (plug::Transparent);
     
-    vertex[1] = sf::Vertex (pos, color_palette_->getFGColor ());
-    (vertex[0].position == vertex[1].position) ? draw_texture->texture_.draw(&vertex[0], 1, sf::Points) :
-                                                 draw_texture->texture_.draw (vertex,    2, sf::Lines);
-    draw_texture->texture_.display ();
+    vertex[1] = {pos, color_palette_->getFGColor (), plug::Vec2d ()};
+    if ((vertex[0].position.x == vertex[1].position.x) && 
+        (vertex[0].position.y == vertex[1].position.y)) 
+    {
+        vertex.setPrimitive (plug::Points);
+    }
+    else
+    {
+        vertex.setPrimitive (plug::Lines);        
+    }
+
+    draw_texture->draw(vertex);
     
     latest_pos_ = pos;
 }
@@ -154,19 +152,11 @@ void Line::on_confirm             ()
 
     assert (active_canvas_);
 
-    sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    plug::Vec2d draw_rect_offset (rect.left, rect.top);
-
-    vertex[1] = sf::Vertex (latest_pos_ + draw_rect_offset, color_palette_->getFGColor ());
-    vertex[0].position += sf::Vector2f (draw_rect_offset.get_x (), draw_rect_offset.get_y ());
-
-    (vertex[0].position == vertex[1].position) ? active_canvas_->getRenderTexture ().draw(&vertex[0], 1, sf::Points) :
-                                                 active_canvas_->getRenderTexture ().draw (vertex,    2, sf::Lines);
-    active_canvas_->getRenderTexture ().display ();
+    vertex[1] = {latest_pos_, color_palette_->getFGColor (), plug::Vec2d ()};
+    active_canvas_->draw (vertex);
 
     state_.state = plug::Released;
 
-    // delete (M_render_texture *)widget_;
     delete widget_;
     widget_ = nullptr;
 
@@ -197,7 +187,7 @@ void Circle_shape::on_main_button         (const plug::ControlState &control_sta
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
         
@@ -256,10 +246,9 @@ void Circle_shape::on_modifier_1          (const plug::ControlState &control_sta
     circle_.setOutlineThickness (DEFAULT_CIRCLE_THICKNESS);
 
     circle_.setPosition (last_center_);
-    circle_.setScale (1, 1);
+    circle_.setScale (plug::Vec2d (1, 1));
 
-    draw_texture->texture_.draw (circle_);
-    draw_texture->texture_.display ();
+    draw_texture->draw (circle_);
 }
 
 void Circle_shape::on_modifier_2          (const plug::ControlState &control_state)
@@ -317,11 +306,11 @@ void Circle_shape::on_move                (plug::Vec2d &pos)
     {
         if (min_idx == 0)
         {
-            circle_.setScale (1, max / min);
+            circle_.setScale (plug::Vec2d (1, max / min));
         }
         else 
         {
-            circle_.setScale (max / min, 1);
+            circle_.setScale (plug::Vec2d (max / min, 1));
         }
     }
 
@@ -338,8 +327,7 @@ void Circle_shape::on_move                (plug::Vec2d &pos)
 
     circle_.setPosition (last_center_);
 
-    draw_texture->texture_.draw (circle_);
-    draw_texture->texture_.display ();
+    draw_texture->draw (circle_);
 }
 
 void Circle_shape::on_confirm             ()
@@ -349,14 +337,11 @@ void Circle_shape::on_confirm             ()
 
     assert (active_canvas_);
 
-    sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    circle_.setPosition (last_center_ + plug::Vec2d (rect.left, rect.top));
-    active_canvas_->getRenderTexture ().draw (circle_);
-    active_canvas_->getRenderTexture ().display ();
+    circle_.setPosition (last_center_ );
+    ((Canvas *)active_canvas_)->draw (circle_);
 
     state_.state = plug::Released;
 
-    // delete (M_render_texture *)widget_;
     delete widget_;
     widget_ = nullptr;
 }
@@ -365,7 +350,6 @@ void Circle_shape::on_cancel              ()
 {
     if (state_.state == plug::Pressed)
     {
-        // delete  M_render_texture *)widget_;
         delete widget_;
         widget_ = nullptr;
         state_.state = plug::Released;
@@ -384,7 +368,7 @@ void Rect_shape::on_main_button         (const plug::ControlState &control_state
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        plug::Vec2d canvas_size = active_canvas_->get_size ();
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
         
@@ -444,8 +428,7 @@ void Rect_shape::on_modifier_1          (const plug::ControlState &control_state
 
     rect_.setPosition (last_center_);
 
-    draw_texture->texture_.draw (rect_);
-    draw_texture->texture_.display ();
+    draw_texture->draw (rect_);
 }
 
 void Rect_shape::on_modifier_2          (const plug::ControlState &control_state)
@@ -496,8 +479,7 @@ void Rect_shape::on_move                (plug::Vec2d &pos)
     rect_.setSize (pos_offset);    
     rect_.setPosition (last_center_);
 
-    draw_texture->texture_.draw (rect_);
-    draw_texture->texture_.display ();
+    draw_texture->draw (rect_);
 }
 
 void Rect_shape::on_confirm             ()
@@ -507,15 +489,11 @@ void Rect_shape::on_confirm             ()
 
     assert (active_canvas_);
 
-    sf::IntRect &rect = active_canvas_->get_draw_rect ();
-    rect_.setPosition (last_center_ + plug::Vec2d (rect.left, rect.top));
-    active_canvas_->getRenderTexture ().draw (rect_);
-    active_canvas_->getRenderTexture ().display ();
+    ((Canvas *)active_canvas_)->draw (rect_);
 
     state_.state = plug::Released;
     center_ = last_center_;
     
-    // delete (M_render_texture *)widget_;
     delete widget_;
     widget_ = nullptr;
 }
@@ -538,40 +516,40 @@ void Fill::on_main_button         (const plug::ControlState &control_state, plug
 {
     assert (active_canvas_);
 
-    if (control_state.state == plug::Pressed)
-    {
-        rect_ = active_canvas_->get_draw_rect ();
-        plug::Vec2d real_pos = pos + plug::Vec2d (rect_.left, rect_.top);
+    // if (control_state.state == plug::Pressed)
+    // {
+    //     rect_ = active_canvas_->getDrawRect ();
+    //     plug::Vec2d real_pos = pos + plug::Vec2d (rect_.left, rect_.top);
 
-        plug::Vec2d canvas_size = active_canvas_->get_size ();
-        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
-        assert (widget_);
+    //     plug::Vec2d canvas_size = active_canvas_->getSize ();
+    //     widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
+    //     assert (widget_);
 
-        prev_canvas_img_ = active_canvas_->getRenderTexture ().getTexture ().copyToImage ();
-        size_ = plug::Vec2d (active_canvas_->get_size ().get_x (), active_canvas_->get_size ().get_y ());
-        fill_color_ = color_palette_->getFGColor ();
-        cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
+    //     prev_canvas_img_ = active_canvas_->getRenderTexture ().getTexture ().copyToImage ();
+    //     size_ = plug::Vec2d (active_canvas_->getSize ().get_x (), active_canvas_->getSize ().get_y ());
+    //     fill_color_ = color_palette_->getFGColor ();
+    //     cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
 
-        pixel_arr_ = (uint8_t *)calloc (4 * size_.get_x () * size_.get_y (), sizeof (uint8_t));
-        assert (pixel_arr_);
+    //     pixel_arr_ = (uint8_t *)calloc (4 * size_.get_x () * size_.get_y (), sizeof (uint8_t));
+    //     assert (pixel_arr_);
 
-        fill_pixels (pos);
+    //     fill_pixels (pos);
 
-        sf::Image new_canvas_img_;
-        new_canvas_img_.create (size_.get_x (), size_.get_y (), pixel_arr_);
+    //     sf::Image new_canvas_img_;
+    //     new_canvas_img_.create (size_.get_x (), size_.get_y (), pixel_arr_);
 
-        draw_texture_.create (size_.get_x (), size_.get_y ());
-        draw_texture_.loadFromImage (new_canvas_img_);
+    //     draw_texture_.create (size_.get_x (), size_.get_y ());
+    //     draw_texture_.loadFromImage (new_canvas_img_);
 
-        draw_sprite_.setTexture (draw_texture_);
-        draw_sprite_.setPosition (0, 0);
+    //     draw_sprite_.setTexture (draw_texture_);
+    //     draw_sprite_.setPosition (0, 0);
         
-        ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
-        ((M_render_texture *)widget_)->texture_.display ();
+    //     ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
+    //     ((M_render_texture *)widget_)->texture_.display ();
 
-        state_.state = plug::Pressed;
-        free (pixel_arr_);
-    }
+    //     state_.state = plug::Pressed;
+    //     free (pixel_arr_);
+    // }
 
 }
 
@@ -604,19 +582,19 @@ void Fill::on_confirm             ()
 {
     assert (active_canvas_);
 
-    if (state_.state == plug::Pressed)
-    {
-        draw_sprite_.setPosition (rect_.left, rect_.top);
+    // if (state_.state == plug::Pressed)
+    // {
+    //     draw_sprite_.setPosition (rect_.left, rect_.top);
         
-        active_canvas_->getRenderTexture ().draw (draw_sprite_);
-        active_canvas_->getRenderTexture ().display ();
+    //     active_canvas_->getRenderTexture ().draw (draw_sprite_);
+    //     active_canvas_->getRenderTexture ().display ();
 
-        state_.state = plug::Released;
+    //     state_.state = plug::Released;
 
-        // delete (M_render_texture *)widget_;
-        delete widget_;
-        widget_ = nullptr;
-    }
+    //     // delete (M_render_texture *)widget_;
+    //     delete widget_;
+    //     widget_ = nullptr;
+    // }
 }
 
 void Fill::on_cancel              ()
@@ -633,70 +611,70 @@ void Fill::on_cancel              ()
 
 void Fill::fill_pixels (plug::Vec2d &pos)
 {
-    assert (active_canvas_);
-    assert (pixel_arr_);
+    // assert (active_canvas_);
+    // assert (pixel_arr_);
 
-    M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
+    // M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
 
-    plug::Vec2d offset (rect_.left, rect_.top);
-    pixels.push (pos);
+    // plug::Vec2d offset (rect_.left, rect_.top);
+    // pixels.push (pos);
 
-    while (pixels.get_size ())
-    {
-        plug::Vec2d cur_pixel = pixels.top ();
-        plug::Vec2d real_cur_pixel = cur_pixel + offset;
+    // while (pixels.get_size ())
+    // {
+    //     plug::Vec2d cur_pixel = pixels.top ();
+    //     plug::Vec2d real_cur_pixel = cur_pixel + offset;
 
-        pixels.pop ();
+    //     pixels.pop ();
 
-        plug::Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? plug::Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
-        plug::Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? plug::Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
-        plug::Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : plug::Vec2d (-1);
-        plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
+    //     plug::Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? plug::Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+    //     plug::Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? plug::Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+    //     plug::Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : plug::Vec2d (-1);
+    //     plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
         
-        sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
-                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
-                                   : plug::Transparent;
-        sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
-                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
-                                   : plug::Transparent;
-        sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
-                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
-                                   : plug::Transparent;
-        sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
-                                   ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
-                                   : plug::Transparent;
+    //     sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
+    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
+    //                                : plug::Transparent;
+    //     sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
+    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
+    //                                : plug::Transparent;
+    //     sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
+    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
+    //                                : plug::Transparent;
+    //     sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
+    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
+    //                                : plug::Transparent;
 
-        if ((int)left.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
-        {
-            if (cur_color_ == left_color)
-            {
-                pixels.push (left);
-            }
-        }
-        if ((int)right.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
-        {
-            if (cur_color_ == right_color)
-            {
-                pixels.push (right);
-            }
-        }
-        if ((int)low.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
-        {
-            if (cur_color_ == low_color)
-            {
-                pixels.push (low);
-            }
-        }
-        if ((int)top.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
-        {
-            if (cur_color_ == top_color)
-            {
-                pixels.push (top);
-            }
-        }
+    //     if ((int)left.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
+    //     {
+    //         if (cur_color_ == left_color)
+    //         {
+    //             pixels.push (left);
+    //         }
+    //     }
+    //     if ((int)right.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
+    //     {
+    //         if (cur_color_ == right_color)
+    //         {
+    //             pixels.push (right);
+    //         }
+    //     }
+    //     if ((int)low.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
+    //     {
+    //         if (cur_color_ == low_color)
+    //         {
+    //             pixels.push (low);
+    //         }
+    //     }
+    //     if ((int)top.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
+    //     {
+    //         if (cur_color_ == top_color)
+    //         {
+    //             pixels.push (top);
+    //         }
+    //     }
         
-        ((plug::Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
-    }
+    //     ((plug::Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
+    // }
 }
 
 
@@ -807,39 +785,39 @@ void Text_tool::on_confirm             ()
 {
     assert (active_canvas_);
 
-    if (on_rect_)
-    {
-        rect_tool.on_cancel ();
-        on_rect_ = false;
-        // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
+    // if (on_rect_)
+    // {
+    //     rect_tool.on_cancel ();
+    //     on_rect_ = false;
+    //     // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
 
-        widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
-    }
-    else 
-    {
-        if (!widget_)
-        {
-            return;
-        }
+    //     widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
+    // }
+    // else 
+    // {
+    //     if (!widget_)
+    //     {
+    //         return;
+    //     }
         
-        plug::Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
-        if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
-            (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
-            (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
-            (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
-        {
-            TransformStack stack;
+    //     plug::Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
+    //     if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
+    //         (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
+    //         (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
+    //         (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
+    //     {
+    //         TransformStack stack;
 
-            widget_->render (active_canvas_->getRenderTexture (), stack);
-            active_canvas_->getRenderTexture ().display ();
+    //         widget_->render (active_canvas_->getRenderTexture (), stack);
+    //         active_canvas_->getRenderTexture ().display ();
 
-            // delete (M_text *)widget_;
-            delete widget_;
-            widget_ = nullptr;
+    //         // delete (M_text *)widget_;
+    //         delete widget_;
+    //         widget_ = nullptr;
             
-            state_.state = plug::Released;
-        } 
-    }
+    //         state_.state = plug::Released;
+    //     } 
+    // }
 }
 
 void Text_tool::on_cancel ()
