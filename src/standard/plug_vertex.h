@@ -77,6 +77,7 @@ namespace plug
 
     class Vertex
     {
+    public:
         Vec2d position;
 
         Vec2d tex_coords;
