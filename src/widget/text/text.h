@@ -31,7 +31,7 @@ public:
 
     const char *get_string () {assert (buf_); buf_[len_] = '\0'; return buf_;}
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack) override; 
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override; 
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

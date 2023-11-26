@@ -29,7 +29,7 @@ public:
     int     get_list_size ()        {return windows.size;};
     Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
 
-    void render    (sf::RenderTarget &target, plug::TransformStack &transform_stack)     override;
+    void render    (plug::RenderTarget &target, plug::TransformStack &transform_stack)     override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

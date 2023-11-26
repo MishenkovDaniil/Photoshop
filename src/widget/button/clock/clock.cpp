@@ -3,6 +3,12 @@
 #include <string.h>
 #include <cstring>
 
+#include "../../../graphics/rendertexture/rendertexture.h"
+#include "../../../graphics/rectangleshape/rectangleshape.h"
+#include "../../../graphics/text/text.h"
+#include "../../../graphics/font/font.h"
+#include "../../../graphic_structures/color/color.h"
+
 Clock::Clock (plug::Vec2d lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, float hours, float minutes, float seconds, void *arg, plug::Color fill_color, int run_mask) :
     Button (lh_corner, width, height, func, controlled_window, arg, fill_color ,run_mask),
     hours_ (hours),
@@ -10,7 +16,7 @@ Clock::Clock (plug::Vec2d lh_corner, int width, int height, Button_run_fn func, 
     seconds_ (seconds) 
 {};
 
-void Clock::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Clock::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     Button::render (target, transform_stack);
     
@@ -23,19 +29,19 @@ void Clock::render (sf::RenderTarget &target, plug::TransformStack &transform_st
     sprintf (sec, "%d", (int)seconds_);
     sprintf (clck, "%s:%s:%s", hrs, min, sec);
     
-    sf::Text text;
-    sf::Font font;
+    Text text;
+    Font font;
     font.loadFromFile (font_path);
     text.setString (clck);
     text.setFont (font);
-    text.setFillColor (sf::Color::White);
+    text.setFillColor (plug::White);
     text.setCharacterSize (CLOCK_CHARACTER_SIZE);
 
     double text_width = text.findCharacterPos(8).x - text.findCharacterPos (0).x;
     text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + height_ / 2 - CLOCK_CHARACTER_SIZE / 2);
     
     // target.draw (button);
-    target.draw (text);
+    ((RenderTexture &)target).draw (text);
 }   
 
 void Clock::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)

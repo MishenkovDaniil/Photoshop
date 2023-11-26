@@ -3,15 +3,17 @@
 
 #include "../widget.h"
 
+#include "../../graphics/rendertexture/rendertexture.h"
+
 class M_render_texture : public Widget
 {
 public:
-    sf::RenderTexture texture_;
+    RenderTexture texture_;
     M_render_texture (int width, int height, plug::Color color)  {texture_.create (width, height); texture_.clear (color);};
     ~M_render_texture () = default;
 
     void clear (plug::Color color) {texture_.clear (color);};
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack); 
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack); 
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) {return;};
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) {return;};
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) {return;};

@@ -26,7 +26,7 @@ public:
 
     void change_time (float seconds, float minutes = -1, float hours = -1);
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack)                    override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)                    override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

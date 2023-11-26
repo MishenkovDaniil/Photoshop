@@ -26,7 +26,7 @@ void Master_window::add_window (Window *window)
     last_ = list_insert (&windows, last_, window);
 }
 
-void Master_window::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Master_window::render (plug::RenderTarget &target, plug::TransformStack &transform_stack) 
 {
     Window::render (target, transform_stack);
     

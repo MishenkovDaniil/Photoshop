@@ -1,5 +1,10 @@
 #include "text.h"
 
+#include "../../graphics/rendertexture/rendertexture.h"
+#include "../../graphics/rectangleshape/rectangleshape.h"
+#include "../../graphics/font/font.h"
+#include "../../graphics/text/text.h"
+
 M_text::M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color) :
     text_color_ (color),
     capacity_ (START_TEXT_CAPACITY),
@@ -21,7 +26,7 @@ M_text::~M_text ()
     buf_ = nullptr;
 }
 
-void M_text::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void M_text::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     static size_t a = 0;
     static char b = '|';
@@ -41,24 +46,23 @@ void M_text::render (sf::RenderTarget &target, plug::TransformStack &transform_s
     plug::Vec2d size   = layout_->getSize ();
     // size = unite.scale_apply (size);
     
-    sf::RectangleShape  text_rect (layout_->getSize ());
+    RectangleShape      text_rect (layout_->getSize ());
                         text_rect.setFillColor (plug::Transparent);
                         text_rect.setOutlineColor (plug::Black);
                         text_rect.setPosition (unite.getOffset ());
                         text_rect.setOutlineThickness (1);
     
-    sf::String string (buf_);
-    sf::Font    monospace_font;
+    Font    monospace_font;
                 monospace_font.loadFromFile (MONOSPACE_FONT_FILE);
-    sf::Text text;
-    text.setString (string);
+    Text text;
+    text.setString (buf_);
     text.setFont (monospace_font);
     text.setFillColor (text_color_);
     text.setCharacterSize (TEXT_CHARACTER_SIZE);
     text.setPosition (lh_pos);
     
-    target.draw (text_rect);
-    target.draw (text);
+    ((RenderTexture &)target).draw (text_rect);
+    ((RenderTexture &)target).draw (text);
 }   
 
 void M_text::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)

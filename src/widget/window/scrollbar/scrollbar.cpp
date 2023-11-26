@@ -50,7 +50,7 @@ Scrollbar::~Scrollbar ()
 };
 
 
-void Scrollbar::render (sf::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Scrollbar::render (plug::RenderTarget &target, plug::TransformStack &transform_stack) 
 {
     Button::render  (target, transform_stack);
 
@@ -166,14 +166,14 @@ void Scrollbar::onTick             (const plug::TickEvent &event, plug::EHC &ehc
 
 bool change_canvas_rect_up (void *window, void *arg)
 {
-    sf::Keyboard::Key key = sf::Keyboard::Key::Up;
+    plug::KeyCode key = plug::KeyCode::Up;
 
     return change_canvas_rect_up_down (window, &key);
 }
 
 bool change_canvas_rect_down (void *window, void *arg)
 {
-    sf::Keyboard::Key key = sf::Keyboard::Key::Down;
+    plug::KeyCode key = plug::KeyCode::Down;
 
     return change_canvas_rect_up_down (window, &key);
 }
@@ -185,18 +185,19 @@ bool change_canvas_rect_up_down (void *window_, void *arg)
     assert (window->canvas_);
 
     int top = 0;
-    sf::IntRect &rect = window->canvas_->get_draw_rect ();
+    IntRect &rect = window->canvas_->getDrawRect ();
 
-    switch (*((sf::Keyboard::Key *)arg))
+    switch (*((plug::KeyCode *)arg))
     {
-        case sf::Keyboard::Key::Up:
+        case plug::KeyCode::Up:
         {
-            top = std::max (rect.top - UP_DOWN_CANVAS_CHANGE, 0); //not friend but canvas member func ()
+            top = std::max (rect.getTopCorner () - UP_DOWN_CANVAS_CHANGE, 0); //not friend but canvas member func ()
             break;
         }
-        case sf::Keyboard::Key::Down:
+        case plug::KeyCode::Down:
         {
-            top = std::min ((unsigned int)(rect.top + UP_DOWN_CANVAS_CHANGE), window->canvas_->getRenderTexture ().getSize ().y - (unsigned int)window->canvas_->get_size ().y);
+            top = std::min ((unsigned int)(rect.getTopCorner () + UP_DOWN_CANVAS_CHANGE), 
+                            (unsigned int)(window->canvas_->getFullSize ().y - window->canvas_->getSize ().y));
             break;
         }
         default:
@@ -205,7 +206,7 @@ bool change_canvas_rect_up_down (void *window_, void *arg)
         }
     }
 
-    window->canvas_->set_draw_rect_offset (rect.left, top);
+    window->canvas_->setDrawRectOffset (rect.getLeftCorner (), top);
     return true;
 } 
 
@@ -215,14 +216,14 @@ bool change_canvas_rect_mid (void *window_, void *arg)
     double val = *(double *)arg;
     static double good_top = 0;
 
-    int texture_height = window->canvas_->getRenderTexture ().getSize ().y;
-    int real_height = window->canvas_->get_size ().y;
+    int texture_height = window->canvas_->getFullSize ().y;
+    int real_height = window->canvas_->getSize ().y;
 
-    sf::IntRect &rect = window->canvas_->get_draw_rect ();
+    IntRect &rect = window->canvas_->getDrawRect ();
 
     // int top = rect.top;
-    if (rect.top != (int)good_top)
-        good_top = rect.top;
+    if (rect.getTopCorner () != (int)good_top)
+        good_top = rect.getTopCorner ();
     good_top += val * (double)(texture_height - real_height);
     // top = std::min (top, texture_height - real_height);
     if (good_top > texture_height - real_height)
@@ -234,7 +235,7 @@ bool change_canvas_rect_mid (void *window_, void *arg)
         good_top = 0;
     }
 
-    window->canvas_->set_draw_rect_offset (rect.left, good_top);
+    window->canvas_->setDrawRectOffset (rect.getLeftCorner (), good_top);
 
     return true;
 }

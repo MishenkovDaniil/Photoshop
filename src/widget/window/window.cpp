@@ -46,13 +46,13 @@ Window::~Window ()
     delete layout_;
 }
 
-void Window::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Window::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    sf::RectangleShape rect (plug::Vec2d (width_, height_));
+    RectangleShape rect (plug::Vec2d (width_, height_));
     rect.setFillColor (plug::Color (0, 0,0,0));
     rect.setOutlineColor (plug::Color (50, 50, 50));
     rect.setOutlineThickness (-1);
@@ -67,7 +67,7 @@ void Window::render (sf::RenderTarget &target, plug::TransformStack &transform_s
     
     header_->render (target, transform_stack);
     
-    target.draw (rect);
+    ((RenderTexture &)target).draw (rect);
 
     transform_stack.leave ();
 }

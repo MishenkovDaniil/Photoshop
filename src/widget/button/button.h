@@ -14,6 +14,8 @@
 #include "../../standard/plug_key_code.h"
 #include "../../standard/plug_mouse_button.h"
 
+#include "../../graphics/sprite/sfml_texture.h"
+
 static const int START_CAPACITY = 10;
 static const int BUTTON_TEXT_SIZE = 10;
 
@@ -71,7 +73,7 @@ public:
     void          set_arg           (void *arg) {arg_ = arg;};
     
     bool run ();
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack)                    override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)                    override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
@@ -88,17 +90,21 @@ public:
 class Texture_button : public Button
 {
 protected:
-    sf::Texture *cur_texture_ = nullptr;
-    sf::Texture &pressed_texture_;
-    sf::Texture &released_texture_;
-    sf::Sprite *sprite_ = nullptr;
+    // SFMLTexture *cur_texture_ = nullptr;
+    // SFMLTexture &pressed_texture_;
+    // SFMLTexture &released_texture_;
+    Sprite *pressed_sprite_ = nullptr;
+    Sprite *released_sprite_ = nullptr;
+    Sprite *cur_sprite_ = nullptr;
 
 public:
-    Texture_button (plug::Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+    Texture_button (plug::Vec2d lh_corner, int width, int height, plug::Texture &pressed, plug::Texture &released, 
+                    Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
+    Texture_button (plug::Vec2d lh_corner, int width, int height, Sprite &pressed, Sprite &released, 
                     Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~Texture_button () override;
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
@@ -122,7 +128,7 @@ public:
                 void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~String_button ();
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
@@ -143,7 +149,7 @@ public:
 
     void add_button (Button *button); /// can change button layout
     
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack)                        override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)                        override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

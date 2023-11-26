@@ -8,6 +8,10 @@
 #include "../window.h"
 #include "../../constants.h"
 #include "../../../standard/plug_layout.h"
+#include "../../../graphics/rectangleshape/rectangleshape.h"
+#include "../../../graphics/rendertexture/rendertexture.h"
+#include "../../../graphics/text/text.h"
+#include "../../../graphics/font/font.h"
 
 static const int HEADER_HEIGHT       = 30;
 static const int CHARACTER_SIZE      = 20;
@@ -34,7 +38,7 @@ public:
 
     bool contains (int x, int y);
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack)    override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)    override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

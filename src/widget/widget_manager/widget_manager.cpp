@@ -20,7 +20,7 @@ void Widget_manager::add_widget (plug::Widget *widget)
     list_insert (&widgets, 0, widget);
 }
 
-void Widget_manager::render (sf::RenderTarget &target)
+void Widget_manager::render (plug::RenderTarget &target)
 {
     for (int widget_idx = 0; widget_idx < widgets.size; ++widget_idx)
     {

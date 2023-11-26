@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 
 #include "button.h"
+#include "../../graphics/rendertexture/rendertexture.h"
+#include "../../graphics/rectangleshape/rectangleshape.h"
 
 // may be made base class for text and image to add it as parameter in button and use int it whether image or text
 //image of our size-->texture-->sprite-->sprite.set_texture () and sprite.set_texture_rect ()
@@ -40,7 +42,7 @@ bool Button::run ()
     return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());
@@ -48,14 +50,14 @@ void Button::render (sf::RenderTarget &target, plug::TransformStack &transform_s
     plug::Vec2d size = layout_->getSize ();
 
     // sf::RectangleShape rect (unite.scale_apply(size));
-    sf::RectangleShape rect (size);
+    RectangleShape rect (size);
     rect.setFillColor (fill_color_);
 /*TODO: 
 //make constant for thickness and add possibility to change it (in constructor for example)*/
     rect.setOutlineThickness (1); 
     rect.setPosition (lh_corner.get_x (), lh_corner.get_y ());
 
-    target.draw (rect);
+    ((RenderTexture &)target).draw (rect);
 }   
 
 
@@ -139,63 +141,88 @@ void Button::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 } 
 
 
-Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, sf::Texture &pressed, sf::Texture &released, 
+Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, plug::Texture &pressed, plug::Texture &released, 
                                 Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
-    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask),
-    pressed_texture_ (pressed),
-    released_texture_ (released) 
+    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask)
+    // ,
+    // pressed_texture_ (pressed),
+    // released_texture_ (released) 
 {
-    cur_texture_ = &released_texture_;
-    sprite_ = new sf::Sprite;
+    // cur_texture_ = &released_texture_;
+    pressed_sprite_ = new Sprite (pressed);
+    released_sprite_ = new Sprite (released);
+    assert (pressed_sprite_ && released_sprite_);
+
+    cur_sprite_ = released_sprite_;
+}
+
+Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, Sprite &pressed, Sprite &released, 
+                                Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
+    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask)
+{
+    pressed_sprite_ = &pressed;
+    released_sprite_ = &released;
+    assert (pressed_sprite_ && released_sprite_);
+
+    cur_sprite_ = released_sprite_;
 }
 
 Texture_button::~Texture_button ()
 {
-    if (sprite_)
-        delete sprite_;
+    if (pressed_sprite_)
+    {
+        // delete pressed_sprite_;
+        pressed_sprite_ = nullptr;
+    }
+    if (released_sprite_)
+    {
+        // delete released_sprite_;
+        released_sprite_ = nullptr;
+    }
+    cur_sprite_ = nullptr;
 }
 
-void Texture_button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Texture_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());
     plug::Vec2d lh_corner = unite.getOffset ();
 
-    sprite_->setTexture (*cur_texture_);
-    sprite_->setPosition (lh_corner.get_x (), lh_corner.get_y ());
+    // sprite_->setTexture (*cur_texture_);
+    cur_sprite_->setPosition (lh_corner.get_x (), lh_corner.get_y ());
 
-    target.draw (*sprite_);
+    ((RenderTexture &)target).draw (*cur_sprite_);
 }
 
 void Texture_button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     Button::onMousePressed (event, ehc);
     bool status = ehc.stopped;
-    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    cur_sprite_ = is_pressed_ ? pressed_sprite_ : released_sprite_;
 }
 
 void Texture_button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
     Button::onMouseReleased (event, ehc);
-    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    cur_sprite_ = is_pressed_ ? pressed_sprite_ : released_sprite_;
 }
 
 void Texture_button::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
     Button::onMouseMove (event, ehc);
-    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    cur_sprite_ = is_pressed_ ? pressed_sprite_ : released_sprite_;
 }
 
 void Texture_button::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc)
 {
     Button::onKeyboardPressed (event, ehc);
-    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    cur_sprite_ = is_pressed_ ? pressed_sprite_ : released_sprite_;
 }
 
 void Texture_button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc)
 {
     Button::onKeyboardReleased (event, ehc);
-    cur_texture_ = is_pressed_ ? &pressed_texture_ : &released_texture_;
+    cur_sprite_ = is_pressed_ ? pressed_sprite_ : released_sprite_;
 }
 
 
@@ -221,7 +248,7 @@ String_button::~String_button ()
     if (string_) delete[] string_;
 }
 
-void String_button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void String_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     assert (layout_);
 
@@ -231,12 +258,12 @@ void String_button::render (sf::RenderTarget &target, plug::TransformStack &tran
     plug::Vec2d size = layout_->getSize ();
     plug::Vec2d real_size = size;
     // transform_stack.top ().scale_apply (size);
-    sf::RectangleShape button (real_size);
+    RectangleShape button (real_size);
                        button.setFillColor (*cur_color_);
                        button.setOutlineThickness (1);
                        button.setPosition (lh_pos.get_x (), lh_pos.get_y ());
-    sf::Text text;
-    sf::Font font;
+    Text text;
+    Font font;
     font.loadFromFile (DEFAULT_FONT_FILE);
     text.setString (string_);
     text.setFont (font);
@@ -246,8 +273,8 @@ void String_button::render (sf::RenderTarget &target, plug::TransformStack &tran
     double text_width = text.findCharacterPos(str_size_ - 1).x - text.findCharacterPos (0).x;
     text.setPosition (lh_pos.get_x () + (real_size.get_x () - text_width) / 2, lh_pos.get_y () + real_size.get_y () / 2 - BUTTON_TEXT_SIZE / 2);
     
-    target.draw (button);
-    target.draw (text);
+    ((RenderTexture &)target).draw (button);
+    ((RenderTexture &)target).draw (text);
 
     transform_stack.leave ();
 }
@@ -319,7 +346,7 @@ void List_button::add_button (Button *button)
 }
 
 
-void List_button::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void List_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     list_button_->render (target, transform_stack);
 

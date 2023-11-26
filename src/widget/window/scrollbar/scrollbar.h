@@ -32,7 +32,7 @@ public:
     Scrollbar (plug::Vec2d lh_pos, int height, int obj_height, int obj_allowed_height, Window *window);
     ~Scrollbar ();
 
-    void render (sf::RenderTarget &target, plug::TransformStack &transform_stack)    override;
+    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)    override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

@@ -31,20 +31,19 @@ Header::~Header ()
     delete layout_;
 }
 
-void Header::render (sf::RenderTarget &target, plug::TransformStack &transform_stack)
+void Header::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    sf::RectangleShape header (sf::Vector2f (width_, HEADER_HEIGHT));
-                       header.setFillColor((sf::Color)background_color); 
+    RectangleShape     header (plug::Vec2d (width_, HEADER_HEIGHT));
+                       header.setFillColor(background_color); 
                        header.setOutlineColor (plug::Color (50, 50, 50));
                        header.setOutlineThickness (-1);
-                       header.setPosition (lh_pos);
-    
-    sf::Text text;
-    sf::Font font;
+                       header.setPosition (lh_pos.x, lh_pos.y);
+    Text text;
+    Font font;
     font.loadFromFile (font_file_);
     text.setString (string_);
     text.setFont (font);
@@ -54,8 +53,8 @@ void Header::render (sf::RenderTarget &target, plug::TransformStack &transform_s
     double text_width = text.findCharacterPos(str_len - 1).x - text.findCharacterPos (0).x;
     text.setPosition (lh_pos.get_x () + (width_ - text_width) / 2, lh_pos.get_y () + HEADER_HEIGHT / 2 - CHARACTER_SIZE / 2);
 
-    target.draw (header);
-    target.draw (text);
+    ((RenderTexture &)target).draw (header);
+    ((RenderTexture &)target).draw (text);
 
     transform_stack.leave ();
 }

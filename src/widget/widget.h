@@ -31,7 +31,7 @@ protected:
     plug::LayoutBox *layout_ = nullptr;
 public:
     virtual ~Widget () = default;
-    virtual void render (sf::RenderTarget &target, plug::TransformStack &transform_stack) = 0;
+    virtual void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) = 0;
     
     virtual void onEvent (const plug::Event &event, plug::EHC &ehc);
 

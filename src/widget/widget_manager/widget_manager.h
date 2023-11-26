@@ -18,7 +18,7 @@ public:
 
     void add_widget (plug::Widget *widget);   /// stores widget * so if widget pointer is destroyed it will be destroyed in manager too 
     // void rm_widget (Widget *widget);
-    void render (sf::RenderTarget &target);
+    void render (plug::RenderTarget &target);
 
     void onEvent (sf::Event *event, double delta_time);
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc);
