@@ -335,12 +335,12 @@ void List_button::add_button (Button *button)
     assert (old_layout);
 
     size_t button_height = old_layout->getSize ().get_y ();
-    delete old_layout;
+    // delete old_layout;
     
-    Default_layout_box *new_layout = new Default_layout_box (plug::Vec2d (0, relative_height_), 
-                                                             plug::Vec2d (layout_->getSize ().get_x (), button_height));
+    Default_layout_box new_layout = Default_layout_box (plug::Vec2d (0, relative_height_), 
+                                                        plug::Vec2d (layout_->getSize ().get_x (), button_height));
     relative_height_ += button_height;
-    button->setLayoutBox (*new_layout);
+    button->setLayoutBox (new_layout);
     
     buttons_.add (button);
 }
