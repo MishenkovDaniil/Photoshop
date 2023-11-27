@@ -10,13 +10,15 @@
 #include "../../../graphics/rendertexture/rendertexture.h"
 #include "../../../graphics/intrect/intrect.h"
 #include "../../../graphics/sprite/sfml_texture.h"
+#include "../../../standard/standard.h"
 
 class Tool;
 class Tool_palette;
 class Master_window;
 class Window;
 
-struct SelectionMask
+
+struct SelectionMask : public plug::SelectionMask
 {
     bool *mask = nullptr;
     size_t width_  = 0;
@@ -27,12 +29,14 @@ public:
                                                 { mask = new bool[width * height];
                                                 assert (mask);};
     ~SelectionMask () {delete[] mask;};
-    size_t get_width () {return width_;};
-    size_t get_height () {return height_;};
+    size_t getWidth () const override {return width_;};
+    size_t getHeight () const override {return height_;};
 
-    bool get_pixel (size_t x, size_t y) const;  
-    void set_pixel (size_t x, size_t y, bool flag);  
-    void fill (bool value);
+    bool getPixel (size_t x, size_t y) const override;  
+    void setPixel (size_t x, size_t y, bool flag) override;  
+    void fill (bool value) override;
+    virtual void invert(void) override {return;}; //TODO
+
     //TODO :: void invert ();
 };
 
@@ -61,7 +65,8 @@ public:
 
     plug::Vec2d getSize () const                                                    override 
         {return plug::Vec2d (width_, height_);};
-    const SelectionMask &getSelectionMask ()                                        override 
+
+    const plug::SelectionMask &getSelectionMask ()                                  override 
         {return selection;};
     void setSize(const plug::Vec2d &size)                                           override 
         {width_ = size.x; height_ = size.y;};
@@ -116,13 +121,12 @@ public:
     // sf::RenderTexture &getRenderTexture () {return view.getRenderTexture ();};
     plug::Vec2d getSize () const {return view.getSize ();};
     plug::Vec2d getFullSize () const {return view.getFullSize ();};
-    void setSize (const plug::Vec2d &size) {layout_->setSize (size); view.setSize (size);};
-
+    void setSize (const plug::Vec2d &size) {layout_->setSize (size); view.setSize (size);}
 
     IntRect &getDrawRect () {return view.getDrawRect ();};
     void setDrawRectOffset (int left, int top);
     void setDrawRectSize   (int width, int height);
-    const SelectionMask &getSelectionMask () {return view.getSelectionMask ();};
+    const plug::SelectionMask &getSelectionMask () {return view.getSelectionMask ();};
     const plug::Texture& getTexture(void) const {return view.getTexture ();};
 
     friend bool change_canvas_rect_up_down  (void *window, void *arg);
@@ -130,7 +134,7 @@ public:
     friend bool change_canvas_rect_space    (void *window, void *arg);
     friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 
-    friend Window;
+    // friend Window;
     friend Tool;
 };
 

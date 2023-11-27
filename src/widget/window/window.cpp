@@ -22,7 +22,7 @@ Window::Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, b
 
     if (need_scrollbar)
     {
-        scrollbar_ = new Scrollbar (plug::Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->view.height_, height - HEADER_HEIGHT, this);
+        scrollbar_ = new Scrollbar (plug::Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->getSize ().y, height - HEADER_HEIGHT, this);
         assert (scrollbar_ && "failed to allocate window scrollbar \n");
 
         Widget *scrollbar = scrollbar_;
