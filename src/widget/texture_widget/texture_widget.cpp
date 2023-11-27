@@ -6,9 +6,7 @@ void M_render_texture::render (plug::RenderTarget &target, plug::TransformStack 
 {
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
-    Sprite sprite;
-    sprite.setTexture (texture_.getTexture ());
-    sprite.setPosition (lh_pos);
+    cur_sprite.setPosition (lh_pos);
     
-    ((RenderTexture &)target).draw (sprite);
+    ((RenderTexture &)target).draw (cur_sprite);
 }
