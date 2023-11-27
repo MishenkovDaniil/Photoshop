@@ -2,10 +2,7 @@
 #define TOOL_PALETTE_H
 
 #include "../../../graphic_structures/vector/vector.h"
-// #include "../tools.h"
 #include "../../../standard/plug_tool.h"
-// #include "../../../button/button.h"
-// #include "../../../button/palette/palette.h"
 
 class Tool;
 class Button;
