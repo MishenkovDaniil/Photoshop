@@ -5,7 +5,6 @@
 
 #include "../../graphic_structures/vector/vector.h"
 #include "../../graphic_structures/color/color.h"
-#include "../convert_sfml_functions.h"
 #include "../shape.h"
 
 

@@ -1,6 +1,7 @@
 #include "circleshape.h"
+#include "../convert_sfml_functions.h"
 
-CircleShape::CircleShape (double radius = 0, size_t point_count = 30)
+CircleShape::CircleShape (double radius, size_t point_count)
     : Shape (static_cast<size_t>(Shapes::Circle))
       {
         drawable = new sf::CircleShape (radius, point_count);

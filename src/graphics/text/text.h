@@ -24,7 +24,7 @@ public:
     void setCharacterSize (size_t character_size);
 
     void setPosition (double x, double y);
-    void setPosition (const plug::Vec2d &pos);
+    void setPosition (const plug::Vec2d pos);
 
     plug::Vec2d findCharacterPos(size_t character);
     const char *getString () const;

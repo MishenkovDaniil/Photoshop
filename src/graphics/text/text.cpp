@@ -51,7 +51,7 @@ void Text::setPosition (double x, double y)
     ((sf::Text *)drawable)->setPosition (x, y);
 }
 
-void Text::setPosition (const plug::Vec2d &pos)
+void Text::setPosition (const plug::Vec2d pos)
 {
     ((sf::Text *)drawable)->setPosition (getSFMLVector2f (pos));
 }

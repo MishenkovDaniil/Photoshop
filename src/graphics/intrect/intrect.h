@@ -20,8 +20,8 @@ public:
 
     int getLeftCorner () const {return rect_.left;};
     int getTopCorner () const {return rect_.top;};
-    size_t getWidth (int width) {return rect_.width;};
-    size_t getHeight (int height) {return rect_.height;;}; 
+    size_t getWidth () const {return rect_.width;};
+    size_t getHeight () const {return rect_.height;;}; 
 };
 
 #endif /* INTRECT_H */

@@ -1,6 +1,7 @@
 #include "rectangleshape.h"
+#include "../convert_sfml_functions.h"
 
-RectangleShape::RectangleShape (const plug::Vec2d &size = plug::Vec2d (0, 0))
+RectangleShape::RectangleShape (const plug::Vec2d &size)
     : Shape (static_cast<size_t>(Shapes::Rectangle))
       {
         drawable = new sf::RectangleShape (getSFMLVector2f (size));

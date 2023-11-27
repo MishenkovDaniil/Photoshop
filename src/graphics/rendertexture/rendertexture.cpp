@@ -92,12 +92,18 @@ void RenderTexture::draw (const Drawable &drawable, Sprite &sprite)
 
 plug::Texture RenderTexture::getTexture () const
 {
-    sf::Image img = cur_texture.copyToImage ();
+    sf::Image img = render_texture_.getTexture ().copyToImage ();
     
     plug::Texture texture (img.getSize ().x, img.getSize ().y);
     memcpy (texture.data, img.getPixelsPtr (), sizeof (plug::Color) * img.getSize ().x * img.getSize ().y);
     
     return texture;
+}
+
+void RenderTexture::getTexture (plug::Texture &texture) const
+{
+    sf::Image img = render_texture_.getTexture ().copyToImage ();
+    memcpy (texture.data, img.getPixelsPtr (), sizeof (plug::Color) * texture.width * texture.height);
 }
 
 plug::Vec2d RenderTexture::getSize () const

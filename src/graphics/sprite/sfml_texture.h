@@ -19,8 +19,9 @@ public:
 
     void setTexture (const plug::Texture &texture);
     void setTextureRect (IntRect &rect);
-    void setPosition (double x, double y);
-    void setPosition (const plug::Vec2d &pos);
+    void setPosition (const plug::Vec2d pos) override;
+    void setPosition (double x, double y) override;
+    plug::Vec2d getPosition () const override;
     const plug::Texture *getTexture () const;
     void loadFromFile (const char *pathname);
 };

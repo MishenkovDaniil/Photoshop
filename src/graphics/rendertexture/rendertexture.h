@@ -30,13 +30,14 @@ public:
 
     plug::Vec2d getSize () const;
     plug::Texture getTexture () const;
+    void getTexture (plug::Texture &texture) const;
 
     void display () {render_texture_.display ();};
     
-    void draw (const plug::VertexArray& array, Sprite &sprite);
-    void draw (const plug::VertexArray& array, const plug::Texture& texture, Sprite &sprite);
     void draw (const Drawable &drawable);
+    void draw (const plug::VertexArray& array, Sprite &sprite);
     void draw (const Drawable &drawable, Sprite &sprite);
+    void draw (const plug::VertexArray& array, const plug::Texture& texture, Sprite &sprite);
     void clear (plug::Color color, Sprite &sprite);
 };
 

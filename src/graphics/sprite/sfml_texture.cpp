@@ -43,7 +43,7 @@ void Sprite::setPosition (double x, double y)
     ((sf::Sprite *)drawable)->setPosition (x, y);
 }
 
-void Sprite::setPosition (const plug::Vec2d &pos)
+void Sprite::setPosition (const plug::Vec2d pos)
 {
     ((sf::Sprite *)drawable)->setPosition (getSFMLVector2f (pos));
 }
@@ -63,4 +63,10 @@ void Sprite::setTextureRect (IntRect &rect)
 {
     sf::IntRect sfml_rect (rect.getLeftCorner (), rect.getTopCorner (), rect.getWidth (), rect.getHeight ());
     ((sf::Sprite *)drawable)->setTextureRect (sfml_rect);
+}
+
+plug::Vec2d Sprite::getPosition () const
+{
+    sf::Vector2f vec = ((sf::Sprite *)drawable)->getPosition ();
+    return plug::Vec2d (vec.x, vec.y);
 }
