@@ -51,6 +51,7 @@ class Canvas : public plug::Canvas
 
 public:
     bool is_changed_img = false;
+    bool is_changed_texture = false;
     RenderTexture canvas_texture;
 
 public:
@@ -77,6 +78,11 @@ public:
     void setDrawRectOffset (int left, int top);
     void setDrawRectSize   (int width, int height);
 
+private:
+    void update_texture ();
+    void update_img ();
+    void dump_img ();
+     
     friend CanvasView;
     friend Window;
     friend Tool;

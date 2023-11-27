@@ -97,14 +97,16 @@ void Canvas::setPixel(size_t x, size_t y, const plug::Color& color)
     y += draw_rect_.getTopCorner ();
 
     canvas_img.data[x + y * width_] = color;
+    is_changed_img = true;
 }
 
 const plug::Texture& Canvas::getTexture(void) const
 {
     // plug::Texture texture = canvas_texture.getTexture ();
-    if (is_changed_img)
+    if (is_changed_texture)
     {
         plug::Texture texture = canvas_texture.getTexture ();
+
         memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
         // is_changed_img = false;
     }
@@ -124,24 +126,88 @@ void Canvas::draw (const plug::VertexArray& vertex_array)
     // {
     //     vertex_array[idx].position += plug::Vec2d (draw_rect_.getLeftCorner, draw_rect_.getTopCorner ());
     // }
-    
+    update_texture ();
     canvas_texture.draw (vertex_array, canvas_sprite);
-    is_changed_img = true;
-}   
+    is_changed_texture = true;
+    update_img ();
+}  
+
+void Canvas::update_texture ()
+{
+    if (is_changed_img)
+    {
+        plug::VertexArray vertices (plug::Quads, 4);
+
+        vertices[0].position = plug::Vec2d (0, 0);
+        vertices[1].position = plug::Vec2d (width_, 0);
+        vertices[2].position = plug::Vec2d (width_, height_);
+        vertices[3].position = plug::Vec2d (0, height_);
+        // Sprite sprite (canvas.getTexture ());
+        vertices[0].color = getPixel (0, 0);
+        vertices[1].color = getPixel (width_ - 1, 0);
+        vertices[2].color = getPixel (width_ - 1, height_ - 1);
+        vertices[3].color = getPixel (0, height_ - 1);
+
+        // for (int i = 0; i < 4; ++i)
+        // {
+        //     printf ("vertex color = %d %d %d %d\n", vertices[i].color.r, vertices[i].color.g, vertices[i].color.b, vertices[i].color.a);
+        // }
+
+        vertices[0].tex_coords = plug::Vec2d (0, 0);
+        vertices[1].tex_coords = plug::Vec2d (width_ - 1, 0);
+        vertices[2].tex_coords = plug::Vec2d (width_ - 1, height_ - 1);
+        vertices[3].tex_coords = plug::Vec2d (0, height_ - 1);
+        canvas_texture.draw (vertices, canvas_img);
+        is_changed_img = false;
+    }
+}
+
+void Canvas::update_img ()
+{
+    if (is_changed_texture)
+    {
+        canvas_texture.getTexture (canvas_img);
+        is_changed_texture = false;
+    }
+}
+
+void Canvas::dump_img ()
+{
+    for (size_t y = 1; y < 2; ++y)
+    {
+        for (size_t x = 0; x < 50; ++x)
+        {
+            printf ("[%lu][%lu] = %d %d %d %d\n", x, y, canvas_img.data[x + y * width_].r,
+                                                      canvas_img.data[x + y * width_].g,
+                                                      canvas_img.data[x + y * width_].b, 
+                                                      canvas_img.data[x + y * width_].a);
+        }
+    }
+    printf ("\n\n\n\n\n");
+}
 
 void Canvas::draw (const plug::VertexArray& vertex_array, const plug::Texture &texture)
 {
+    update_texture ();
+
     canvas_texture.draw (vertex_array, texture, canvas_sprite);
-    is_changed_img = true;
+    is_changed_texture = true;
+    update_img ();
 }
 
 void Canvas::draw (Drawable &drawable)
 {
+    update_texture ();
+
+    printf ("pos = %lf %lf\n", drawable.getPosition ().x, drawable.getPosition ().y);
     plug::Vec2d real_pos = drawable.getPosition () + plug::Vec2d (draw_rect_.getLeftCorner (), draw_rect_.getTopCorner ());
+    printf ("real_pos = %lf %lf\n", real_pos.x, real_pos.y);
     drawable.setPosition (real_pos);
 
     canvas_texture.draw (drawable, canvas_sprite);
-    is_changed_img = true;
+    is_changed_texture = true;
+
+    update_img ();
 }
 
 CanvasView::CanvasView (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, Tool_palette *palette) :
@@ -169,6 +235,8 @@ void CanvasView::render (plug::RenderTarget &target, plug::TransformStack &trans
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
+
+    view.update_texture ();
 
     Sprite &canvas_sprite = view.canvas_sprite;
     canvas_sprite.setPosition (lh_pos);
