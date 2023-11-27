@@ -10,14 +10,18 @@ void Brush::on_main_button         (const plug::ControlState &control_state, plu
 
     if (control_state.state == plug::Pressed)
     {
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
+        widget_ = new M_render_texture (canvas_size.x, canvas_size.y, plug::Transparent);
+        assert (widget_);
+
         CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
-
+        printf ("pos in brush = %lf %lf\n", pos.x, pos.y);
         circle.setFillColor (color_palette_->getFGColor ());
 
         prev_pos = pos;
 
-        ((Canvas *)active_canvas_)->draw (circle); //fg_color
+        ((M_render_texture *)widget_)->draw (circle); //fg_color
         is_pressed = true;
     }
 }
@@ -46,24 +50,33 @@ void Brush::on_move                (plug::Vec2d &pos)
 {
     if (!is_pressed)
         return;
-
+    printf ("on move\n");
     assert (active_canvas_);
 
     CircleShape circle (DEFAULT_BRUSH_THICKNESS);
     circle.setPosition (pos);
-    circle.setFillColor (color_palette_->getFGColor ());   //fg_color
+    circle.setFillColor (color_palette_->getFGColor ());
     prev_pos = pos;
 
-    ((Canvas *)active_canvas_)->draw (circle); //fg_color
+    ((M_render_texture *)widget_)->draw (circle);
 }
 
 void Brush::on_confirm             ()
 {
     is_pressed = false;
+    printf ("sprite pos = %lf %lf\n", ((M_render_texture *)widget_)->cur_sprite.getPosition ().x, ((M_render_texture *)widget_)->cur_sprite.getPosition ().y);
+    
+    Sprite &sprite = ((M_render_texture *)widget_)->cur_sprite;
+    sprite.setPosition (0, 0);
+    ((Canvas *)active_canvas_)->draw (sprite);
+    delete widget_;
+    widget_ = nullptr;
 }
 
 void Brush::on_cancel              ()
 {
+    delete widget_;
+    widget_ = nullptr;
 
     // sf::CircleShape circle (10);
     // circle.setPosition (prev_pos); 
@@ -518,6 +531,7 @@ void Fill::on_main_button         (const plug::ControlState &control_state, plug
 
     if (control_state.state == plug::Pressed)
     {
+        // plug::Texture texture = active_canvas_->getTexture ();
         plug::Vec2d canvas_size = active_canvas_->getSize ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
@@ -606,7 +620,6 @@ void Fill::fill_pixels (plug::Vec2d &pos)
     while (pixels.get_size ())
     {
         plug::Vec2d cur_pixel = pixels.top ();
-        plug::Vec2d real_cur_pixel = cur_pixel;
 
         pixels.pop ();
 
@@ -616,16 +629,16 @@ void Fill::fill_pixels (plug::Vec2d &pos)
         plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
         
         plug::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
-                                   ? active_canvas_->getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
+                                   ? active_canvas_->getPixel (cur_pixel.get_x() - 1, cur_pixel.get_y ()) 
                                    : plug::Transparent;
         plug::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
-                                   ? active_canvas_->getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
+                                   ? active_canvas_->getPixel (cur_pixel.get_x() + 1, cur_pixel.get_y ()) 
                                    : plug::Transparent;
         plug::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
-                                   ? active_canvas_->getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
+                                   ? active_canvas_->getPixel (cur_pixel.get_x(),     cur_pixel.get_y () + 1) 
                                    : plug::Transparent;
         plug::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
-                                   ? active_canvas_->getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
+                                   ? active_canvas_->getPixel (cur_pixel.get_x(),     cur_pixel.get_y () - 1) 
                                    : plug::Transparent;
 
         if ((int)left.get_x () >= 0 && 
@@ -783,39 +796,42 @@ void Text_tool::on_confirm             ()
 {
     assert (active_canvas_);
 
-    // if (on_rect_)
-    // {
-    //     rect_tool.on_cancel ();
-    //     on_rect_ = false;
-    //     // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
+    if (on_rect_)
+    {
+        rect_tool.on_cancel ();
+        on_rect_ = false;
+        // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
 
-    //     widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
-    // }
-    // else 
-    // {
-    //     if (!widget_)
-    //     {
-    //         return;
-    //     }
+        widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
+    }
+    else 
+    {
+        if (!widget_)
+        {
+            return;
+        }
         
-    //     plug::Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
-    //     if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
-    //         (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
-    //         (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
-    //         (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
-    //     {
-    //         TransformStack stack;
-
-    //         widget_->render (active_canvas_->getRenderTexture (), stack);
-    //         active_canvas_->getRenderTexture ().display ();
-
-    //         // delete (M_text *)widget_;
-    //         delete widget_;
-    //         widget_ = nullptr;
+        plug::Vec2d size (rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y);
+        if ((latest_pos_.get_x () <  rect_tool.center_.get_x ()) || 
+            (latest_pos_.get_y () <  rect_tool.center_.get_y ()) || 
+            (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
+            (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
+        {
+            TransformStack stack;
             
-    //         state_.state = plug::Released;
-    //     } 
-    // }
+            // widget_->render (active_canvas_->getRenderTexture (), stack);
+            // active_canvas_->getRenderTexture ().display ();
+            Sprite &sprite = ((M_render_texture *)widget_)->cur_sprite;
+            sprite.setPosition (0, 0);
+            ((Canvas *)active_canvas_)->draw (sprite);
+            ((Canvas *)active_canvas_)->draw (sprite);
+
+            delete widget_;
+            widget_ = nullptr;
+            
+            state_.state = plug::Released;
+        } 
+    }
 }
 
 void Text_tool::on_cancel ()
@@ -833,7 +849,6 @@ void Text_tool::on_cancel ()
         rect_tool.on_cancel ();
         if (widget_) delete widget_;
         
-        // delete (M_text *)widget_;
         widget_ = nullptr;
     }
     state_.state = plug::Released;
