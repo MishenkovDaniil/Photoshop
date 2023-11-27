@@ -35,14 +35,16 @@ public:
     
     virtual void onEvent (const plug::Event &event, plug::EHC &ehc);
 
-    // virtual LayoutBox&       getLayoutBox()                     = 0;
-    // virtual const LayoutBox& getLayoutBox() const               = 0;
-    // virtual void             setLayoutBox(const LayoutBox& box) = 0;
+    plug::LayoutBox &getLayoutBox ()                        override 
+        {return *layout_;};
+    const plug::LayoutBox& getLayoutBox() const             override
+        {return *layout_;};
+    void setLayoutBox (const plug::LayoutBox &new_layout)   override 
+        {layout_->setPosition   (new_layout.getPosition ());
+         layout_->setSize       (new_layout.getSize ());};
+
     // virtual bool covers(TransformStack& stack, const Vec2d& position) const = 0;
     // virtual void onParentUpdate(const LayoutBox& parent_box) = 0;
-
-    plug::LayoutBox &getLayoutBox () {return *layout_;};
-    void setLayoutBox (plug::LayoutBox &new_layout) {layout_ = &new_layout;};
 
 protected:
     virtual void onTick             (const plug::TickEvent &event, plug::EHC &ehc) = 0;
