@@ -17,7 +17,7 @@ namespace plug
     class Plugin 
     {
     public:
-        virtual Plugin *tryGetInterface (size_t) = 0;	// аналог  QueryInterface
+        virtual Plugin *tryGetInterface (size_t) = 0;	/// аналог  QueryInterface
         virtual void addReference (Plugin *) = 0;
         virtual void release (Plugin *) = 0;
         virtual const PluginData *getPluginData () const = 0;
