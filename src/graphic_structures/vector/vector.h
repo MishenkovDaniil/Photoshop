@@ -8,12 +8,8 @@
 #include <cassert>
 #include <SFML/Graphics.hpp>
 
-// static const int START_CAPACITY = 10;
-// static const double LOAD_FACTOR = 0.7;
-// static const double MULT_COEFF = 1.5;
 static const double PI = 3.14;
 
-//TODO:make on template + the same to point
 namespace plug
 {
     struct Vec2d 

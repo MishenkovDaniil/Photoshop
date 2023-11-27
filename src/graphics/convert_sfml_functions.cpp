@@ -12,9 +12,9 @@ sf::Vector2f getSFMLVector2f (const plug::Vec2d &plug_vector)
 
 void copyToSFMLVertex (sf::Vertex &sf_vertex, const plug::Vertex &plug_vertex)
 {
-    sf_vertex.color = plug_vertex.color;
-    sf_vertex.position = plug_vertex.position;
-    sf_vertex.texCoords = plug_vertex.tex_coords;
+    sf_vertex.color = getSFMLColor (plug_vertex.color);
+    sf_vertex.position = getSFMLVector2f (plug_vertex.position);
+    sf_vertex.texCoords = getSFMLVector2f (plug_vertex.tex_coords);
 }
 
 void copyToSFMLVertexArray (sf::VertexArray &sf_array, const plug::VertexArray &plug_array)

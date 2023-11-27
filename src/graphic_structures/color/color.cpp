@@ -42,14 +42,14 @@ plug::Color plug::Color::operator += (const plug::Color &color)
     return plug::Color (r, g, b, a);
 }
 
-plug::Color plug::Color::operator = (const sf::Color &other)
+plug::Color plug::Color::operator = (const plug::Color &other)
 {
        r = other.r;
        g = other.g;
        b = other.b;
        a = other.a;
 
-       return *this;
+       return *this;   
 }
 
 
