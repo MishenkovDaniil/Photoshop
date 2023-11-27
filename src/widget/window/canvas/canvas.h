@@ -70,7 +70,7 @@ public:
     void setPixel(size_t x, size_t y, const plug::Color& color)                     override;   
     void draw (const plug::VertexArray& vertex_array)                               override;             
     void draw (const plug::VertexArray& vertex_array, const plug::Texture &texture) override;
-    void draw (const Drawable &drawable);
+    void draw (Drawable &drawable);
     
     plug::Vec2d getFullSize () const {return canvas_texture.getSize ();};
     IntRect &getDrawRect () {return draw_rect_;};

@@ -41,7 +41,7 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     canvas_texture.create (width, height * 2);
     draw_rect_  = IntRect (0, 0, width, height);
 
-    RectangleShape rect (plug::Vec2d (width, height));
+    RectangleShape rect (plug::Vec2d (width, height * 2));
     rect.setFillColor (color);
     
     canvas_texture.draw (rect, canvas_sprite);
@@ -135,8 +135,11 @@ void Canvas::draw (const plug::VertexArray& vertex_array, const plug::Texture &t
     is_changed_img = true;
 }
 
-void Canvas::draw (const Drawable &drawable)
+void Canvas::draw (Drawable &drawable)
 {
+    plug::Vec2d real_pos = drawable.getPosition () + plug::Vec2d (draw_rect_.getLeftCorner (), draw_rect_.getTopCorner ());
+    drawable.setPosition (real_pos);
+
     canvas_texture.draw (drawable, canvas_sprite);
     is_changed_img = true;
 }
@@ -285,6 +288,7 @@ void CanvasView::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, pl
         {
             tool->get_widget ()->onEvent (event, ehc);
             bool status = ehc.stopped;
+            // ehc.stopped = true;
             is_focused = status;
             if (status) 
                 return;
@@ -296,6 +300,7 @@ void CanvasView::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, pl
             {
                 tool->on_cancel ();
                 ehc.stopped = true;
+                printf ("cancel\n");
                 return;
             }
             case plug::KeyCode::Enter:
