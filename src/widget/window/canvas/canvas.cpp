@@ -1,6 +1,6 @@
 #include "canvas.h"
 
-bool SelectionMask::get_pixel (size_t x, size_t y) const
+bool SelectionMask::getPixel (size_t x, size_t y) const
 {
     assert (mask && "nullptr filter mask\n");
     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
@@ -8,7 +8,7 @@ bool SelectionMask::get_pixel (size_t x, size_t y) const
     return mask[x + y * width_];
 }  
 
-void SelectionMask::set_pixel (size_t x, size_t y, bool flag)
+void SelectionMask::setPixel (size_t x, size_t y, bool flag)
 {
     assert (mask && "nullptr filter mask\n");
     assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
@@ -126,6 +126,7 @@ void Canvas::draw (const plug::VertexArray& vertex_array)
     // {
     //     vertex_array[idx].position += plug::Vec2d (draw_rect_.getLeftCorner, draw_rect_.getTopCorner ());
     // }
+    
     update_texture ();
     canvas_texture.draw (vertex_array, canvas_sprite);
     is_changed_texture = true;
@@ -199,9 +200,7 @@ void Canvas::draw (Drawable &drawable)
 {
     update_texture ();
 
-    printf ("pos = %lf %lf\n", drawable.getPosition ().x, drawable.getPosition ().y);
     plug::Vec2d real_pos = drawable.getPosition () + plug::Vec2d (draw_rect_.getLeftCorner (), draw_rect_.getTopCorner ());
-    printf ("real_pos = %lf %lf\n", real_pos.x, real_pos.y);
     drawable.setPosition (real_pos);
 
     canvas_texture.draw (drawable, canvas_sprite);
