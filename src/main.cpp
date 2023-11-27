@@ -1,20 +1,25 @@
-#include <iostream>
 #include <cassert>
 #include <ctime>
+#include <dlfcn.h>
+#include <iostream>
 
-#include "widget/widget.h"
-#include "widget/window/window.h"
+#include "graphics/sprite/sfml_texture.h"
+#include "plugin/tools/tools.h"
+#include "plugin/tools/palette/palette.h"
+#include "plugin/filter/filter.h"
 #include "widget/button/button.h"
-#include "widget/window/menu/menu.h"
+#include "widget/button/clock/clock.h"
+#include "widget/button/palette/palette.h"
+#include "widget/widget.h"
 #include "widget/widget_manager/widget_manager.h"
 #include "widget/window/canvas/canvas.h"
 #include "widget/window/master_window/master_window.h"
-#include "widget/button/clock/clock.h"
-#include "plugin/tools/tools.h"
-#include "plugin/tools/palette/palette.h"
-#include "widget/button/palette/palette.h"
-#include "plugin/filter/filter.h"
-#include "graphics/sprite/sfml_texture.h"
+#include "widget/window/menu/menu.h"
+#include "widget/window/window.h"
+
+#include "standard/standard.h"
+
+static const char *FILTER_PATH = "/home/daniil/programming/code/C++_projects/photoshop/libFilter.so";
 
 static const char *line_img   = "resources/imgs/line.png";
 static const char *fill_img   = "resources/imgs/fill.png";
@@ -28,12 +33,12 @@ static const int FULL_SCREEN_HEIGHT = 1080;
 static const int LIGHT_DELTA_CHANGE = 5;
 static const int SATURATION_DELTA_CHANGE = 5;
 
+typedef plug::Plugin *(getInterfaceFunc) (size_t type);	/// аналог  QueryInterface
+
 bool save_file (void *widget, void *arg);
 
-//TODO first make contain func/
-// !!!
-// !!!
-// !!!
+plug::Filter *getFilter (const char *plugin_path);
+
 int main ()
 {
     sf::RenderWindow window (sf::VideoMode (FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT), "w_manager");//, sf::Style::Fullscreen);
@@ -92,13 +97,15 @@ int main ()
     Light_filter light_decr (-LIGHT_DELTA_CHANGE);
     Saturation_filter saturation_incr (SATURATION_DELTA_CHANGE);
     Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
-    White_black_filter black_white;
+    // White_black_filter black_white;
+    plug::Filter *loaded_filter = getFilter (FILTER_PATH);  
 
     Filter_tool light_incr_tool (&light_incr);
     Filter_tool light_decr_tool (&light_decr);
     Filter_tool saturation_incr_tool (&saturation_incr);
     Filter_tool saturation_decr_tool (&saturation_decr);
-    Filter_tool black_white_tool (&black_white);
+    // Filter_tool black_white_tool (&black_white);
+    Filter_tool loaded_filter_tool (loaded_filter);
 
     Sprite circle_pressed_texture;
     Sprite  brush_pressed_texture;
@@ -130,7 +137,8 @@ int main ()
     Pair light_decr_args      = Pair((void *)&palette, &light_decr_tool);
     Pair saturation_incr_args = Pair((void *)&palette, &saturation_incr_tool);
     Pair saturation_decr_args = Pair((void *)&palette, &saturation_decr_tool);
-    Pair black_white_args     = Pair((void *)&palette, &black_white_tool);
+    // Pair black_white_args     = Pair((void *)&palette, &black_white_tool);
+    Pair loaded_filter_args     = Pair((void *)&palette, &loaded_filter_tool);
 
     Button red_button    (plug::Vec2d (0, 160),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Red,    plug::Red,    PRESS_BUTTON);
     Button blue_button   (plug::Vec2d (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Blue,   plug::Blue,   PRESS_BUTTON);
@@ -150,11 +158,12 @@ int main ()
     Texture_button fill_button   (plug::Vec2d (0, 50),  50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
     Texture_button text_button   (plug::Vec2d (50, 50), 50, 50, text_released_texture,  text_released_texture,   tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
     
-    String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,      PRESS_BUTTON);
-    String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,      PRESS_BUTTON);
-    String_button saturation_incr_tool_button (plug::Vec2d (120, 0), 60, 20, "satur++", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args, PRESS_BUTTON);
-    String_button saturation_decr_tool_button (plug::Vec2d (180, 0), 60, 20, "satur--", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args, PRESS_BUTTON);
-    String_button black_white_tool_button     (plug::Vec2d (240, 0), 60, 20, "black-white", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&black_white_args, PRESS_BUTTON);
+    String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,        PRESS_BUTTON);
+    String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,        PRESS_BUTTON);
+    String_button saturation_incr_tool_button (plug::Vec2d (120, 0), 60, 20, "satur++",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args,   PRESS_BUTTON);
+    String_button saturation_decr_tool_button (plug::Vec2d (180, 0), 60, 20, "satur--",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args,   PRESS_BUTTON);
+    // String_button black_white_tool_button     (plug::Vec2d (240, 0), 60, 20, "black-white", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&black_white_args,       PRESS_BUTTON);
+    String_button loaded_filter_tool_button   (plug::Vec2d (240, 0), 60, 20, "loaded",      plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&loaded_filter_args,     PRESS_BUTTON);
     
     // main_window.add_menu_button (&filter_tool_button);
     String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
@@ -164,7 +173,8 @@ int main ()
     filters.add_button (&light_decr_tool_button);
     filters.add_button (&saturation_incr_tool_button);
     filters.add_button (&saturation_decr_tool_button);
-    filters.add_button (&black_white_tool_button);
+    // filters.add_button (&black_white_tool_button);
+    filters.add_button (&loaded_filter_tool_button);
 
     main_window.add_menu_button (&filters);
     
@@ -267,4 +277,37 @@ bool save_file (void *widget, void *arg)
     //sf image save to file
     
     return true;//status
+}
+
+plug::Filter *getFilter (const char *plugin_path)
+{
+    void *dll_start = dlopen (plugin_path, RTLD_NOW | RTLD_NODELETE | RTLD_LOCAL);
+    
+    const char *error1 = dlerror ();
+
+    if (error1 != NULL)
+    {
+        fprintf (stderr, "dlerror: %s.\n", error1);
+        // dlclose (dll_start);
+        // return nullptr;
+    } 
+    else 
+    {
+        printf ("no error1\n");
+    }
+
+    getInterfaceFunc *plugin_func = (getInterfaceFunc *)dlsym (dll_start, "getMyFilter");
+    const char *error = dlerror ();
+
+    if (error != NULL)
+    {
+        fprintf (stderr, "dlerror: %s.\n", error);
+        dlclose (dll_start);
+        return nullptr;
+    } 
+
+    plug::Filter *plugin = (plug::Filter *)plugin_func ((size_t)plug::PluginGuid::Filter);
+    
+    dlclose (dll_start);
+    return plugin;
 }
