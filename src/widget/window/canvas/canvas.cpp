@@ -120,22 +120,24 @@ unsigned int Canvas::getNativeHandle(void) const
 
 void Canvas::draw (const plug::VertexArray& vertex_array)                        
 {
+    // for (size_t idx = 0; idx < vertex_array.getSize (); ++idx)
+    // {
+    //     vertex_array[idx].position += plug::Vec2d (draw_rect_.getLeftCorner, draw_rect_.getTopCorner ());
+    // }
+    
     canvas_texture.draw (vertex_array, canvas_sprite);
-    canvas_texture.display ();
     is_changed_img = true;
 }   
 
 void Canvas::draw (const plug::VertexArray& vertex_array, const plug::Texture &texture)
 {
     canvas_texture.draw (vertex_array, texture, canvas_sprite);
-    canvas_texture.display ();
     is_changed_img = true;
 }
 
 void Canvas::draw (const Drawable &drawable)
 {
     canvas_texture.draw (drawable, canvas_sprite);
-    canvas_texture.display ();
     is_changed_img = true;
 }
 
@@ -170,6 +172,7 @@ void CanvasView::render (plug::RenderTarget &target, plug::TransformStack &trans
     canvas_sprite.setTextureRect (view.draw_rect_);
      
     ((RenderTexture &)target).draw (canvas_sprite);
+    ((RenderTexture &)target).display ();
     
     if (palette_ && is_focused)
     {

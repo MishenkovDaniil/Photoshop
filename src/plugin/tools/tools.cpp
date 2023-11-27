@@ -76,7 +76,7 @@ void Brush::on_cancel              ()
 }  
 
 
-Line::Line () {};
+Line::Line ()  : vertex (plug::Lines, 2) {};
 Line::~Line () {};
 
 void Line::on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos)
@@ -516,41 +516,30 @@ void Fill::on_main_button         (const plug::ControlState &control_state, plug
 {
     assert (active_canvas_);
 
-    // if (control_state.state == plug::Pressed)
-    // {
-    //     rect_ = active_canvas_->getDrawRect ();
-    //     plug::Vec2d real_pos = pos + plug::Vec2d (rect_.left, rect_.top);
+    if (control_state.state == plug::Pressed)
+    {
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
+        widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
+        assert (widget_);
 
-    //     plug::Vec2d canvas_size = active_canvas_->getSize ();
-    //     widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
-    //     assert (widget_);
+        size_ = plug::Vec2d (active_canvas_->getSize ().get_x (), active_canvas_->getSize ().get_y ());
+        fill_color_ = color_palette_->getFGColor ();
+        cur_color_  = active_canvas_->getPixel (pos.x, pos.y);
 
-    //     prev_canvas_img_ = active_canvas_->getRenderTexture ().getTexture ().copyToImage ();
-    //     size_ = plug::Vec2d (active_canvas_->getSize ().get_x (), active_canvas_->getSize ().get_y ());
-    //     fill_color_ = color_palette_->getFGColor ();
-    //     cur_color_  = prev_canvas_img_.getPixel (real_pos.get_x (), real_pos.get_y ());
+        pixel_arr_ = new plug::Color [(int)size_.get_x () * (int)size_.get_y ()];
+        assert (pixel_arr_);
 
-    //     pixel_arr_ = (uint8_t *)calloc (4 * size_.get_x () * size_.get_y (), sizeof (uint8_t));
-    //     assert (pixel_arr_);
+        fill_pixels (pos);
 
-    //     fill_pixels (pos);
+        plug::Texture new_canvas_img_ ((size_t)size_.get_x (), (size_t)size_.get_y (), pixel_arr_);
 
-    //     sf::Image new_canvas_img_;
-    //     new_canvas_img_.create (size_.get_x (), size_.get_y (), pixel_arr_);
-
-    //     draw_texture_.create (size_.get_x (), size_.get_y ());
-    //     draw_texture_.loadFromImage (new_canvas_img_);
-
-    //     draw_sprite_.setTexture (draw_texture_);
-    //     draw_sprite_.setPosition (0, 0);
+        draw_sprite_.setTexture (new_canvas_img_);
+        draw_sprite_.setPosition (0, 0);
         
-    //     ((M_render_texture *)widget_)->texture_.draw (draw_sprite_);
-    //     ((M_render_texture *)widget_)->texture_.display ();
+        ((M_render_texture *)widget_)->draw (draw_sprite_);
 
-    //     state_.state = plug::Pressed;
-    //     free (pixel_arr_);
-    // }
-
+        state_.state = plug::Pressed;
+    }
 }
 
 void Fill::on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos)
@@ -582,19 +571,16 @@ void Fill::on_confirm             ()
 {
     assert (active_canvas_);
 
-    // if (state_.state == plug::Pressed)
-    // {
-    //     draw_sprite_.setPosition (rect_.left, rect_.top);
+    if (state_.state == plug::Pressed)
+    {
         
-    //     active_canvas_->getRenderTexture ().draw (draw_sprite_);
-    //     active_canvas_->getRenderTexture ().display ();
+        ((Canvas *)active_canvas_)->draw (draw_sprite_);
 
-    //     state_.state = plug::Released;
+        state_.state = plug::Released;
 
-    //     // delete (M_render_texture *)widget_;
-    //     delete widget_;
-    //     widget_ = nullptr;
-    // }
+        delete widget_;
+        widget_ = nullptr;
+    }
 }
 
 void Fill::on_cancel              ()
@@ -603,7 +589,6 @@ void Fill::on_cancel              ()
     {
         state_.state = plug::Released;
         
-        // delete  M_render_texture *)widget_;
         delete widget_;
         widget_ = nullptr;
     }
@@ -611,70 +596,83 @@ void Fill::on_cancel              ()
 
 void Fill::fill_pixels (plug::Vec2d &pos)
 {
-    // assert (active_canvas_);
-    // assert (pixel_arr_);
+    assert (active_canvas_);
+    assert (pixel_arr_);
 
-    // M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
+    M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
 
-    // plug::Vec2d offset (rect_.left, rect_.top);
-    // pixels.push (pos);
+    pixels.push (pos);
 
-    // while (pixels.get_size ())
-    // {
-    //     plug::Vec2d cur_pixel = pixels.top ();
-    //     plug::Vec2d real_cur_pixel = cur_pixel + offset;
+    while (pixels.get_size ())
+    {
+        plug::Vec2d cur_pixel = pixels.top ();
+        plug::Vec2d real_cur_pixel = cur_pixel;
 
-    //     pixels.pop ();
+        pixels.pop ();
 
-    //     plug::Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? plug::Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
-    //     plug::Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? plug::Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
-    //     plug::Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : plug::Vec2d (-1);
-    //     plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
+        plug::Vec2d left    = (cur_pixel.get_x() - 1 >= 0)                   ? plug::Vec2d (cur_pixel.get_x() - 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+        plug::Vec2d right   = (cur_pixel.get_x() + 1 < (int)size_.get_x ())  ? plug::Vec2d (cur_pixel.get_x() + 1, cur_pixel.get_y ()) : plug::Vec2d (-1);
+        plug::Vec2d top     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () + 1) : plug::Vec2d (-1);
+        plug::Vec2d low     = (cur_pixel.get_y () - 1 >= 0)                  ? plug::Vec2d (cur_pixel.get_x(), cur_pixel.get_y () - 1) : plug::Vec2d (-1);
         
-    //     sf::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
-    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
-    //                                : plug::Transparent;
-    //     sf::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
-    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
-    //                                : plug::Transparent;
-    //     sf::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
-    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
-    //                                : plug::Transparent;
-    //     sf::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
-    //                                ? prev_canvas_img_.getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
-    //                                : plug::Transparent;
+        plug::Color left_color    = (cur_pixel.get_x() - 1 >= 0) 
+                                   ? active_canvas_->getPixel (real_cur_pixel.get_x() - 1, real_cur_pixel.get_y ()) 
+                                   : plug::Transparent;
+        plug::Color right_color   = (cur_pixel.get_x() + 1 < (int)size_.get_x ()) 
+                                   ? active_canvas_->getPixel (real_cur_pixel.get_x() + 1, real_cur_pixel.get_y ()) 
+                                   : plug::Transparent;
+        plug::Color top_color     = (cur_pixel.get_y () + 1 < (int)size_.get_y ()) 
+                                   ? active_canvas_->getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () + 1) 
+                                   : plug::Transparent;
+        plug::Color low_color     = (cur_pixel.get_y () - 1 >= 0) 
+                                   ? active_canvas_->getPixel (real_cur_pixel.get_x(),     real_cur_pixel.get_y () - 1) 
+                                   : plug::Transparent;
 
-    //     if ((int)left.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() - 1 >= 0))
-    //     {
-    //         if (cur_color_ == left_color)
-    //         {
-    //             pixels.push (left);
-    //         }
-    //     }
-    //     if ((int)right.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
-    //     {
-    //         if (cur_color_ == right_color)
-    //         {
-    //             pixels.push (right);
-    //         }
-    //     }
-    //     if ((int)low.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
-    //     {
-    //         if (cur_color_ == low_color)
-    //         {
-    //             pixels.push (low);
-    //         }
-    //     }
-    //     if ((int)top.get_x () >= 0 && (((plug::Color *)pixel_arr_)[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
-    //     {
-    //         if (cur_color_ == top_color)
-    //         {
-    //             pixels.push (top);
-    //         }
-    //     }
+        if ((int)left.get_x () >= 0 && 
+            (pixel_arr_[(int)left.get_x () + (int)left.get_y () * (int)size_.get_x ()].a == 0) &&
+             ((int)cur_pixel.get_x() - 1 >= 0))
+        {
+            if (cur_color_.r == left_color.r && 
+                cur_color_.g == left_color.g && 
+                cur_color_.b == left_color.b && 
+                cur_color_.a == left_color.a)
+            {
+                pixels.push (left);
+            }
+        }
+        if ((int)right.get_x () >= 0 && (pixel_arr_[(int)right.get_x () + (int)right.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_x() + 1 < (int)size_.get_x ()))
+        {
+            if (cur_color_.r == right_color.r && 
+                cur_color_.g == right_color.g && 
+                cur_color_.b == right_color.b && 
+                cur_color_.a == right_color.a)
+            {
+                pixels.push (right);
+            }
+        }
+        if ((int)low.get_x () >= 0 && (pixel_arr_[(int)low.get_x () + (int)low.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() - 1 >= 0))
+        {
+            if (cur_color_.r == low_color.r && 
+                cur_color_.g == low_color.g && 
+                cur_color_.b == low_color.b && 
+                cur_color_.a == low_color.a)
+            {
+                pixels.push (low);
+            }
+        }
+        if ((int)top.get_x () >= 0 && (pixel_arr_[(int)top.get_x () + (int)top.get_y () * (int)size_.get_x ()].a == 0) && ((int)cur_pixel.get_y() + 1 < (int)size_.get_y ()))
+        {
+            if (cur_color_.r == top_color.r && 
+                cur_color_.g == top_color.g && 
+                cur_color_.b == top_color.b && 
+                cur_color_.a == top_color.a)
+            {
+                pixels.push (top);
+            }
+        }
         
-    //     ((plug::Color *)pixel_arr_)[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
-    // }
+        pixel_arr_[(int)cur_pixel.get_x () + (int)cur_pixel.get_y () * (int)size_.get_x ()] = fill_color_;
+    }
 }
 
 

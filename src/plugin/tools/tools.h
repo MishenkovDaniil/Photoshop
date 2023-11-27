@@ -80,7 +80,7 @@ public:
 
 class Line : public Tool 
 {
-    plug::VertexArray vertex = plug::VertexArray (plug::Lines, 2);
+    plug::VertexArray vertex;
     plug::Vec2d latest_pos_ = plug::Vec2d ();
 
 public:
@@ -154,16 +154,13 @@ public:
 
 class Fill : public Tool
 {
-    uint8_t *pixel_arr_ = 0;
+    plug::Color *pixel_arr_ = nullptr;
     plug::Vec2d size_;
 
     plug::Color fill_color_;
     plug::Color cur_color_;
 
-    sf::Image prev_canvas_img_;
-    sf::Texture draw_texture_;
-    sf::Sprite draw_sprite_;
-    IntRect rect_;
+    Sprite draw_sprite_;
 
 public:
     Fill ();

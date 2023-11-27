@@ -27,6 +27,7 @@ void RenderTexture::draw(const plug::VertexArray& array, Sprite &sprite)
     sf::VertexArray sfml_array;
     copyToSFMLVertexArray (sfml_array, array);
     render_texture_.draw (sfml_array);
+    render_texture_.display ();
 
     cur_texture = render_texture_.getTexture ();
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
@@ -41,6 +42,7 @@ void RenderTexture::draw(const plug::VertexArray& array, const plug::Texture& te
     copyToSFMLTexture (sfml_texture, texture);
 
     render_texture_.draw (sfml_array, &sfml_texture);
+    render_texture_.display ();
 
     cur_texture = render_texture_.getTexture ();
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
@@ -55,6 +57,8 @@ void RenderTexture::clear(plug::Color color)
 void RenderTexture::clear (plug::Color color, Sprite &sprite)
 {
     render_texture_.clear (getSFMLColor (color));
+    render_texture_.display ();
+    
     cur_texture = render_texture_.getTexture ();
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
 }
@@ -79,7 +83,8 @@ void RenderTexture::draw (const Drawable &drawable, Sprite &sprite)
 {
     assert (drawable.drawable);
     render_texture_.draw (*(drawable.drawable));
-
+    render_texture_.display ();
+    
     cur_texture = render_texture_.getTexture ();
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
 }
