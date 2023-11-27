@@ -14,6 +14,7 @@
 #include "plugin/tools/palette/palette.h"
 #include "widget/button/palette/palette.h"
 #include "plugin/filter/filter.h"
+#include "graphics/sprite/sfml_texture.h"
 
 static const char *line_img   = "resources/imgs/line.png";
 static const char *fill_img   = "resources/imgs/fill.png";
@@ -38,7 +39,7 @@ int main ()
     sf::RenderWindow window (sf::VideoMode (FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT), "w_manager");//, sf::Style::Fullscreen);
     sf::Vector2u window_size = window.getSize ();
     
-    sf::RenderTexture render_texture;
+    RenderTexture render_texture;
     render_texture.create (window_size.x, window_size.y);
 
     plug::Vec2d pos (50, 50);
@@ -57,7 +58,7 @@ int main ()
     main_window.add_window (&child_window);
     main_window.add_window (&child_window_2);
 
-    sf::Sprite window_sprite;
+    Sprite window_sprite;
     bool status = true;
 
     sf::Clock clock;
@@ -99,18 +100,18 @@ int main ()
     Filter_tool saturation_decr_tool (&saturation_decr);
     Filter_tool black_white_tool (&black_white);
 
-    sf::Texture circle_pressed_texture;
-    sf::Texture  brush_pressed_texture;
-    sf::Texture   text_pressed_texture;
-    sf::Texture   rect_pressed_texture;
-    sf::Texture   line_pressed_texture;
-    sf::Texture   fill_pressed_texture;
-    sf::Texture circle_released_texture;
-    sf::Texture  brush_released_texture;
-    sf::Texture   rect_released_texture;
-    sf::Texture   text_released_texture;
-    sf::Texture   line_released_texture;
-    sf::Texture   fill_released_texture;
+    Sprite circle_pressed_texture;
+    Sprite  brush_pressed_texture;
+    Sprite   text_pressed_texture;
+    Sprite   rect_pressed_texture;
+    Sprite   line_pressed_texture;
+    Sprite   fill_pressed_texture;
+    Sprite circle_released_texture;
+    Sprite  brush_released_texture;
+    Sprite   rect_released_texture;
+    Sprite   text_released_texture;
+    Sprite   line_released_texture;
+    Sprite   fill_released_texture;
 
     circle_released_texture.loadFromFile (circle_img);
      brush_released_texture.loadFromFile (brush_img);
@@ -227,10 +228,11 @@ int main ()
         {
             widget_manager.render (render_texture);
             render_texture.display ();
-            window_sprite.setTexture (render_texture.getTexture ());
+            // window_sprite.setTexture (render_texture.getTexture ()); //TODO
+            ((sf::Sprite *)window_sprite.drawable)->setTexture (render_texture.render_texture_.getTexture ());
 
             window.clear ();
-            window.draw (window_sprite);
+            window.draw (*((sf::Sprite *)(window_sprite.drawable)));
             window.display ();
             status = false;
         }
@@ -244,11 +246,12 @@ bool save_file (void *widget, void *arg)
     assert (widget);
 
     Master_window *m_window = (Master_window *)widget;
-    static sf::String enter_request_string("Enter filename:");
-    static sf::Font text_font;
+    static Font text_font;
     text_font.loadFromFile (DEFAULT_FONT_FILE);
 
-    static sf::Text enter_request_text (enter_request_string, text_font);
+    static Text enter_request_text;
+                enter_request_text.setString ("Enter filename:");
+                enter_request_text.setFont (text_font);
 
     char buf[512] = {};
     scanf ("%s", buf);
@@ -258,8 +261,10 @@ bool save_file (void *widget, void *arg)
     CanvasView *cur_canvas = cur_window->get_canvas ();
     assert (cur_canvas);
 
-    sf::Texture texture (cur_canvas->getRenderTexture ().getTexture ());
-    bool status = texture.copyToImage ().saveToFile (buf);
-
-    return status;
+    plug::Texture texture (cur_canvas->getTexture ());
+    // bool status = texture.copyToImage ().saveToFile (buf);
+    //sf::image = texture color data
+    //sf image save to file
+    
+    return true;//status
 }
