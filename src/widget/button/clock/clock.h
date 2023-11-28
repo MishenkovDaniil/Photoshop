@@ -3,7 +3,7 @@
 
 #include "../button.h"
 
-static const char *font_path = "resources/font.ttf";
+static const char *FONT_PATH = "resources/font.ttf";
 static const size_t CLOCK_CHARACTER_SIZE = 20;
 
 class Clock : public Button
@@ -16,7 +16,7 @@ class Clock : public Button
     char min[3] = "";
     char sec[3] = "";
 
-    char clck[20] = "";
+    char time_string[20] = "";
 
 public:
     Clock (plug::Vec2d lh_corner, int width, int height, Button_run_fn func, Window *controlled_window, 

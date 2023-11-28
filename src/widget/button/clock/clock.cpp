@@ -27,12 +27,12 @@ void Clock::render (plug::RenderTarget &target, plug::TransformStack &transform_
     sprintf (hrs, "%d", (int)hours_);
     sprintf (min, "%d", (int)minutes_);
     sprintf (sec, "%d", (int)seconds_);
-    sprintf (clck, "%s:%s:%s", hrs, min, sec);
+    sprintf (time_string, "%s:%s:%s", hrs, min, sec);
     
     Text text;
     Font font;
-    font.loadFromFile (font_path);
-    text.setString (clck);
+    font.loadFromFile (FONT_PATH);
+    text.setString (time_string);
     text.setFont (font);
     text.setFillColor (plug::White);
     text.setCharacterSize (CLOCK_CHARACTER_SIZE);
