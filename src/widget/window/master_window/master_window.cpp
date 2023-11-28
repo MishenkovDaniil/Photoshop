@@ -72,7 +72,7 @@ void Master_window::onMousePressed     (const plug::MousePressedEvent &event, pl
         }
         assert (window);
 
-        if (window->contains (event.pos))
+        if (window->covers (ehc.stack, event.pos))
         {
             window->onMousePressed (event, ehc);
             if (ehc.stopped)

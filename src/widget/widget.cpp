@@ -76,3 +76,21 @@ void Widget::onEvent (const plug::Event &event, plug::EHC &ehc)
             break;
     }
 }
+
+bool Widget::covers (plug::TransformStack& stack, const plug::Vec2d& position) const
+{
+    plug::Vec2d top_left_corner    = stack.restore (layout_->getPosition ());
+    plug::Vec2d top_right_corner   = stack.restore (layout_->getPosition () + layout_->getSize () * plug::Vec2d (1, 0));
+    plug::Vec2d low_left_corner    = stack.restore (layout_->getPosition () + layout_->getSize () * plug::Vec2d (0, 1));
+
+    return ((position.x >= top_left_corner.x)  && 
+            (position.x <= top_right_corner.x) && 
+            (position.y <= low_left_corner.y)  && 
+            (position.y >= top_left_corner.y));
+}
+
+void Widget::onParentUpdate(const plug::LayoutBox& parent_box)
+{
+    //TODO
+    ;
+}

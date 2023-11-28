@@ -61,7 +61,6 @@ public:
 public:
     Canvas (int width, int height, const plug::Color color);
     ~Canvas () = default;
-    bool contains (int x, int y) override;
 
     plug::Vec2d getSize () const                                                    override 
         {return plug::Vec2d (width_, height_);};
@@ -116,9 +115,6 @@ public:
     plug::LayoutBox &getLayoutBox () {return *layout_;};
     void setLayoutBox (plug::LayoutBox &new_layout) {layout_ = &new_layout;};
 
-    bool contains (int x, int y);
-    
-    // sf::RenderTexture &getRenderTexture () {return view.getRenderTexture ();};
     plug::Vec2d getSize () const {return view.getSize ();};
     plug::Vec2d getFullSize () const {return view.getFullSize ();};
     void setSize (const plug::Vec2d &size) {layout_->setSize (size); view.setSize (size);}

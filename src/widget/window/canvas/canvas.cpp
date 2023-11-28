@@ -52,13 +52,6 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
 }
 
-bool Canvas::contains (int x, int y)
-{
-    return ((x >= 0 && y >= 0) && 
-            (x <= width_ && y <= height_));
-}
-
-
 void Canvas::setDrawRectOffset (int left, int top)
 {
     if (left < 0 || top < 0)
@@ -266,7 +259,7 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
     plug::Transform unite = tr.combine (ehc.stack.top ());
     
     plug::Vec2d pos_ = unite.apply (event.pos);
-    if (!contains (pos_.get_x (), pos_.get_y ()))
+    if (!covers (ehc.stack, event.pos))
         return;
     
     if (!palette_)
@@ -424,13 +417,6 @@ void CanvasView::onTick             (const plug::TickEvent &event, plug::EHC &eh
     }
 
     tool->get_widget ()->onEvent (event, ehc);
-}
-
-bool CanvasView::contains (int x, int y)
-{
-    // return ((x >= 0 && y >= 0) && 
-            // (x <= width_ && y <= height_));
-    return view.contains (x, y);
 }
 
 void CanvasView::setDrawRectOffset (int left, int top)

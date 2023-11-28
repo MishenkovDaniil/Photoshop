@@ -45,8 +45,6 @@ public:
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
 
-    bool contains (const plug::Vec2d &pos);
-    
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);
     friend bool change_canvas_rect_space    (void *window,  void *arg);

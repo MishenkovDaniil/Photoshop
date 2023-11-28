@@ -62,11 +62,11 @@ void Header::render (plug::RenderTarget &target, plug::TransformStack &transform
 
 void Header::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
-    plug::Transform tr (layout_->getPosition ());
-    plug::Transform unite = tr.combine (ehc.stack.top ());
-    plug::Vec2d pos_ = unite.apply (event.pos);
+    // plug::Transform tr (layout_->getPosition ());
+    // plug::Transform unite = tr.combine (ehc.stack.top ());
+    // plug::Vec2d pos_ = unite.apply (event.pos);
 
-    if (contains (pos_.get_x (), pos_.get_y ()))
+    if (covers (ehc.stack, event.pos))
     {
         is_moving_ = true;
         move_start_ = event.pos;
@@ -110,13 +110,4 @@ void Header::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug:
 void Header::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 {
     return;
-}
-
-
-bool Header::contains (int x, int y)
-{
-    if ((x >= 0 && x <= width_) &&
-        (y >= 0 && y <= HEADER_HEIGHT))
-        return true;
-    return false;
 }

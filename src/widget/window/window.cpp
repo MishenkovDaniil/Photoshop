@@ -168,17 +168,3 @@ void Window::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
         }
     }
 }
-
-bool Window::contains (const plug::Vec2d &pos)
-{   
-    plug::Vec2d pos_ = pos - layout_->getPosition ();
-
-    double x = pos_.get_x ();
-    double y = pos_.get_y ();
-
-    if ((x >= 0 && y >= 0) && 
-        (x <= width_ && y <= height_))
-        return true;
-
-    return false;  
-} 

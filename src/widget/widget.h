@@ -43,8 +43,8 @@ public:
         {layout_->setPosition   (new_layout.getPosition ());
          layout_->setSize       (new_layout.getSize ());};
 
-    // virtual bool covers(TransformStack& stack, const Vec2d& position) const = 0;
-    // virtual void onParentUpdate(const LayoutBox& parent_box) = 0;
+    virtual bool covers (plug::TransformStack& stack, const plug::Vec2d& position) const override;
+    virtual void onParentUpdate(const plug::LayoutBox& parent_box) override;
 
 protected:
     virtual void onTick             (const plug::TickEvent &event, plug::EHC &ehc) = 0;
