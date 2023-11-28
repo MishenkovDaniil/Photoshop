@@ -16,7 +16,6 @@ void Brush::on_main_button         (const plug::ControlState &control_state, plu
 
         CircleShape circle (DEFAULT_BRUSH_THICKNESS);
         circle.setPosition (pos);
-        printf ("pos in brush = %lf %lf\n", pos.x, pos.y);
         circle.setFillColor (color_palette_->getFGColor ());
 
         prev_pos = pos;
@@ -50,7 +49,6 @@ void Brush::on_move                (plug::Vec2d &pos)
 {
     if (!is_pressed)
         return;
-    printf ("on move\n");
     assert (active_canvas_);
 
     CircleShape circle (DEFAULT_BRUSH_THICKNESS);
@@ -64,7 +62,6 @@ void Brush::on_move                (plug::Vec2d &pos)
 void Brush::on_confirm             ()
 {
     is_pressed = false;
-    printf ("sprite pos = %lf %lf\n", ((M_render_texture *)widget_)->cur_sprite.getPosition ().x, ((M_render_texture *)widget_)->cur_sprite.getPosition ().y);
     
     Sprite &sprite = ((M_render_texture *)widget_)->cur_sprite;
     sprite.setPosition (0, 0);
@@ -817,14 +814,36 @@ void Text_tool::on_confirm             ()
             (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
             (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
         {
-            TransformStack stack;
+            plug::Vec2d canvas_size = active_canvas_->getSize ();
             
-            // widget_->render (active_canvas_->getRenderTexture (), stack);
-            // active_canvas_->getRenderTexture ().display ();
-            Sprite &sprite = ((M_render_texture *)widget_)->cur_sprite;
-            sprite.setPosition (0, 0);
-            ((Canvas *)active_canvas_)->draw (sprite);
-            ((Canvas *)active_canvas_)->draw (sprite);
+            TransformStack stack;
+
+            RenderTexture r_texture;
+            r_texture.create (canvas_size.x, canvas_size.y);
+            r_texture.clear (plug::Transparent);
+
+            widget_->render (r_texture, stack);
+            r_texture.display ();
+
+            plug::Texture texture = r_texture.getTexture ();
+            plug::VertexArray vertices (plug::Quads, 4);
+            
+            vertices[0].position = plug::Vec2d (0, 0);
+            vertices[1].position = plug::Vec2d (0, texture.height);
+            vertices[2].position = plug::Vec2d (texture.width, texture.height);
+            vertices[3].position = plug::Vec2d (texture.width, 0);
+
+            vertices[0].color = plug::White;
+            vertices[1].color = plug::White;
+            vertices[2].color = plug::White;
+            vertices[3].color = plug::White;
+            
+            vertices[0].tex_coords = plug::Vec2d (0, 0);
+            vertices[1].tex_coords = plug::Vec2d (0, texture.height - 1);
+            vertices[2].tex_coords = plug::Vec2d (texture.width - 1, texture.height - 1);
+            vertices[3].tex_coords = plug::Vec2d (texture.width - 1, 0);
+
+            active_canvas_->draw (vertices, texture);
 
             delete widget_;
             widget_ = nullptr;

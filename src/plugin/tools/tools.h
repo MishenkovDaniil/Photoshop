@@ -9,21 +9,22 @@
 #include "../../widget/window/window.h"
 #include "../filter/filter.h"
 #include "../../widget/text/text.h"
-//sf::RTX --> canvas 
 
 #include "../../standard/plug_tool.h"
 #include "../../standard/plug_plugin.h"
+#include "../../standard/plug_filter.h"
 #include "../../graphics/intrect/intrect.h"
 #include "../../graphics/circleshape/circleshape.h"
 #include "../../graphics/rectangleshape/rectangleshape.h"
 
-
+#include "../plugin_data.h"
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
 static const double DEFAULT_BRUSH_THICKNESS     = 10.0;
 
 class Filter;
 class ColorPalette;
+
 class Tool : public plug::Tool
 {    
 protected:
@@ -31,12 +32,18 @@ protected:
     plug::ControlState state_;
     plug::ColorPalette *color_palette_ = nullptr;
     plug::Canvas *active_canvas_ = nullptr;
+    size_t ref_num_ = 0;
+    PluginData plugin_data_;
 
 public:
+    Tool (const char *name, const char *texture_path) : plugin_data_ (name, texture_path) {};
+    Tool () = default;
     virtual ~Tool () = default;
 
-    void setColorPalette (plug::ColorPalette &palette) override {color_palette_ = &palette;};
-    void setActiveCanvas (plug::Canvas &canvas) override {active_canvas_ = (plug::Canvas *)&canvas;};
+    void setColorPalette (plug::ColorPalette &palette)  override 
+        {color_palette_ = &palette;};
+    void setActiveCanvas (plug::Canvas &canvas)         override 
+        {active_canvas_ = (plug::Canvas *)&canvas;};
 
     virtual void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) = 0;
     virtual void on_secondary_button    (const plug::ControlState &control_state, plug::Vec2d &pos) = 0;
@@ -51,10 +58,14 @@ public:
 
     Widget *get_widget () {return widget_;};
 
-    virtual plug::Plugin *tryGetInterface (size_t) override {return (plug::Plugin *)nullptr;};	
-    virtual void addReference (plug::Plugin *) override {};
-    virtual void release (plug::Plugin *) override {};
-    virtual const plug::PluginData *getPluginData () const override {return nullptr;};
+    virtual plug::Plugin *tryGetInterface (size_t type)     override 
+        {return ((plug::PluginGuid)type == plug::PluginGuid::Tool) ? this : nullptr;};	
+    virtual void addReference (plug::Plugin *)              override 
+        {++ref_num_;};
+    virtual void release (plug::Plugin *)                   override 
+        {if (!(--ref_num_)) delete this;};
+    virtual const plug::PluginData *getPluginData () const  override 
+        {return &plugin_data_;};
 };
 
 class Brush : public Tool
@@ -184,10 +195,10 @@ private:
 
 class Filter_tool : public Tool 
 {
-    Filter *filter_ = nullptr;
+    plug::Filter *filter_ = nullptr;
 
 public:
-    Filter_tool (Filter *filter) : filter_(filter) {};
+    Filter_tool (plug::Filter *filter) : filter_(filter) {};
     ~Filter_tool () = default;
     
     void on_main_button         (const plug::ControlState &control_state, plug::Vec2d &pos) override;
