@@ -16,7 +16,7 @@ public:
     const char *getName () const override {return name_;};
     const char *getTexturePath () const override {return path_;};
 
-    ~PluginData () = default;
+    ~PluginData ();
 };
 
 #endif /* PLUGIN_DATA_H */
