@@ -4,13 +4,17 @@
 #include "../../standard/standard.h"
 #include "../../widget/window/canvas/canvas.h"
 #include "../../standard/plug_plugin.h"
+#include "../plugin_data.h"
 
 class MYFilter : public plug::Filter
 {
+protected:
     plug::Widget *filter_widget = nullptr;
     size_t ref_num_ = 0;
     PluginData plugin_data_;
+
 public:
+    MYFilter (const char *name, const char *texture_path = nullptr) : plugin_data_ (name, texture_path) {};
     MYFilter () = default;
     ~MYFilter () = default;
 
@@ -30,7 +34,7 @@ public:
 class White_black_filter : public MYFilter
 {
 public:
-    White_black_filter () {};
+    White_black_filter () : MYFilter ("White&black") {};
     ~White_black_filter () = default;
 
     void apply_filter (plug::Canvas &canvas) const override;

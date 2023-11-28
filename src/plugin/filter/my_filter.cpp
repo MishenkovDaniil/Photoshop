@@ -1,6 +1,6 @@
 #include "my_filter.h"
 
-extern "C" plug::Plugin *getMyFilter (size_t type)
+extern "C" plug::Plugin *loadPlugin (size_t type)
 {
     return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? new White_black_filter : nullptr;
 }
