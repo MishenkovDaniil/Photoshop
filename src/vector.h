@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cassert>
 
-
 static const int INIT_CAPACITY = 100;
 static const int REALLOC_COEFF = 2;
 static const double VECTOR_LOAD_FACTOR = 0.9;
@@ -31,7 +30,7 @@ public:
 
     int get_size () const {return size_;};
     int get_capacity () const {return capacity_;};
-    T operator [] (int num) const {return arr_[num];};
+    T operator [] (size_t num) const {return arr_[num];};
 
 private:
     bool recalloc ();
