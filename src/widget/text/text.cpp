@@ -15,6 +15,16 @@ M_text::M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color) :
     assert (layout_ );
     buf_ = (char *)calloc (capacity_, sizeof (char));
     assert (buf_);
+
+    text_font_.loadFromFile (MONOSPACE_FONT_FILE);
+    
+    text_text_.setFont (text_font_);
+    text_text_.setFillColor (text_color_);
+    text_text_.setCharacterSize (TEXT_CHARACTER_SIZE);
+
+    text_rect.setFillColor (plug::Transparent);
+    text_rect.setOutlineColor (plug::Black);
+    text_rect.setOutlineThickness (1);
 }
 
 M_text::~M_text ()
@@ -46,23 +56,14 @@ void M_text::render (plug::RenderTarget &target, plug::TransformStack &transform
     plug::Vec2d size   = layout_->getSize ();
     // size = unite.scale_apply (size);
     
-    RectangleShape      text_rect (layout_->getSize ());
-                        text_rect.setFillColor (plug::Transparent);
-                        text_rect.setOutlineColor (plug::Black);
-                        text_rect.setPosition (unite.getOffset ());
-                        text_rect.setOutlineThickness (1);
-    
-    Font    monospace_font;
-                monospace_font.loadFromFile (MONOSPACE_FONT_FILE);
-    Text text;
-    text.setString (buf_);
-    text.setFont (monospace_font);
-    text.setFillColor (text_color_);
-    text.setCharacterSize (TEXT_CHARACTER_SIZE);
-    text.setPosition (lh_pos);
+    text_rect.setSize (size);
+    text_rect.setPosition (lh_pos);
+
+    text_text_.setString (buf_);
+    text_text_.setPosition (lh_pos);
     
     ((RenderTexture &)target).draw (text_rect);
-    ((RenderTexture &)target).draw (text);
+    ((RenderTexture &)target).draw (text_text_);
 }   
 
 void M_text::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)

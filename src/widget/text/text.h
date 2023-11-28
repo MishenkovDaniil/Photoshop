@@ -3,8 +3,13 @@
 
 #include "../widget.h"
 
-static const size_t START_TEXT_CAPACITY = 512;
+#include "../../graphics/rendertexture/rendertexture.h"
+#include "../../graphics/rectangleshape/rectangleshape.h"
+#include "../../graphics/font/font.h"
+#include "../../graphics/text/text.h"
+
 static const char *MONOSPACE_FONT_FILE = "resources/monospace_font.ttf";
+static const size_t START_TEXT_CAPACITY = 512;
 static const size_t TEXT_CHARACTER_SIZE = 14;
 static const double TEXT_CHARACTER_WIDTH = 8.4; //hardcode!!!
 
@@ -24,6 +29,9 @@ class M_text : public Widget
     plug::KeyCode latest_key_ = plug::KeyCode::Unknown;
 
     size_t cursor_pos = 0;
+    Font text_font_;
+    Text text_text_;
+    RectangleShape  text_rect;
 
 public:
     M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color = plug::Black);
