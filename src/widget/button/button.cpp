@@ -23,14 +23,6 @@ Button::Button (plug::Vec2d lh_corner, int width, int height, Button_run_fn func
     assert (layout_);
 };
 
-bool Button::contains (double x, double y) const
-{
-    plug::Vec2d size = layout_->getSize ();
-
-    return (0 <= x && 0 <= y &&
-            x <= size.get_x () && y <= size.get_y ());
-}
-
 bool Button::run ()
 {
     if (!run_fn_)
@@ -60,14 +52,13 @@ void Button::render (plug::RenderTarget &target, plug::TransformStack &transform
     ((RenderTexture &)target).draw (rect);
 }   
 
-
 void Button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (ehc.stack.top ());
     plug::Vec2d pos_ = unite.apply (event.pos);
 
-    if (contains (pos_.get_x (), pos_.get_y ()))
+    if (covers (ehc.stack, event.pos))
     {
         if (run_mask_ & PRESS_BUTTON)
         {
@@ -77,7 +68,6 @@ void Button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC
         press_pos_ = pos_;
         is_pressed_ = true;
         ehc.stopped = true;
-        return;
     }
 
     // return false;
@@ -89,7 +79,7 @@ void Button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EH
     plug::Transform unite = tr.combine (ehc.stack.top ());
     plug::Vec2d pos_ = unite.apply (event.pos);
 
-    if (contains (pos_.get_x (), pos_.get_y ()))
+    if (covers (ehc.stack, event.pos))
     {
         if (run_mask_ & RELEASE_BUTTON)
         {
@@ -387,7 +377,7 @@ void List_button::onMousePressed     (const plug::MousePressedEvent &event, plug
     list_button_->onMousePressed (event, ehc);
     status |= ehc.stopped;
 
-    if (list_button_->contains (pos_.get_x (), pos_.get_y ()))
+    if (list_button_->covers (ehc.stack, event.pos))
     {
         is_open_ = !is_open_;
         ehc.stopped = true;

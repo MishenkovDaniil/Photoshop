@@ -63,7 +63,6 @@ public:
     
     virtual ~Button () {delete layout_;};
 
-    bool contains (double x, double y) const;
     Button_run_fn get_func          ()const {return run_fn_;};
     plug::Color   get_fill_color    ()const {return fill_color_;};
     bool          get_status        ()const {return is_pressed_;}; //may be instead made bool is_pressed (...) const {...};
