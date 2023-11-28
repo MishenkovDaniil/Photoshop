@@ -4,7 +4,6 @@
 #include "plug_plugin.h"
 #include "plug_widget.h"
 #include "plug_canvas.h"
-// #include "../widget/window/canvas/canvas.h"
 
 namespace plug
 {

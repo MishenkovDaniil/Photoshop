@@ -43,4 +43,4 @@ namespace plug
 
 } // namespace plug
 
-#endif // __PLUG_CANVAS_SELECTION_MASK_H
+#endif /* __PLUG_CANVAS_SELECTION_MASK_H */

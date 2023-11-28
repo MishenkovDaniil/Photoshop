@@ -6,9 +6,6 @@
 #include "plug_widget.h"
 #include "plug_colorpalette.h"
 #include "plug_canvas.h"
-// class Canvas;
-// #include "../widget/window/canvas/canvas.h"
-
 
 namespace plug
 {

@@ -79,9 +79,8 @@ namespace plug
     {
     public:
         Vec2d position;
-
-        Vec2d tex_coords;
         Color color;
+        Vec2d tex_coords;
     };
     
     class VertexArray

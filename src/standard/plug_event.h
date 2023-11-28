@@ -2,6 +2,7 @@
 #define PLUG_EVENT_H
 
 #include <iostream>
+
 #include "../graphic_structures/vector/vector.h"
 #include "plug_mouse_button.h"
 #include "plug_key_code.h"
