@@ -1,14 +1,11 @@
 #ifndef PLUG_CANVAS_H
 #define PLUG_CANVAS_H
 
-
-#include <SFML/Graphics.hpp>
 #include "../graphic_structures/vector/vector.h"
 #include "plug_vertex.h"
 #include "plug_texture.h"
 #include "plug_widget.h"
-
-struct SelectionMask;
+#include "plug_selection_mask.h"
 
 namespace plug
 {
@@ -25,7 +22,6 @@ namespace plug
         virtual const Texture& getTexture(void) const = 0;
 
         virtual unsigned int getNativeHandle(void) const = 0;             
-        virtual bool contains (int x, int y) = 0;                               //to rm
 
         virtual void draw(const VertexArray& vertex_array) = 0;             
         virtual void draw(const VertexArray& vertex_array, const Texture &texture) = 0;
