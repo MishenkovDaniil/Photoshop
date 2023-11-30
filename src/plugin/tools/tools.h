@@ -2,7 +2,6 @@
 #define TOOLS_H
 
 #include <iostream>
-#include <SFML/Graphics.hpp>
 
 #include "../../widget/widget.h"
 #include "../../widget/window/canvas/canvas.h"
@@ -18,9 +17,18 @@
 #include "../../graphics/rectangleshape/rectangleshape.h"
 
 #include "../plugin_data.h"
+
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
-static const double DEFAULT_BRUSH_THICKNESS     = 10.0;
+static const double DEFAULT_BRUSH_THICKNESS     = 2.0;
+
+enum class BrushKeyPointsNum
+{
+    Zero,
+    One,
+    Two,
+    ThreeOrMore
+};
 
 class Filter;
 class ColorPalette;
@@ -70,8 +78,10 @@ public:
 
 class Brush : public Tool
 {
-    plug::Vec2d prev_pos = 0;
-    bool is_pressed = false;
+    bool is_used_ = false;
+    
+    plug::Vec2d last_point[3] = {};
+    enum BrushKeyPointsNum key_points_num_ = BrushKeyPointsNum::Zero;
 
 public:
     Brush ();

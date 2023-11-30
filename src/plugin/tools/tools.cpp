@@ -1,5 +1,7 @@
 #include "tools.h"
 #include "../../widget/texture_widget/texture_widget.h"
+#include "../../catmullRom/catmull.h"
+
 
 Brush::Brush () {};
 Brush::~Brush () {};
@@ -18,10 +20,12 @@ void Brush::on_main_button         (const plug::ControlState &control_state, plu
         circle.setPosition (pos);
         circle.setFillColor (color_palette_->getFGColor ());
 
-        prev_pos = pos;
+        ((M_render_texture *)widget_)->draw (circle); /// fg_color
+        
+        is_used_ = true;
 
-        ((M_render_texture *)widget_)->draw (circle); //fg_color
-        is_pressed = true;
+        key_points_num_ = BrushKeyPointsNum::One;
+        last_point[0] = pos;
     }
 }
 
@@ -47,42 +51,74 @@ void Brush::on_modifier_3          (const plug::ControlState &control_state)
 
 void Brush::on_move                (plug::Vec2d &pos)
 {
-    if (!is_pressed)
+    if (!is_used_)
         return;
     assert (active_canvas_);
 
-    CircleShape circle (DEFAULT_BRUSH_THICKNESS);
-    circle.setPosition (pos);
-    circle.setFillColor (color_palette_->getFGColor ());
-    prev_pos = pos;
+    plug::Color draw_color = color_palette_->getFGColor ();
 
-    ((M_render_texture *)widget_)->draw (circle);
+    switch (key_points_num_)
+    {
+        case BrushKeyPointsNum::One:
+        {
+            catmullRomLineDraw (last_point[0], pos, DEFAULT_BRUSH_THICKNESS, 
+                                *((M_render_texture *)widget_), draw_color);
+            last_point[1] = pos;
+            key_points_num_ = BrushKeyPointsNum::Two;
+            break;
+        }
+        case BrushKeyPointsNum::Two:
+        {
+            catmullRomLeftSplineDraw    (last_point[0], last_point[1], pos, DEFAULT_BRUSH_THICKNESS, 
+                                        *((M_render_texture *)widget_), draw_color);
+            catmullRomRightSplineDraw   (last_point[0], last_point[1], pos, DEFAULT_BRUSH_THICKNESS, 
+                                        *((M_render_texture *)widget_), draw_color);
+            last_point[2] = pos;
+            key_points_num_ = BrushKeyPointsNum::ThreeOrMore;
+            break;
+        }
+        case BrushKeyPointsNum::ThreeOrMore:
+        {
+            catmullRomLeftSplineDraw    (last_point[0], last_point[1], pos, DEFAULT_BRUSH_THICKNESS, 
+                                        *((M_render_texture *)widget_), draw_color);
+            catmullRomRightSplineDraw   (last_point[1], last_point[2], pos, DEFAULT_BRUSH_THICKNESS, 
+                                        *((M_render_texture *)widget_), draw_color);
+            catmullRomCentralSplineDraw (last_point[0], last_point[1], last_point[2], pos, DEFAULT_BRUSH_THICKNESS, 
+                                        *((M_render_texture *)widget_), draw_color);
+            last_point[0] = last_point[1];
+            last_point[1] = last_point[2];
+            last_point[2] = pos;
+            break;
+        }
+        default:
+        {
+            fprintf (stderr, "Error: bad number of key points in brush tool.\n");
+            break;
+        }
+    }
 }
 
-void Brush::on_confirm             ()
+void Brush::on_confirm ()
 {
-    is_pressed = false;
+    is_used_ = false;
     
     Sprite &sprite = ((M_render_texture *)widget_)->cur_sprite;
     sprite.setPosition (0, 0);
     ((Canvas *)active_canvas_)->draw (sprite);
+    
     delete widget_;
     widget_ = nullptr;
+
+    key_points_num_ = BrushKeyPointsNum::Zero;
 }
 
-void Brush::on_cancel              ()
+void Brush::on_cancel ()
 {
+    is_used_ = false;
     delete widget_;
     widget_ = nullptr;
-
-    // sf::CircleShape circle (10);
-    // circle.setPosition (prev_pos); 
-    // circle.setFillColor (sf::Color::White);   //bg_color
     
-    // canvas.canvas_texture.draw (circle);
-    // canvas.canvas_texture.display ();
-
-    return;
+    key_points_num_ = BrushKeyPointsNum::Zero;
 }  
 
 
@@ -177,7 +213,7 @@ void Line::on_cancel              ()
 {
     if (state_.state == plug::Pressed)
     {
-        delete (M_render_texture *)widget_;
+        delete widget_;
         widget_ = nullptr;
         state_.state = plug::Released;
     }
@@ -499,7 +535,29 @@ void Rect_shape::on_confirm             ()
 
     assert (active_canvas_);
 
-    ((Canvas *)active_canvas_)->draw (rect_);
+    plug::Texture texture = ((M_render_texture *)widget_)->getTexture ();
+
+    plug::Vec2d canvas_size = active_canvas_->getSize ();
+    plug::VertexArray vertices (plug::Quads, 4);
+    
+    vertices[0].position = plug::Vec2d (0, 0);
+    vertices[1].position = plug::Vec2d (0, texture.height);
+    vertices[2].position = plug::Vec2d (texture.width, texture.height);
+    vertices[3].position = plug::Vec2d (texture.width, 0);
+
+    vertices[0].color = plug::White;
+    vertices[1].color = plug::White;
+    vertices[2].color = plug::White;
+    vertices[3].color = plug::White;
+    
+    vertices[0].tex_coords = plug::Vec2d (0, 0);
+    vertices[1].tex_coords = plug::Vec2d (0, texture.height - 1);
+    vertices[2].tex_coords = plug::Vec2d (texture.width - 1, texture.height - 1);
+    vertices[3].tex_coords = plug::Vec2d (texture.width - 1, 0);
+
+    active_canvas_->draw (vertices, texture);
+
+    // ((Canvas *)active_canvas_)->draw (rect_);
 
     state_.state = plug::Released;
     center_ = last_center_;
@@ -797,7 +855,6 @@ void Text_tool::on_confirm             ()
     {
         rect_tool.on_cancel ();
         on_rect_ = false;
-        // printf ("last_pos = %lf, %lf\n", rect_tool.last_center_.get_x (), rect_tool.last_center_.get_y ());
 
         widget_ = new M_text (rect_tool.last_center_, rect_tool.rect_.getSize ().x, rect_tool.rect_.getSize ().y, color_palette_->getFGColor ());
     }
