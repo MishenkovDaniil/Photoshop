@@ -7,7 +7,7 @@ void M_render_texture::render (plug::RenderTarget &target, plug::TransformStack 
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     static plug::VertexArray array (plug::Points, 1);
-    array[0] = {plug::Vec2d (), plug::Transparent, plug::Vec2d ()};
+    array[0] = {plug::Vec2d (), plug::Vec2d (), plug::Transparent};
 
     if (is_changed_)
     {

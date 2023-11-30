@@ -135,7 +135,7 @@ void Line::on_main_button         (const plug::ControlState &control_state, plug
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
 
-        vertex[0] = vertex[1] = {pos, color_palette_->getFGColor (), plug::Vec2d ()};
+        vertex[0] = vertex[1] = {pos, plug::Vec2d (), color_palette_->getFGColor ()};
         M_render_texture *draw_texture = (M_render_texture *)widget_;
 
         draw_texture->draw (vertex);
@@ -175,7 +175,7 @@ void Line::on_move                (plug::Vec2d &pos)
     assert (draw_texture);
     draw_texture->clear (plug::Transparent);
     
-    vertex[1] = {pos, color_palette_->getFGColor (), plug::Vec2d ()};
+    vertex[1] = {pos, plug::Vec2d (), color_palette_->getFGColor ()};
     if ((vertex[0].position.x == vertex[1].position.x) && 
         (vertex[0].position.y == vertex[1].position.y)) 
     {
@@ -198,7 +198,7 @@ void Line::on_confirm             ()
 
     assert (active_canvas_);
 
-    vertex[1] = {latest_pos_, color_palette_->getFGColor (), plug::Vec2d ()};
+    vertex[1] = {latest_pos_, plug::Vec2d (), color_palette_->getFGColor ()};
     active_canvas_->draw (vertex);
 
     state_.state = plug::Released;
