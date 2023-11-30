@@ -7,6 +7,7 @@
 
 class M_render_texture : public Widget
 {
+    bool is_changed_ = false;
 public:
     RenderTexture texture_;
     Sprite cur_sprite;
@@ -21,10 +22,16 @@ public:
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) {return;};
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) {return;};
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) {return;};
-    void draw (const plug::VertexArray& array) {texture_.draw (array, cur_sprite);};
-    void draw (const Drawable &drawable) {texture_.draw (drawable, cur_sprite);};
-    void draw (const plug::VertexArray& array, const plug::Texture& texture) {texture_.draw (array, texture, cur_sprite);};
-    void clear (plug::Color color) {texture_.clear (color, cur_sprite);};
+    
+    plug::Texture getTexture () const {return texture_.getTexture ();};
+
+    void draw (const plug::VertexArray& array) {is_changed_ = true; texture_.draw (array);};
+    void draw (const Drawable &drawable) {is_changed_ = true; texture_.draw (drawable);};
+    void draw (const plug::VertexArray& array, const plug::Texture& texture) {is_changed_ = true; texture_.draw (array, texture);};
+    
+    void clear (plug::Color color) {is_changed_ = true; texture_.clear (color);};
+private:
+    void init_vertices (plug::VertexArray &array, const plug::Texture *texture);
 };
 
 #endif /* TEXTURE_WIDGET_H */
