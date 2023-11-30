@@ -45,42 +45,42 @@ namespace plug
     inline Vec2d operator + (const Vec2d &left, const Vec2d &right)
     {
         return Vec2d (left.x + right.x, left.y + right.y);
-    }
+    };
 
     inline Vec2d operator - (const Vec2d &left, const Vec2d &right)
     {
         return Vec2d (left.x - right.x, left.y - right.y);
-    } 
+    }; 
 
     inline Vec2d operator / (const Vec2d &vec, const double val)
     {
         return Vec2d (vec.x / val, vec.y / val);
-    }   
+    };   
 
     inline Vec2d operator - (const Vec2d &vec)
     {
         return Vec2d (-vec.x, -vec.y);
-    }
+    };
 
     inline Vec2d operator * (const Vec2d &vec, const double val)
     {
         return Vec2d (vec.x * val, vec.y * val);
-    }
+    };
 
     inline Vec2d operator * (const double val, const Vec2d &vec)
     {
         return vec * val;
-    }
+    };
 
     inline Vec2d operator / (const Vec2d &left, const Vec2d &right)
     {
         return Vec2d (left.x / right.x, left.y / right.y);
-    }  
+    };  
 
     inline Vec2d operator * (const Vec2d &left, const Vec2d &right)
     {
         return Vec2d (left.x * right.x, left.y * right.y);
-    }
+    };
 
     inline Vec2d& operator *= (Vec2d &vec,	 const double val)
     {
@@ -88,7 +88,7 @@ namespace plug
         vec.y *= val;
 
         return vec;
-    } 
+    }; 
 
     inline Vec2d& operator /= (Vec2d &vec, const double val)
     {
@@ -104,7 +104,7 @@ namespace plug
         left.y += right.y;
 
         return left;
-    }
+    };
 
     inline Vec2d& operator -= (Vec2d &left, const Vec2d &right)
     {
@@ -112,7 +112,7 @@ namespace plug
         left.y -= right.y;
 
         return left;
-    }   
+    };  
 
     inline Vec2d& operator *= (Vec2d &left, const Vec2d &right)
     {
@@ -120,7 +120,7 @@ namespace plug
         left.y *= right.y;
 
         return left;
-    } 
+    }; 
 
     inline Vec2d& operator /= (Vec2d &left, const Vec2d &right)
     {
@@ -128,10 +128,21 @@ namespace plug
         left.y /= right.y;
 
         return left;
-    } 
-    inline double dot (Vec2d &left, Vec2d &right);	  // скалярное произведение
-    inline double cross (Vec2d &left, Vec2d &right); // ориентированная площадь, порожденная векторами          
-    inline Vec2d normalize (const Vec2d &vec);
+    }; 
+    inline double dot (Vec2d &left, Vec2d &right)	  // скалярное произведение
+    {
+        return left.x * right.x + left.y * right.y;
+    };
+    inline double cross (Vec2d &left, Vec2d &right) // ориентированная площадь, порожденная векторами          
+    {
+        return left.x * right.y - left.y * right.x;
+    };
+    inline Vec2d normalize (const Vec2d &vec)
+    {
+        double module = sqrt (vec.x * vec.x + vec.y * vec.y);
+
+        return plug::Vec2d (vec.x / module, vec.y / module);
+    };
 }
 
 #endif /* GRAPHIC_VECTOR_H */

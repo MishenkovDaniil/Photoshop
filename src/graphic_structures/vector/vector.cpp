@@ -1,22 +1,5 @@
 #include "vector.h"
 
-inline double plug::dot (plug::Vec2d &left, plug::Vec2d &right)
-{
-    return left.x * right.x + left.y * right.y;
-}	
-
-inline double plug::cross (plug::Vec2d &left, plug::Vec2d &right)
-{
-    return left.x * right.y - left.y * right.x;
-} 
-
-inline plug::Vec2d plug::normalize (const plug::Vec2d &vec)
-{
-    double module = sqrt (vec.x * vec.x + vec.y * vec.y);
-
-    return plug::Vec2d (vec.x / module, vec.y / module);
-}
-
 void plug::Vec2d::rotate (double deg)
 {  
     double radians = deg * PI / 180.0;
