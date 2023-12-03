@@ -16,3 +16,12 @@ my_filter_run: my_filter.o
 	g++ -shared -o libFilter.so my_filter.o
 dump_so: libFilter.so
 	nm -D libFilter.so > filterFunctionsSo.txt
+
+my_tool: src/plugin/tools/m_tool.cpp src/widget/texture_widget/texture_widget.cpp src/plugin/plugin_data.cpp src/graphics/rectangleshape/rectangleshape.cpp src/graphics/rendertexture/rendertexture.cpp src/graphics/convert_sfml_functions.cpp src/graphics/sprite/sfml_texture.cpp
+	g++ -c -fPIC -lsfml-graphics -lsfml-window -lsfml-system src/plugin/tools/m_tool.cpp src/widget/texture_widget/texture_widget.cpp src/plugin/plugin_data.cpp src/graphics/rectangleshape/rectangleshape.cpp src/graphics/rendertexture/rendertexture.cpp src/graphics/convert_sfml_functions.cpp src/graphics/sprite/sfml_texture.cpp
+my_tool_run: m_tool.o texture_widget.o plugin_data.o rectangleshape.o rendertexture.o convert_sfml_functions.o sfml_texture.o
+	g++ -shared -o libTool.so m_tool.o texture_widget.o plugin_data.o rectangleshape.o rendertexture.o convert_sfml_functions.o sfml_texture.o
+dump_tool_so: libTool.so
+	nm -D libTool.so > toolFunctionsSo.txt
+temp: temp.cpp 
+	$(CC) temp.cpp $(Flags)

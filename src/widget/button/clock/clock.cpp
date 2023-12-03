@@ -16,9 +16,9 @@ Clock::Clock (plug::Vec2d lh_corner, int width, int height, Button_run_fn func, 
     seconds_ (seconds) 
 {};
 
-void Clock::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void Clock::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
-    Button::render (target, transform_stack);
+    Button::draw (transform_stack, target);
     
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());

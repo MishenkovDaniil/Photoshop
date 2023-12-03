@@ -31,7 +31,7 @@ Header::~Header ()
     delete layout_;
 }
 
-void Header::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void Header::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 

@@ -107,11 +107,11 @@ const plug::Texture& Canvas::getTexture(void) const
     return canvas_img;
 }
 
-unsigned int Canvas::getNativeHandle(void) const
-{
-    //TODO;
-    return 0;
-}               
+// unsigned int Canvas::getNativeHandle(void) const
+// {
+//     //TODO;
+//     return 0;
+// }               
 
 void Canvas::draw (const plug::VertexArray& vertex_array)                        
 {
@@ -223,7 +223,7 @@ CanvasView::~CanvasView ()
     delete layout_;
 };
 
-void CanvasView::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
@@ -242,10 +242,10 @@ void CanvasView::render (plug::RenderTarget &target, plug::TransformStack &trans
         plug::Tool *tool = palette_->get_cur_tool ();
         if (tool)
         {
-            plug::Widget *widget = tool->get_widget ();
+            plug::Widget *widget = tool->getWidget ();
             if (widget)
             {
-                widget->render (target, transform_stack);
+                widget->draw (transform_stack, target);
             }
         }
     }
@@ -270,12 +270,12 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
     plug::Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
-        if (tool->get_widget ())
+        if (tool->getWidget ())
         {
             // if (tool->get_widget ()->get_layout_box ().getPosition ())
             // transform_stack.enter (unite);
             
-            tool->get_widget ()->onEvent (event, ehc);
+            tool->getWidget ()->onEvent (event, ehc);
             bool status = ehc.stopped;
             is_focused = status;
             // transform_stack.leave ();
@@ -284,10 +284,10 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
         }
 
         plug::ControlState control_state;
-        control_state.state = plug::Pressed;
+        control_state.state = plug::State::Pressed;
 
         tool->setActiveCanvas (view);
-        tool->on_main_button (control_state, pos_);
+        tool->onMainButton (control_state, pos_);
         is_focused = true;
         ehc.stopped = true;
 
@@ -310,8 +310,8 @@ void CanvasView::onMouseReleased    (const plug::MouseReleasedEvent &event, plug
         // ControlState control_state;
         // control_state.state = Released;
 
-        tool->on_confirm ();
-        if (!(tool->get_widget ())) is_focused = false;
+        tool->onConfirm ();
+        if (!(tool->getWidget ())) is_focused = false;
         ehc.stopped = true;
     }
 }
@@ -329,7 +329,7 @@ void CanvasView::onMouseMove        (const plug::MouseMoveEvent &event, plug::EH
     plug::Tool *tool = palette_->get_cur_tool ();
     if (tool)
     {
-        tool->on_move (pos_);
+        tool->onMove (pos_);
         // tool->on_modifier_1 (pos_, *this);
         ehc.stopped = true;
     }
@@ -344,9 +344,9 @@ void CanvasView::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, pl
 
     if (tool) 
     {
-        if (tool->get_widget ())
+        if (tool->getWidget ())
         {
-            tool->get_widget ()->onEvent (event, ehc);
+            tool->getWidget ()->onEvent (event, ehc);
             bool status = ehc.stopped;
             // ehc.stopped = true;
             is_focused = status;
@@ -358,22 +358,22 @@ void CanvasView::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, pl
         {
             case plug::KeyCode::Escape:
             {
-                tool->on_cancel ();
+                tool->onCancel ();
                 ehc.stopped = true;
                 printf ("cancel\n");
                 return;
             }
             case plug::KeyCode::Enter:
             {
-                tool->on_confirm ();
+                tool->onConfirm ();
                 ehc.stopped = true;
                 return;
             }
             case plug::KeyCode::RShift:
             case plug::KeyCode::LShift:
             {
-                plug::ControlState state = {plug::Pressed};
-                tool->on_modifier_1 (state);
+                plug::ControlState state = {plug::State::Pressed};
+                tool->onModifier1 (state);
                 is_focused = true;
                 ehc.stopped = true;
                 return;
@@ -399,7 +399,7 @@ void CanvasView::onKeyboardReleased (const plug::KeyboardReleasedEvent &event, p
         return;
     }
 
-    tool->on_released_key ();
+    // tool->on_released_key ();
     ehc.stopped = true;
 }
 
@@ -411,12 +411,12 @@ void CanvasView::onTick             (const plug::TickEvent &event, plug::EHC &eh
     }
 
     plug::Tool *tool = palette_->get_cur_tool ();
-    if (!(tool && tool->get_widget ()))
+    if (!(tool && tool->getWidget ()))
     {
         return;
     }
 
-    tool->get_widget ()->onEvent (event, ehc);
+    tool->getWidget ()->onEvent (event, ehc);
 }
 
 void CanvasView::setDrawRectOffset (int left, int top)

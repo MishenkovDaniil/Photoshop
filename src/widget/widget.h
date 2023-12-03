@@ -20,9 +20,10 @@ public:
     void enter (const plug::Transform &transform) override;
     void leave  () override;
     plug::Transform top () const override;
-    int get_size () const override;
     plug::Vec2d apply (const plug::Vec2d &vector) const override; 
     plug::Vec2d restore (const plug::Vec2d &vector) const override;
+private:
+    int get_size () const;
 };
 
 class Widget :public plug::Widget
@@ -31,7 +32,7 @@ protected:
     plug::LayoutBox *layout_ = nullptr;
 public:
     virtual ~Widget () = default;
-    virtual void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) = 0;
+    virtual void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) = 0;
     
     virtual void onEvent (const plug::Event &event, plug::EHC &ehc);
 
@@ -44,7 +45,7 @@ public:
          layout_->setSize       (new_layout.getSize ());};
 
     virtual bool covers (plug::TransformStack& stack, const plug::Vec2d& position) const override;
-    virtual void onParentUpdate(const plug::LayoutBox& parent_box) override;
+    virtual void onParentUpdate (const plug::LayoutBox& parent_box) override;
 
 protected:
     virtual void onTick             (const plug::TickEvent &event, plug::EHC &ehc) = 0;

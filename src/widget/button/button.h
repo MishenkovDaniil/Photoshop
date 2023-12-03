@@ -72,7 +72,7 @@ public:
     void          set_arg           (void *arg) {arg_ = arg;};
     
     bool run ();
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)                    override;
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
@@ -103,7 +103,7 @@ public:
                     Button_run_fn func, void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~Texture_button () override;
 
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
@@ -127,7 +127,7 @@ public:
                 void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
     ~String_button ();
 
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
@@ -148,7 +148,7 @@ public:
 
     void add_button (Button *button); /// can change button layout
     
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack)                        override;
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)                        override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

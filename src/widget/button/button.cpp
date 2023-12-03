@@ -34,7 +34,7 @@ bool Button::run ()
     return run_fn_ (controlled_widget_, arg_);
 }
 
-void Button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void Button::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());
@@ -172,7 +172,7 @@ Texture_button::~Texture_button ()
     cur_sprite_ = nullptr;
 }
 
-void Texture_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void Texture_button::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (transform_stack.top ());
@@ -238,7 +238,7 @@ String_button::~String_button ()
     if (string_) delete[] string_;
 }
 
-void String_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void String_button::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     assert (layout_);
 
@@ -336,10 +336,10 @@ void List_button::add_button (Button *button)
 }
 
 
-void List_button::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void List_button::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
-    list_button_->render (target, transform_stack);
-
+    list_button_->draw (transform_stack, target);
+ 
     if (is_open_)
     {
         transform_stack.enter (plug::Transform (layout_->getPosition ()));
@@ -357,7 +357,7 @@ void List_button::render (plug::RenderTarget &target, plug::TransformStack &tran
             }
             assert (button);
 
-            button->render (target, transform_stack);
+            button->draw (transform_stack, target);
         }
 
         transform_stack.leave ();

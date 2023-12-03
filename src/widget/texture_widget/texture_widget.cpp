@@ -2,7 +2,7 @@
 #include "../../graphics/rendertexture/rendertexture.h"
 #include "../../graphics/sprite/sfml_texture.h"
 
-void M_render_texture::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void M_render_texture::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 

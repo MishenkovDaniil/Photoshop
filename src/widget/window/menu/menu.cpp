@@ -22,7 +22,7 @@ void Menu::add_button (Button *button)
     buttons.add (button);
 }
 
-void Menu::render (plug::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Menu::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) 
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
@@ -48,7 +48,7 @@ void Menu::render (plug::RenderTarget &target, plug::TransformStack &transform_s
         }
         assert (button);
 
-        button->render (target, transform_stack);
+        button->draw (transform_stack, target);
     }
 
     transform_stack.leave ();

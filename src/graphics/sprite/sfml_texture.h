@@ -10,7 +10,7 @@
 class Sprite : public Drawable
 {
     sf::Texture sprite_texture;
-    const plug::Texture *plug_texture;
+    const plug::Texture *plug_texture = nullptr;
 
 public:
     Sprite ();

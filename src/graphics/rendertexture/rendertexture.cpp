@@ -63,10 +63,10 @@ void RenderTexture::clear (plug::Color color, Sprite &sprite)
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
 }
 
-unsigned RenderTexture::getNativeHandle(void) const 
-{
-    ;
-}
+// unsigned RenderTexture::getNativeHandle(void) const 
+// {
+//     ;
+// }
 
 void RenderTexture::setActive (bool active)
 {
@@ -88,7 +88,6 @@ void RenderTexture::draw (const Drawable &drawable, Sprite &sprite)
     cur_texture = render_texture_.getTexture ();
     ((sf::Sprite *)sprite.drawable)->setTexture (cur_texture);
 }
-
 
 plug::Texture RenderTexture::getTexture () const
 {

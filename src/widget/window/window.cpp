@@ -46,7 +46,7 @@ Window::~Window ()
     delete layout_;
 }
 
-void Window::render (plug::RenderTarget &target, plug::TransformStack &transform_stack)
+void Window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
@@ -58,14 +58,14 @@ void Window::render (plug::RenderTarget &target, plug::TransformStack &transform
     rect.setOutlineThickness (-1);
     rect.setPosition (lh_pos);
 
-    canvas_->render (target, transform_stack);
+    canvas_->draw (transform_stack, target);
 
     if (scrollbar_) 
     {
-        scrollbar_->render (target, transform_stack);
+        scrollbar_->draw (transform_stack, target);
     }
     
-    header_->render (target, transform_stack);
+    header_->draw (transform_stack, target);
     
     ((RenderTexture &)target).draw (rect);
 

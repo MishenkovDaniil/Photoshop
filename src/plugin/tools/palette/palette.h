@@ -8,12 +8,23 @@ class Tool;
 class Button;
 class Button_palette;
 
+class ColorPalette : public plug::ColorPalette
+{
+        plug::Color fg_color_ = plug::Red;
+        plug::Color bg_color_ = plug::White;
+public:
+        plug::Color getFGColor () const {return fg_color_;}; 
+        plug::Color getBGColor () const {return bg_color_;}; 
+        void setFGColor (plug::Color fg_color) {fg_color_ = fg_color;};
+        void setBGColor (plug::Color bg_color) {bg_color_ = bg_color;};
+};
+
 class Tool_palette 
 {
     M_vector<plug::Tool *> palette_;
     plug::Tool *cur_tool_ = nullptr;
     
-    plug::ColorPalette color_palette_;
+    ColorPalette color_palette_;
     
 public:
     Tool_palette ();

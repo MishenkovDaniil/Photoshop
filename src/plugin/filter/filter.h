@@ -15,21 +15,21 @@ class Filter : public plug::Filter
 {
     plug::Widget *filter_widget = nullptr;
     size_t ref_num_ = 0;
-    PluginData plugin_data_;
+    MishenkovPluginData plugin_data_;
 
 public:
     Filter (const char *name, const char *texture_path = nullptr) : plugin_data_ (name, texture_path) {};
     Filter () = default;
     ~Filter () = default;
 
-    virtual void apply_filter (plug::Canvas &canvas) const override = 0;
+    virtual void applyFilter (plug::Canvas &canvas) const override = 0;
     plug::Widget *getWidget () {return filter_widget;};
 
     virtual plug::Plugin *tryGetInterface (size_t type)     override 
         {return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? this : nullptr;};	
-    virtual void addReference (plug::Plugin *)              override 
+    virtual void addReference ()                            override 
         {++ref_num_;};
-    virtual void release (plug::Plugin *)                   override 
+    virtual void release ()                                 override 
         {if (!(--ref_num_)) delete this;};
     virtual const plug::PluginData *getPluginData () const  override 
         {return &plugin_data_;};
@@ -44,7 +44,7 @@ public:
                                         delta_light_ (delta_light) {};
     ~Light_filter () = default;
 
-    void apply_filter (plug::Canvas &canvas) const override;
+    void applyFilter (plug::Canvas &canvas) const override;
 };
 
 class Saturation_filter : public Filter
@@ -55,7 +55,7 @@ public:
                                                     delta_saturation_ (delta_saturation) {};
     ~Saturation_filter () = default;
 
-    void apply_filter (plug::Canvas &canvas) const override;
+    void applyFilter (plug::Canvas &canvas) const override;
 };
 
 // class White_black_filter : public Filter
@@ -64,7 +64,7 @@ public:
 //     White_black_filter () {};
 //     ~White_black_filter () = default;
 
-//     void apply_filter (plug::Canvas &canvas) const override;
+//     void applyFilter (plug::Canvas &canvas) const override;
 // };
 
 class Filter_palette 

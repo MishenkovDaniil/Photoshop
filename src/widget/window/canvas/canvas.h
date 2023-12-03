@@ -65,11 +65,11 @@ public:
     plug::Vec2d getSize () const                                                    override 
         {return plug::Vec2d (width_, height_);};
 
-    const plug::SelectionMask &getSelectionMask ()                                  override 
+    plug::SelectionMask &getSelectionMask ()                                        override 
         {return selection;};
     void setSize(const plug::Vec2d &size)                                           override 
         {width_ = size.x; height_ = size.y;};
-    unsigned int getNativeHandle(void) const                                        override;                
+    // unsigned int getNativeHandle(void) const                                        override;                
     plug::Color getPixel(size_t x, size_t y) const                                  override;                
     const plug::Texture& getTexture(void) const                                     override;
     void setPixel(size_t x, size_t y, const plug::Color& color)                     override;   
@@ -102,7 +102,7 @@ public:
     CanvasView (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, Tool_palette *palette = nullptr);
     ~CanvasView ();
 
-    void render             (plug::RenderTarget &target, plug::TransformStack &transform_stack) override;
+    void draw             (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;

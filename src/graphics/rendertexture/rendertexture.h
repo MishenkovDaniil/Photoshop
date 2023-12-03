@@ -25,7 +25,7 @@ public:
     void draw (const plug::VertexArray& array)                                  override;
     void draw (const plug::VertexArray& array, const plug::Texture& texture)    override;
     void clear (plug::Color color)                                              override;
-    unsigned getNativeHandle(void) const                                        override;
+    // unsigned getNativeHandle(void) const                                        override;
     void setActive (bool active)                                                override;
 
     plug::Vec2d getSize () const;

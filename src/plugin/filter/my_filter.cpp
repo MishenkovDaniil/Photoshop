@@ -5,7 +5,7 @@ extern "C" plug::Plugin *loadPlugin (size_t type)
     return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? new White_black_filter : nullptr;
 }
 
-void White_black_filter::apply_filter (plug::Canvas &canvas) const
+void White_black_filter::applyFilter (plug::Canvas &canvas) const
 {
     const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 

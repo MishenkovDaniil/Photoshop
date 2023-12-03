@@ -15,7 +15,7 @@ public:
     M_render_texture (int width, int height, plug::Color color)  {texture_.create (width, height); texture_.clear (color); cur_sprite.setPosition (0, 0);};
     ~M_render_texture () = default;
 
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack); 
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target); 
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) {return;};
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) {return;};
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) {return;};

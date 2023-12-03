@@ -32,6 +32,7 @@ class M_text : public Widget
     Font text_font_;
     Text text_text_;
     RectangleShape  text_rect;
+    plug::VertexArray cursor_line_ = plug::VertexArray (plug::Lines, 2);
 
 public:
     M_text (plug::Vec2d lh_pos, int width, int height, plug::Color color = plug::Black);
@@ -39,7 +40,7 @@ public:
 
     const char *get_string () {assert (buf_); buf_[len_] = '\0'; return buf_;}
 
-    void render (plug::RenderTarget &target, plug::TransformStack &transform_stack) override; 
+    void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override; 
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
     void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc) override;
@@ -47,9 +48,14 @@ public:
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
+private:
     char convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_);
+    char convert_key_to_char_shift (plug::KeyCode key, plug::KeyCode latest_key_);
+    char convert_key_to_char_default (plug::KeyCode key, plug::KeyCode latest_key_);
+    void run_managing_keys (plug::KeyCode key, plug::KeyCode latest_key_);
+
     void check_string ();
     void set_last_symbol (char symbol) {assert (buf_); buf_[len_] = symbol;};
 };
-
+//add len on picture
 #endif /* TEXT_WIDGET_H */

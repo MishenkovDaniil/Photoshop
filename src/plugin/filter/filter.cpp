@@ -26,7 +26,7 @@ size_t Filter_palette::get_filter_count ()
 }   
 
 
-void Light_filter::apply_filter (plug::Canvas &canvas) const
+void Light_filter::applyFilter (plug::Canvas &canvas) const
 {
     const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 
@@ -49,7 +49,7 @@ void Light_filter::apply_filter (plug::Canvas &canvas) const
     }
 }
 
-void Saturation_filter::apply_filter (plug::Canvas &canvas) const
+void Saturation_filter::applyFilter (plug::Canvas &canvas) const
 {
     const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 
@@ -72,7 +72,7 @@ void Saturation_filter::apply_filter (plug::Canvas &canvas) const
     }
 }
 
-// void White_black_filter::apply_filter (plug::Canvas &canvas) const
+// void White_black_filter::applyFilter (plug::Canvas &canvas) const
 // {
 //     const SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 

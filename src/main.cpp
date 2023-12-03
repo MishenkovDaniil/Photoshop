@@ -19,7 +19,8 @@
 
 #include "standard/standard.h"
 
-static const char *FILTER_PATH = "/home/daniil/programming/code/C++_projects/photoshop/libFilter.so";
+static const char *FILTER_PATH = "/home/daniil/programming/code/C++_projects/photoshop/test_filter.so";
+static const char *TOOL_PATH = "/home/daniil/programming/code/C++_projects/photoshop/libTool.so";
 static const char *LOAD_PLUGIN_FUNC = "loadPlugin";
 
 static const char *line_img   = "resources/imgs/line.png";
@@ -38,6 +39,8 @@ typedef plug::Plugin *(loadPluginFunc) (size_t type);	/// аналог  QueryInt
 
 bool save_file (void *widget, void *arg);
 plug::Filter *getFilter (const char *plugin_path);
+plug::Tool *getTool (const char *plugin_path);
+
 bool is_dl_error ();
 
 int main ()
@@ -84,6 +87,9 @@ int main ()
     Rect_shape rect_tool; 
     Fill fill_tool; 
     Text_tool text_tool;
+    plug::Tool *loaded_tool = getTool (TOOL_PATH);
+    // printf ("%p\n", loaded_tool);
+
 
     palette.add_tool (&brush_tool);
     palette.add_tool (&line_tool);
@@ -91,6 +97,7 @@ int main ()
     palette.add_tool (&rect_tool);
     palette.add_tool (&fill_tool);
     palette.add_tool (&text_tool);
+    palette.add_tool (loaded_tool);
 
     Button_palette button_palette (plug::Vec2d (1650, 50), 200, 200, &palette);
     
@@ -100,7 +107,7 @@ int main ()
     Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
     // White_black_filter black_white;
     plug::Filter *loaded_filter = getFilter (FILTER_PATH);  
-
+    
     Filter_tool light_incr_tool (&light_incr);
     Filter_tool light_decr_tool (&light_decr);
     Filter_tool saturation_incr_tool (&saturation_incr);
@@ -159,6 +166,7 @@ int main ()
     Texture_button rect_button   (plug::Vec2d (150, 0), 50, 50, rect_pressed_texture,   rect_released_texture,   tool_run_fn, (void *)&main_window, (void *)&rect_tool,   PRESS_BUTTON);
     Texture_button fill_button   (plug::Vec2d (0, 50),  50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
     Texture_button text_button   (plug::Vec2d (50, 50), 50, 50, text_released_texture,  text_released_texture,   tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
+    Texture_button loaded_tool_button   (plug::Vec2d (100, 50), 50, 50, rect_pressed_texture,  rect_pressed_texture,   tool_run_fn, (void *)&main_window, (void *)loaded_tool,   PRESS_BUTTON);
     
     String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,        PRESS_BUTTON);
     String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,        PRESS_BUTTON);
@@ -186,6 +194,7 @@ int main ()
     button_palette.add_tool_button (&rect_button);
     button_palette.add_tool_button (&fill_button);
     button_palette.add_tool_button (&text_button);
+    button_palette.add_tool_button (&loaded_tool_button);
     
     button_palette.add_tool_button (&red_button);
     button_palette.add_tool_button (&blue_button);
@@ -238,7 +247,7 @@ int main ()
 
         // if (status)
         {
-            widget_manager.render (render_texture);
+            widget_manager.draw (render_texture);
             render_texture.display ();
             // window_sprite.setTexture (render_texture.getTexture ()); //TODO
             ((sf::Sprite *)window_sprite.drawable)->setTexture (render_texture.render_texture_.getTexture ());
@@ -300,6 +309,31 @@ plug::Filter *getFilter (const char *plugin_path)
     } 
 
     plug::Filter *plugin = (plug::Filter *)plugin_func ((size_t)plug::PluginGuid::Filter);
+    
+    dlclose (dll_start);
+    return plugin;
+}
+
+
+plug::Tool *getTool (const char *plugin_path)
+{
+    void *dll_start = dlopen (plugin_path, RTLD_NOW | RTLD_NODELETE | RTLD_LOCAL);
+    
+    if (is_dl_error ())
+    {
+        dlclose (dll_start);
+        return nullptr;
+    } 
+
+    loadPluginFunc *plugin_func = (loadPluginFunc *)dlsym (dll_start, LOAD_PLUGIN_FUNC);
+
+    if (is_dl_error ())
+    {
+        dlclose (dll_start);
+        return nullptr;
+    } 
+
+    plug::Tool *plugin = (plug::Tool *)plugin_func ((size_t)plug::PluginGuid::Tool);
     
     dlclose (dll_start);
     return plugin;

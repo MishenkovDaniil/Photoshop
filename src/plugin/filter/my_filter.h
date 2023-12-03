@@ -34,14 +34,14 @@ public:
     MYFilter () = default;
     ~MYFilter () = default;
 
-    virtual void apply_filter (plug::Canvas &canvas) const override = 0;
+    virtual void applyFilter (plug::Canvas &canvas) const override = 0;
     plug::Widget *getWidget () {return filter_widget;};
 
     virtual plug::Plugin *tryGetInterface (size_t type)     override 
         {return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? this : nullptr;};	
-    virtual void addReference (plug::Plugin *)              override 
+    virtual void addReference ()                            override 
         {++ref_num_;};
-    virtual void release (plug::Plugin *)                   override 
+    virtual void release ()                                 override 
         {if (!(--ref_num_)) delete this;};
     virtual const plug::PluginData *getPluginData () const {return &plugin_data_;};
 };
@@ -53,7 +53,7 @@ public:
     // White_black_filter () = default;
     ~White_black_filter () = default;
 
-    void apply_filter (plug::Canvas &canvas) const override;
+    void applyFilter (plug::Canvas &canvas) const override;
 };
 
 #endif /* MY_FILTER_H */

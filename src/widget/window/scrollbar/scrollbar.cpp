@@ -50,15 +50,15 @@ Scrollbar::~Scrollbar ()
 };
 
 
-void Scrollbar::render (plug::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Scrollbar::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) 
 {
-    Button::render  (target, transform_stack);
+    Button::draw  (transform_stack, target);
 
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
 
     for (size_t i = 0; i < buttons.get_size (); ++i)
     {
-        buttons[i]->render (target, transform_stack);
+        buttons[i]->draw (transform_stack, target);
     } 
 
     transform_stack.leave ();

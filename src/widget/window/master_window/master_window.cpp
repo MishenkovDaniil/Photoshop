@@ -26,12 +26,12 @@ void Master_window::add_window (Window *window)
     last_ = list_insert (&windows, last_, window);
 }
 
-void Master_window::render (plug::RenderTarget &target, plug::TransformStack &transform_stack) 
+void Master_window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) 
 {
-    Window::render (target, transform_stack);
+    Window::draw (transform_stack, target);
     
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
-    menu_->render (target, transform_stack);
+    menu_->draw (transform_stack, target);
     transform_stack.leave ();
 
     size_t window_list_pos = first_;
@@ -50,7 +50,7 @@ void Master_window::render (plug::RenderTarget &target, plug::TransformStack &tr
         }
         assert (window);
 
-        window->render (target, transform_stack);
+        window->draw (transform_stack, target);
     }
 }
 
@@ -166,7 +166,7 @@ void Master_window::onMouseMove        (const plug::MouseMoveEvent &event, plug:
         return;
 
     // event.pos = pos_; // should do pos_ through transformStack
-    ehc.stack.enter (layout_->getPosition ());
+    ehc.stack.enter (plug::Transform (layout_->getPosition ()));
 
     menu_->onMouseMove (event, ehc);
 

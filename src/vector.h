@@ -123,7 +123,7 @@ template <typename T> bool M_vector<T>::pop ()
         return false;
     }
 
-    T &pop_val = arr_[size_ - 1];
+    // T &pop_val = arr_[size_ - 1];
 
     arr_[--size_] = EMPTY;
     return true;
