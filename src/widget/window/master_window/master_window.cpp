@@ -24,7 +24,37 @@ void Master_window::add_window (Window *window)
     assert (window && "incorrect window pointer in add_window()");
 
     last_ = list_insert (&windows, last_, window);
+    window->set_parent (this);
 }
+
+bool Master_window::rm_window (Window *window_to_rm)
+{
+    size_t window_list_pos = first_;
+
+    for (int window_idx = 0; window_idx < windows.size; ++window_idx)
+    {
+        Window *window = (Window *)list_get (&windows, window_list_pos);
+
+        if (window == window_to_rm)
+        {
+            if (window_list_pos == first_)
+            {
+                first_ = windows.elems[window_list_pos].next;
+            }
+            if (window_list_pos == last_)
+            {
+                last_ = windows.elems[window_list_pos].prev;
+            }
+
+            list_remove (&windows, window_list_pos);
+            return true;
+        }
+        
+        window_list_pos = windows.elems[window_list_pos].next;
+    }
+    return false;
+}
+
 
 void Master_window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) 
 {
@@ -57,8 +87,8 @@ void Master_window::draw (plug::TransformStack &transform_stack, plug::RenderTar
 void Master_window::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     size_t window_list_pos = last_;
-
-    for (int window_idx = 0; window_idx < windows.size; ++window_idx)
+    size_t size = windows.size;
+    for (int window_idx = 0; window_idx < size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_list_pos);
 
@@ -75,6 +105,8 @@ void Master_window::onMousePressed     (const plug::MousePressedEvent &event, pl
         if (window->covers (ehc.stack, event.pos))
         {
             window->onMousePressed (event, ehc);
+            if (windows.size < size)
+                return;
             if (ehc.stopped)
             {
                 // active_window = window_list_pos;
@@ -235,6 +267,7 @@ void Master_window::onTick             (const plug::TickEvent &event, plug::EHC 
     for (int window_idx = 0; window_idx < windows.size; ++window_idx)
     {
         Window *window = (Window *)list_get (&windows, window_list_pos);
+        // printf ("window %p\n", window);
         if (!window)
         {
             fprintf (stderr, "Event error: nil button is detected.\n"

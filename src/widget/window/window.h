@@ -27,7 +27,7 @@ protected:
     Scrollbar *scrollbar_   = nullptr;
 
     M_vector<Widget *> contained_widgets;
-    
+    Master_window *parent_window_ = nullptr;
     // Transform transform_;
     
 public:
@@ -44,6 +44,7 @@ public:
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
+    void set_parent (Master_window *parent_window) {parent_window_ = parent_window;};
 
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);

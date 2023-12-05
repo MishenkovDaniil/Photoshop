@@ -2,9 +2,9 @@
 #define MASTER_WINDOW_H
 
 #include "../../../list.h"
+#include "../window.h"
 #include "../menu/menu.h"
 #include "../canvas/canvas.h"
-#include "../window.h"
 #include "../../../plugin/tools/palette/palette.h"
 
 static int INIT_WINDOWS_CAPACITY = 10;
@@ -23,12 +23,6 @@ public:
     Master_window (int width, int height, plug::Vec2d lh_pos, const char *w_name, int list_capacity = INIT_WINDOWS_CAPACITY);
     ~Master_window ();
 
-    void add_menu_button (Button *button);
-    void add_window      (Window *window);
-    
-    int     get_list_size ()        {return windows.size;};
-    Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
-
     void draw    (plug::TransformStack &transform_stack, plug::RenderTarget &target)     override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;
@@ -37,6 +31,13 @@ public:
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
+    void add_menu_button (Button *button);
+    void add_window      (Window *window);
+    bool rm_window       (Window *window);
+
+    int     get_list_size ()        {return windows.size;};
+    Window *get_list_elem (int idx) {return (Window *)list_get(&windows, idx);};
+    
     friend void init_canvases (Master_window *m_window, Tool_palette *palette);
 };
 

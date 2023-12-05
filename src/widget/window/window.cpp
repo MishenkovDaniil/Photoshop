@@ -8,6 +8,7 @@
 #include "header/header.h"
 #include "canvas/canvas.h"
 #include "scrollbar/scrollbar.h"
+#include "master_window/master_window.h"
 
 Window::Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, bool need_scrollbar, Tool_palette *palette) :
     width_ (width),
@@ -44,6 +45,11 @@ Window::~Window ()
     if (canvas_)    delete canvas_;
     if (scrollbar_) delete scrollbar_;
     delete layout_;
+
+    if (parent_window_)
+    {
+        parent_window_->rm_window (this);
+    }
 }
 
 void Window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)

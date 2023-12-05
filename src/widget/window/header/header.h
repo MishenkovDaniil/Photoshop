@@ -12,11 +12,13 @@
 #include "../../../graphics/rendertexture/rendertexture.h"
 #include "../../../graphics/text/text.h"
 #include "../../../graphics/font/font.h"
+#include "../../button/button.h"
 
 static const int HEADER_HEIGHT       = 30;
 static const int CHARACTER_SIZE      = 20;
 
 class Window;
+class Button;
 
 class Header : public Widget
 {
@@ -25,12 +27,13 @@ class Header : public Widget
     int str_len = 0;
     
     const char *font_file_ = DEFAULT_FONT_FILE;
-
     plug::Color background_color;
     Window *parent_window_ = nullptr;
     
     bool is_moving_ = false;
     plug::Vec2d move_start_;
+
+    Button *close_button;
 
 public: 
     Header (plug::Vec2d lh_pos, int width, const char *string, Window *window, plug::Color background = plug::Color (150, 150, 150));
@@ -46,5 +49,7 @@ public:
 
     friend Window;
 };
+
+bool close_window (void *widget, void *arg);
 
 #endif /* HEADER_H */
