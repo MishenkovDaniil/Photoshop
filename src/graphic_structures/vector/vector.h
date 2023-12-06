@@ -9,138 +9,163 @@
 
 static const double PI = 3.14;
 
-namespace plug
+namespace plug 
 {
-    struct Vec2d 
+    class Vec2d 
     {
-        double x = 0;
-        double y = 0;
+    public:
+        explicit Vec2d(const double x_ = 0.0, const double y_ = 0.0) : x(x_), y(y_) {};
 
-        Vec2d (double x_val = 0, double y_val = 0) : x (x_val), y (y_val) {};
-        Vec2d (const Vec2d &other) : x (other.x), y (other.y) {};
+        Vec2d(const Vec2d &src) = default;
 
-        void rotate (double deg);
+        ~Vec2d() = default;
 
-        double length  () const {return sqrt (length2 ());};
-        double length2 () const {return x * x + y * y;};
+        double length2() const { return x * x + y * y; }
 
-        double get_x ()const {return x;};
-        double get_y ()const {return y;};
+        double length() const { return sqrt(this->length2()); }
+        void  rotate (double deg);
+        double get_x () const {return x;};
+        double get_y () const {return y;};
         
-        Vec2d  operator = (const Vec2d &right) 
-            {
-                x = right.x;
-                y = right.y;
+        Vec2d &operator=(const Vec2d &vec) 
+        {
+            x = vec.x;
+            y = vec.y;
 
-                return *this;
-            }
+            return *this;
+        }
+
+        Vec2d &operator+=(const Vec2d &vec) 
+        {
+            x += vec.x;
+            y += vec.y;
+
+            return *this;
+        }
+
+        Vec2d &operator-=(const Vec2d &vec) 
+        {
+            x -= vec.x;
+            y -= vec.y;
+
+            return *this;
+        }
+
+        Vec2d &operator*=(const Vec2d &vec) 
+        {
+            x *= vec.x;
+            y *= vec.y;
+
+            return *this;
+        }
+
+        Vec2d &operator/=(const Vec2d &vec) 
+        {
+            x /= vec.x;
+            y /= vec.y;
+
+            return *this;
+        }
+
+        Vec2d &operator*=(const double val) 
+        {
+            x *= val;
+            y *= val;
+
+            return *this;
+        }
+
+        Vec2d &operator/=(const double val) 
+        {
+            x /= val;
+            y /= val;
+
+            return *this;
+        }
+
+        Vec2d operator -() const
+        {
+            Vec2d res;
+            res.x = -x;
+            res.y = -y;
+
+            return res;
+        }
+
+        double x;
+        double y;
     };
 
-
-    inline Vec2d operator + (const Vec2d &left, const Vec2d &right)
+    inline double dot(const Vec2d &lhs, const Vec2d &rhs) 
     {
-        return Vec2d (left.x + right.x, left.y + right.y);
-    };
-
-    inline Vec2d operator - (const Vec2d &left, const Vec2d &right)
-    {
-        return Vec2d (left.x - right.x, left.y - right.y);
-    }; 
-
-    inline Vec2d operator / (const Vec2d &vec, const double val)
-    {
-        return Vec2d (vec.x / val, vec.y / val);
-    };   
-
-    inline Vec2d operator - (const Vec2d &vec)
-    {
-        return Vec2d (-vec.x, -vec.y);
-    };
-
-    inline Vec2d operator * (const Vec2d &vec, const double val)
-    {
-        return Vec2d (vec.x * val, vec.y * val);
-    };
-
-    inline Vec2d operator * (const double val, const Vec2d &vec)
-    {
-        return vec * val;
-    };
-
-    inline Vec2d operator / (const Vec2d &left, const Vec2d &right)
-    {
-        return Vec2d (left.x / right.x, left.y / right.y);
-    };  
-
-    inline Vec2d operator * (const Vec2d &left, const Vec2d &right)
-    {
-        return Vec2d (left.x * right.x, left.y * right.y);
-    };
-
-    inline Vec2d& operator *= (Vec2d &vec,	 const double val)
-    {
-        vec.x *= val;
-        vec.y *= val;
-
-        return vec;
-    }; 
-
-    inline Vec2d& operator /= (Vec2d &vec, const double val)
-    {
-        vec.x /= val;
-        vec.y /= val;
-
-        return vec;
+        return lhs.x * rhs.x + lhs.y * rhs.y;
     }
 
-    inline Vec2d& operator += (Vec2d &left, const Vec2d &right)
+    inline double cross(const Vec2d &lhs, const Vec2d &rhs) 
     {
-        left.x += right.x;
-        left.y += right.y;
+        return lhs.x * rhs.y - lhs.y * rhs.x;
+    }
 
-        return left;
-    };
-
-    inline Vec2d& operator -= (Vec2d &left, const Vec2d &right)
+    inline Vec2d normalize(const Vec2d &vec) 
     {
-        left.x -= right.x;
-        left.y -= right.y;
+        double len = vec.length();
+        Vec2d res = Vec2d(vec.x / len, vec.y / len);
 
-        return left;
-    };  
+        return res;
+    }
 
-    inline Vec2d& operator *= (Vec2d &left, const Vec2d &right)
+    inline Vec2d operator+(const Vec2d &vec1, const Vec2d &vec2) 
     {
-        left.x *= right.x;
-        left.y *= right.y;
+        Vec2d res = vec1;
+        res += vec2;
 
-        return left;
-    }; 
+        return res;
+    }
 
-    inline Vec2d& operator /= (Vec2d &left, const Vec2d &right)
+    inline Vec2d operator-(const Vec2d &vec1, const Vec2d &vec2) 
     {
-        left.x /= right.x;
-        left.y /= right.y;
+        Vec2d res = vec1;
+        res -= vec2;
 
-        return left;
-    }; 
-    inline double dot (Vec2d &left, Vec2d &right)	  // скалярное произведение
-    {
-        return left.x * right.x + left.y * right.y;
-    };
-    inline double cross (Vec2d &left, Vec2d &right) // ориентированная площадь, порожденная векторами          
-    {
-        return left.x * right.y - left.y * right.x;
-    };
-    inline Vec2d normalize (const Vec2d &vec)
-    {
-        double module = sqrt (vec.x * vec.x + vec.y * vec.y);
-        printf ("module = %lf\n", module);
-        printf ("x = %lf\n", vec.x / module);
-        printf ("y = %lf\n", vec.y / module);
+        return res;
+    }
 
-        return plug::Vec2d (vec.x / module, vec.y / module);
-    };
-}
+    inline Vec2d operator*(const Vec2d &lhs, const Vec2d &rhs) 
+    {
+        Vec2d res = lhs;
+        res *= rhs;
+
+        return res;
+    }
+
+    inline Vec2d operator/(const Vec2d &lhs, const Vec2d &rhs) 
+    {
+        Vec2d res = lhs;
+        res /= rhs;
+
+        return res;
+    }
+
+    inline Vec2d operator*(const Vec2d &vec, const double scale) 
+    {
+        Vec2d res = vec;
+        res *= scale;
+
+        return res;
+    }
+
+    inline Vec2d operator*(const double scale, const Vec2d &vec) 
+    {
+        return operator*(vec, scale);
+    }
+
+    inline Vec2d operator/(const Vec2d &vec, const double scale) 
+    {
+        Vec2d res = vec;
+        res /= scale;
+
+        return res;
+    }
+} // namespace plug
 
 #endif /* GRAPHIC_VECTOR_H */
