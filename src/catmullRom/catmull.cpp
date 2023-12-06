@@ -22,6 +22,10 @@ void catmullRomCentralSplineDraw   (const plug::Vec2d &point_1, const plug::Vec2
     double t1 = calcT (point_1, point_2, t0, alpha);
     double t2 = calcT (point_2, point_3, t1, alpha);
     double t3 = calcT (point_3, point_4, t2, alpha);
+
+    if (t3 == t2 || t2 == t1 || t1 == t0)
+        return;
+
     CircleShape circle;
     circle.setRadius (thickness);
     circle.setFillColor (draw_color);
@@ -50,6 +54,8 @@ void catmullRomRightSplineDraw (const plug::Vec2d &point_1, const plug::Vec2d &p
     double t0 = 0;
     double t1 = calcT (point_1, point_2, t0, alpha);
     double t2 = calcT (point_2, point_3, t1, alpha);
+    if (t2 == t1 || t1 == t0)
+        return;
 
     CircleShape circle;
     circle.setRadius (thickness);
@@ -82,6 +88,8 @@ void catmullRomLineDraw (const plug::Vec2d &point_1, const plug::Vec2d &point_2,
 {
     double t0 = 0;
     double t1 = calcT (point_1, point_2, t0, alpha);
+    if (t1 == t0)
+        return;
 
     CircleShape circle;
     circle.setRadius (thickness);
@@ -90,7 +98,7 @@ void catmullRomLineDraw (const plug::Vec2d &point_1, const plug::Vec2d &point_2,
     for (double i = 0; i <= 1; i += CATMULL_ROM_DELTA)
     {
         double t = iterateT (t0, t1, i);
-
+        
         plug::Vec2d a1 = ((t1 - t) / (t1 - t0)) * point_1 + ((t - t0) / (t1 - t0)) * point_2;
 
         circle.setPosition (a1);
