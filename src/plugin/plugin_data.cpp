@@ -3,7 +3,7 @@
 
 #include "plugin_data.h"
 
-MishenkovPluginData::MishenkovPluginData (const char *name, const char *texture_path)
+MDNPluginData::MDNPluginData (const char *name, const char *texture_path)
 {
     if (name)
     {
@@ -19,7 +19,7 @@ MishenkovPluginData::MishenkovPluginData (const char *name, const char *texture_
     }
 }
 
-MishenkovPluginData::~MishenkovPluginData ()
+MDNPluginData::~MDNPluginData ()
 {
     if (name_)
     {
