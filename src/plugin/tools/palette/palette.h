@@ -42,6 +42,7 @@ public:
     friend Button_palette;
     friend bool color_button_run_fn (void *widget, void *args);
     friend bool tool_run_fn (void *widget, void *args);
+    friend bool curves_func (void *widget, void *arg);
 };
 
 #endif /* TOOL_PALETTE_H */

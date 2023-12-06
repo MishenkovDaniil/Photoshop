@@ -409,7 +409,6 @@ Rect_shape::~Rect_shape () {};
 void Rect_shape::onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos)
 {
     assert (active_canvas_);
-
     if (control_state.state == plug::State::Pressed)
     {
         center_ = last_center_ = latest_pos_ = pos;
@@ -668,7 +667,7 @@ void Fill::fill_pixels (plug::Vec2d pos)
     assert (active_canvas_);
     assert (pixel_arr_);
 
-    M_vector<plug::Vec2d> pixels (plug::Vec2d (0)); // think about init capacity
+    M_vector<plug::Vec2d> pixels (plug::Vec2d (0, 0)); // think about init capacity
 
     pixels.push (pos);
 
@@ -786,16 +785,16 @@ void Filter_tool::onCancel              ()
 }
 
 
-Text_tool::Text_tool () {}
+Text_tool::Text_tool () {state_.state = plug::State::Released;}
 Text_tool::~Text_tool () {}
 
 void Text_tool::onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos)
 {
     assert (active_canvas_);
- 
     if (state_.state == plug::State::Released)
     {
         rect_tool.setActiveCanvas (*active_canvas_);
+        rect_tool.setColorPalette (*color_palette_);
         rect_tool.onMainButton (control_state, pos);
         rect_tool.rect_.setOutlineColor (plug::Black);
         on_rect_ = true;
@@ -929,3 +928,139 @@ void Text_tool::onCancel ()
     }
     state_.state = plug::State::Released;
 }
+
+
+CurveTool::CurveTool () : plot (), filter (new Curve_filter) {}
+CurveTool::~CurveTool () 
+{
+    if (filter)
+    {
+        delete filter;
+        filter = nullptr;
+    }
+}
+
+
+void CurveTool::onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos)
+{
+    if (is_called_before == false)
+    {
+        plug::Vec2d canvas_size = active_canvas_->getSize ();
+        plot.create (canvas_size.x, canvas_size.y);
+            
+        const RenderTexture &r_texture = plot.getRenderTexture ();
+        plug::Texture texture = r_texture.getTexture ();
+
+        init_vertices (texture);
+
+        (active_canvas_)->draw (vertices_, texture);
+        is_called_before = true;
+        return;
+    }
+
+    last_point_idx = plot.contains (pos);
+    printf ("pos = %lf %lf\n", pos.x, pos.y);
+
+    if (last_point_idx == -1)
+    {
+        plug::Texture texture = plot.getRenderTexture ().getTexture ();
+        plug::Color color1 = texture.data[(int)(pos.get_x ()) + (int)(pos.get_y ()) * texture.width];
+        plug::Color color2 = texture.data[(int)(pos.get_x () + 1) + (int)(pos.get_y ()) * texture.width];
+        plug::Color color3 = texture.data[(int)(pos.get_x () + 1) + (int)(pos.get_y () + 1) * texture.width];
+        if ((color1.r == 255 && color1.g == 255 && color1.b == 255) &&
+            (color2.r == 255 && color2.g == 255 && color2.b == 255) &&
+            (color3.r == 255 && color3.g == 255 && color3.b == 255))
+            return;
+
+        plug::Vertex new_vertex;
+        new_vertex.position = pos;
+        new_vertex.color = plug::Red;
+        last_point_idx = plot.add_key_point (new_vertex);
+        printf ("new_point %d\n", last_point_idx);
+
+        prev_pos_ = pos;
+    }
+    else 
+    {
+        prev_pos_ = pos;
+        printf ("contains %d\n", last_point_idx);
+    }
+}
+
+void CurveTool::onSecondaryButton    (const plug::ControlState &control_state, const plug::Vec2d &pos)
+{
+
+}
+
+void CurveTool::onModifier1          (const plug::ControlState &control_state)
+{
+
+}
+
+void CurveTool::onModifier2          (const plug::ControlState &control_state)
+{
+
+}
+
+void CurveTool::onModifier3          (const plug::ControlState &control_state)
+{
+
+}
+
+void CurveTool::onMove                (const plug::Vec2d &pos)
+{
+    if (last_point_idx < 0)
+        return;
+    
+    printf ("pos = %lf %lf\n", pos.x, pos.y);
+
+    plug::Vertex new_vertex;
+    new_vertex.position = pos;
+    new_vertex.color = plug::Red;
+    plot.change_key_point (last_point_idx, new_vertex);
+
+    plug::Vec2d canvas_size = active_canvas_->getSize ();
+            
+    const RenderTexture &r_texture = plot.getRenderTexture ();
+
+    plug::Texture texture = r_texture.getTexture ();
+
+    (active_canvas_)->draw (vertices_, texture);
+}
+
+void CurveTool::onConfirm             ()
+{
+    printf ("onConfirm\n");
+    plug::Vec2d canvas_size = active_canvas_->getSize ();
+            
+    const RenderTexture &r_texture = plot.getRenderTexture ();
+
+    plug::Texture texture = r_texture.getTexture ();
+
+    (active_canvas_)->draw (vertices_, texture);
+    filter->applyCurveFilter (*active_canvas_, plot);
+}
+
+void CurveTool::onCancel              ()
+{
+    printf ("onCancel\n");
+}
+
+void CurveTool::init_vertices (plug::Texture &texture)
+{
+    vertices_[0].position = plug::Vec2d (0, 0);
+    vertices_[1].position = plug::Vec2d (0, texture.height);
+    vertices_[2].position = plug::Vec2d (texture.width, texture.height);
+    vertices_[3].position = plug::Vec2d (texture.width, 0);
+
+    vertices_[0].color = plug::White;
+    vertices_[1].color = plug::White;
+    vertices_[2].color = plug::White;
+    vertices_[3].color = plug::White;
+    
+    vertices_[0].tex_coords = plug::Vec2d (0, 0);
+    vertices_[1].tex_coords = plug::Vec2d (0, texture.height - 1);
+    vertices_[2].tex_coords = plug::Vec2d (texture.width - 1, texture.height - 1);
+    vertices_[3].tex_coords = plug::Vec2d (texture.width - 1, 0);
+}
+

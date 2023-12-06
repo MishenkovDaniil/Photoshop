@@ -16,6 +16,8 @@
 #include "../../graphics/circleshape/circleshape.h"
 #include "../../graphics/rectangleshape/rectangleshape.h"
 
+#include "../../graphics/curve_plot.h"
+#include "../filter/filter.h"
 #include "../plugin_data.h"
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
@@ -41,7 +43,7 @@ protected:
     plug::ColorPalette *color_palette_ = nullptr;
     plug::Canvas *active_canvas_ = nullptr;
     size_t ref_num_ = 0;
-    MishenkovPluginData plugin_data_;
+    MDNPluginData plugin_data_;
 
 public:
     Tool (const char *name, const char *texture_path) : plugin_data_ (name, texture_path) {};
@@ -242,7 +244,37 @@ public:
     void onMove                (const plug::Vec2d &pos) override;
     void onConfirm             () override;
     void onCancel              () override;
+    plug::Widget *getWidget    () override 
+        {if (rect_tool.getWidget ()) return rect_tool.getWidget ();   return widget_;};
+
     // void on_released_key        () override {if (on_rect_) rect_tool.on_released_key ();};
+};
+
+
+class Curve_filter;
+class CurveTool : public Tool 
+{
+    CurvePlot plot;
+    Curve_filter *filter = nullptr;
+    plug::Vec2d prev_pos_ = plug::Vec2d (-1, -1);
+    bool is_called_before = false;
+    int last_point_idx = -1;
+    plug::VertexArray vertices_ = plug::VertexArray (plug::Quads, 4);
+public:
+    CurveTool ();
+    ~CurveTool ();
+
+    void onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos) override;
+    void onSecondaryButton    (const plug::ControlState &control_state, const plug::Vec2d &pos) override;
+    void onModifier1          (const plug::ControlState &control_state) override;
+    void onModifier2          (const plug::ControlState &control_state) override;
+    void onModifier3          (const plug::ControlState &control_state) override;
+
+    void onMove                (const plug::Vec2d &pos) override;
+    void onConfirm             () override;
+    void onCancel              () override;
+private:
+    void init_vertices (plug::Texture &texture);
 };
 
 #endif /* TOOLS_H */
