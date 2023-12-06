@@ -6,7 +6,6 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
-#include <SFML/Graphics.hpp>
 
 static const double PI = 3.14;
 
@@ -35,10 +34,6 @@ namespace plug
 
                 return *this;
             }
-        
-        operator sf::Vector2f() const {return sf::Vector2f (x, y);};
-        operator sf::Vector2i() const {return sf::Vector2i (x, y);};
-        operator sf::Vector2u() const {return sf::Vector2u (x, y);};
     };
 
 
@@ -140,6 +135,9 @@ namespace plug
     inline Vec2d normalize (const Vec2d &vec)
     {
         double module = sqrt (vec.x * vec.x + vec.y * vec.y);
+        printf ("module = %lf\n", module);
+        printf ("x = %lf\n", vec.x / module);
+        printf ("y = %lf\n", vec.y / module);
 
         return plug::Vec2d (vec.x / module, vec.y / module);
     };
