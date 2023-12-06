@@ -2,10 +2,10 @@
 
 extern "C" plug::Plugin *loadPlugin (size_t type)
 {
-    return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? new White_black_filter : nullptr;
+    return ((plug::PluginGuid)type == plug::PluginGuid::Filter) ? new Saturation_filter : nullptr;
 }
 
-void White_black_filter::applyFilter (plug::Canvas &canvas) const
+void Saturation_filter::applyFilter (plug::Canvas &canvas) const
 {
     const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
 
@@ -19,8 +19,10 @@ void White_black_filter::applyFilter (plug::Canvas &canvas) const
         if (filter_mask->getPixel(idx % width, idx / width))
         {
             plug::Color prev_color = canvas.getPixel (idx % width, idx / width);
-            double new_color_val = (LUMA_R_PARAM * prev_color.r + LUMA_G_PARAM * prev_color.g + LUMA_B_PARAM * prev_color.b);
-            plug::Color new_color (new_color_val, new_color_val, new_color_val);
+            plug::Color new_color (prev_color.r, prev_color.g, prev_color.b);
+            Hsl_color hsl_color = rgb_to_hsl (new_color);
+            hsl_color.saturation_ = std::max (MINIMUM_SATURATION_VAL, std::min (hsl_color.saturation_ + (double)(delta_saturation_ / 100.0), 1.0));
+            new_color = hsl_to_rgb (hsl_color);
             canvas.setPixel (idx % width, idx / width, new_color);
         }
     }
