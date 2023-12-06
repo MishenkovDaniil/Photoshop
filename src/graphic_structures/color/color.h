@@ -6,38 +6,33 @@
 
 namespace plug
 {
-    class Color
+    class Color 
     {
     public:
-        union
-        {
-            uint8_t r = 0;
-            uint8_t red;
-        };
-        union
-        {
-            uint8_t g = 0;
-            uint8_t green;
-        };
-        union
-        {
-            uint8_t b = 0;
-            uint8_t blue;
-        };
-        union
-        {
-            uint8_t a = 0;
-            uint8_t alpha;
-        };
+    Color(void) : Color(255, 255, 255, 255) {}
 
-    public:
-        Color () {};
-        Color (uint8_t r_val, uint8_t g_val, uint8_t b_val, uint8_t a_val = 0xff) : r (r_val), g (g_val), b (b_val), a (a_val) {};
+    Color(uint8_t red_, uint8_t green_, uint8_t blue_, uint8_t alpha_ = 255)
+        : red(red_), green(green_), blue(blue_), alpha(alpha_) {}
 
-        Color operator *  (double mult) const;
-        Color operator +  (const Color &color) const;
-        Color operator += (const Color &color);
-        Color operator = (const Color &color);
+    union {
+        uint8_t red; /*!< Red channel value 0 to 255 inclusive */
+        uint8_t r;   /*!< Red channer value 0 to 255 inclusive */
+    };
+
+    union {
+        uint8_t green; /*!< Green channel value 0 to 255 inclusive */
+        uint8_t g;     /*!< Green channel value 0 to 255 inclusive */
+    };
+
+    union {
+        uint8_t blue; /*!< Blue channel value 0 to 255 inclusive */
+        uint8_t b;    /*!< Blue channel value 0 to 255 inclusive */
+    };
+
+    union {
+        uint8_t alpha; /*!< Alpha channel value 0 to 255 inclusive */
+        uint8_t a;     /*!< Alpha channel value 0 to 255 inclusive */
+    };
     };
 
     static const Color Transparent  = Color (0, 0, 0, 0);
