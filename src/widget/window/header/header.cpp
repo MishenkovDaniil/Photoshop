@@ -6,7 +6,8 @@ Header::Header (plug::Vec2d lh_pos, int width, const char *string, Window *windo
     width_ (width),
     parent_window_ (window),
     background_color (background), 
-    close_button (new Button (plug::Vec2d (width - HEADER_HEIGHT, 0), HEADER_HEIGHT, HEADER_HEIGHT, close_window, window, nullptr, plug::Red, PRESS_BUTTON))
+    close_button (new Texture_button (plug::Vec2d (width - HEADER_HEIGHT, 0), HEADER_HEIGHT, HEADER_HEIGHT, 
+                                      CLOSE_BUTTON_SPRITE, CLOSE_BUTTON_SPRITE, close_window, window, nullptr, PRESS_BUTTON))
 {
     layout_ = new Default_layout_box (lh_pos, plug::Vec2d (width, HEADER_HEIGHT));
     assert (layout_);
@@ -67,7 +68,6 @@ void Header::draw (plug::TransformStack &transform_stack, plug::RenderTarget &ta
     transform_stack.leave ();
 }
 
-
 void Header::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     // plug::Transform tr (layout_->getPosition ());
@@ -90,7 +90,6 @@ void Header::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EH
 {
     if (close_button->covers (ehc.stack, event.pos))
     {
-        printf ("on release\n");
         close_button->onMouseReleased (event, ehc);
         return;
     }
@@ -139,10 +138,8 @@ bool close_window (void *widget, void *arg)
     Window *window = (Window *)widget;
     if (window)
     {
-        printf ("delete window\n");
         delete window;
         window = nullptr;
-        printf ("return\n");
         return true;
     }
     return false;

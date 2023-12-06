@@ -16,6 +16,8 @@
 
 static const int HEADER_HEIGHT       = 30;
 static const int CHARACTER_SIZE      = 20;
+static const char *CLOSE_BUTTON_PATH = "resources/imgs/close.png";
+static Sprite CLOSE_BUTTON_SPRITE = Sprite (CLOSE_BUTTON_PATH);
 
 class Window;
 class Button;
