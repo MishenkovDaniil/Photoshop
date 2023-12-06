@@ -27,10 +27,11 @@ public:
     bool rm   (int num);
     bool pop  ();
     T    top () const;
+    void insert (size_t idx, T &val);
 
     int get_size () const {return size_;};
     int get_capacity () const {return capacity_;};
-    T operator [] (size_t num) const {return arr_[num];};
+    T &operator [] (size_t num) const {return arr_[num];};
 
 private:
     bool recalloc ();
@@ -127,6 +128,26 @@ template <typename T> bool M_vector<T>::pop ()
 
     arr_[--size_] = EMPTY;
     return true;
+}
+
+template <typename T> void M_vector<T>::insert (size_t idx, T &val)
+{
+    assert (arr_);
+    assert (idx <= size_);
+
+    if (!arr_)
+    {
+        fprintf (stderr, "Error: failed to pop array elem, array = [%p].\n", arr_);
+        return;
+    }
+
+    for (int i = size_; i >= idx && i >= 0; --i)
+    {
+        arr_[i + 1] = arr_[i];
+    }
+    
+    arr_[idx] = val;
+    size_++;
 }
 
 template <typename T> T M_vector<T>::top () const
