@@ -2,9 +2,12 @@
 #ifndef WIDGET_MANAGER_H
 #define WIDGET_MANAGER_H
 
+#include <SFML/Graphics.hpp>
+
 #include "../widget.h"
 #include "../../list.h"
 #include "../../vector.h"
+
 static const int INIT_WIDGETS_CAPACITY = 10;
 
 class Widget_manager

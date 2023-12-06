@@ -41,38 +41,44 @@ void Widget_manager::draw (plug::RenderTarget &target)
 void Widget_manager::onEvent (sf::Event *event, double delta_time)
 {
     plug::EHC ehc = {transform_stack_, false, false};
+    
+    static bool shift = false;
+    static bool control = false;
+    static bool alt = false;
+
     if (event)
     {
         sf::Event cur_event = *event;
-        // printf ("event\n");
+
         switch (cur_event.type)
         {
             case sf::Event::KeyPressed:
             {
-                // printf ("KeyPressed\n");
+                plug::KeyboardPressedEvent key_event ((plug::KeyCode)cur_event.key.code, cur_event.key.shift, cur_event.key.control, cur_event.key.alt);
 
-                plug::KeyboardPressedEvent key_event ((plug::KeyCode)cur_event.key.code, false, false, false);
-                // key_event.key_id = (plug::KeyCode)cur_event.key.code;
-                
+                shift = cur_event.key.shift;
+                control = cur_event.key.control;
+                alt = cur_event.key.alt;
+
                 onKeyboardPressed (key_event, ehc);
                 break;
             }
             case sf::Event::KeyReleased:
             {
-                // printf ("KeyReleased\n");
-                plug::KeyboardReleasedEvent key_event ((plug::KeyCode)cur_event.key.code, false, false, false);
-                // key_event.key_id = (plug::KeyCode)cur_event.key.code;
-                
+                plug::KeyboardReleasedEvent key_event ((plug::KeyCode)cur_event.key.code, cur_event.key.shift, cur_event.key.control, cur_event.key.alt);
+
+                shift = cur_event.key.shift;
+                control = cur_event.key.control;
+                alt = cur_event.key.alt;
+
                 onKeyboardReleased (key_event, ehc);
                 break;
             }
             case sf::Event::MouseButtonPressed:
             {
-                // printf ("MouseButtonPressed\n");
                 plug::Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
                 
-                plug::MousePressedEvent mouse_event ((plug::MouseButton)event->mouseButton.button, pos, false, false, false);
-                // mouse_event.pos = pos;
+                plug::MousePressedEvent mouse_event ((plug::MouseButton)event->mouseButton.button, pos, shift, control, alt);
                 
                 onMousePressed (mouse_event, ehc);
 
@@ -80,22 +86,18 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
             }
             case sf::Event::MouseButtonReleased:
             {
-                // printf ("MouseButtonReleased\n");
                 plug::Vec2d pos (cur_event.mouseButton.x, cur_event.mouseButton.y);
                 
-                plug::MouseReleasedEvent mouse_event ((plug::MouseButton)event->mouseButton.button, pos, false, false, false);
-                // mouse_event.pos = pos;
+                plug::MouseReleasedEvent mouse_event ((plug::MouseButton)event->mouseButton.button, pos, shift, control, alt);
                 
                 onMouseReleased (mouse_event, ehc);
                 break;
             }
             case sf::Event::MouseMoved:
             {
-                // printf ("MouseMoved\n");
                 plug::Vec2d pos (cur_event.mouseMove.x, cur_event.mouseMove.y);
 
-                plug::MouseMoveEvent mouse_event (pos, false, false, false);
-                // mouse_event.pos = pos;
+                plug::MouseMoveEvent mouse_event (pos, shift, control, alt);
                 
                 onMouseMove (mouse_event, ehc);
                 break;
@@ -108,7 +110,6 @@ void Widget_manager::onEvent (sf::Event *event, double delta_time)
         }
     }
     plug::TickEvent tick_event  (delta_time);
-    // tick_event.delta_time = delta_time;
     ehc.overlapped = ehc.stopped = false;
     onTick (tick_event, ehc);
 }
