@@ -1,8 +1,6 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#include <SFML/Graphics.hpp>
-
 #include "../graphic_structures/vector/vector.h"
 #include "../vector.h"
 #include "layout/layout.h"
@@ -14,7 +12,7 @@
 
 class TransformStack : public plug::TransformStack
 {
-    M_vector<plug::Transform> transform_stack = M_vector<plug::Transform> (plug::Transform (-1, -1));
+    M_vector<plug::Transform> transform_stack = M_vector<plug::Transform> (plug::Transform (plug::Vec2d (-1, -1), plug::Vec2d (-1, -1)));
 public:
     ~TransformStack () = default;
     void enter (const plug::Transform &transform) override;
