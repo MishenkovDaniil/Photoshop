@@ -16,6 +16,7 @@ class Default_layout_box : public plug::LayoutBox
 public:
     Default_layout_box ();
     Default_layout_box (plug::Vec2d relative_pos, plug::Vec2d relative_size);
+    Default_layout_box (const Default_layout_box &other);
     ~Default_layout_box () = default;
 
     void onParentUpdate   (const plug::LayoutBox &parent_layout) override;
