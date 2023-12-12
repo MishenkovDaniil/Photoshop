@@ -24,9 +24,9 @@ void Clock::draw (plug::TransformStack &transform_stack, plug::RenderTarget &tar
     plug::Transform unite = tr.combine (transform_stack.top ());
     plug::Vec2d lh_pos = unite.getOffset ();
 
-    sprintf (hrs, "%d", (int)hours_);
-    sprintf (min, "%d", (int)minutes_);
-    sprintf (sec, "%d", (int)seconds_);
+    sprint_time_val (hrs, hours_);
+    sprint_time_val (min, minutes_);
+    sprint_time_val (sec, seconds_);
     sprintf (time_string, "%s:%s:%s", hrs, min, sec);
     
     Text text;
@@ -43,6 +43,18 @@ void Clock::draw (plug::TransformStack &transform_stack, plug::RenderTarget &tar
     // target.draw (button);
     ((RenderTexture &)target).draw (text);
 }   
+
+void sprint_time_val (char *hrs, const int val)
+{
+    int shift = 0;
+    if (val < 10)
+    {
+        sprintf (hrs, "0");
+        shift++;
+    }
+    sprintf (hrs + shift, "%d", val);
+}
+
 
 void Clock::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {

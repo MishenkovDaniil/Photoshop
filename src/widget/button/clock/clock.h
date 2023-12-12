@@ -35,4 +35,7 @@ public:
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 };
 
+void sprint_time_val (char *hrs, const int val);
+
+
 #endif /* PLUG_CLOCK_H */
