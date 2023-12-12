@@ -14,20 +14,27 @@
 #include "widget/widget.h"
 #include "widget/widget_manager/widget_manager.h"
 #include "widget/window/canvas/canvas.h"
+#include "widget/window/curve_window/curve_window.h"
 #include "widget/window/menu/menu.h"
 #include "widget/window/window.h"
 #include "vector.h"
 
 #include "standard/standard.h"
+// файл с именами плагинов
+// рекурсивный поиск плагинов по папке (с ограничением)
 
 static const char *FILTER_PATHS[]   = 
-     {
+    {
         "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/test_filter.so",
         "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so"
-     };
+        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
+        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
+        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so"
+    };
 static const char *TOOL_PATHS[]     = 
-    {"/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/rect_tool/rectTool.so"};
+    {
+        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/SelectionTool/SelectionTool.so"
+    };
 
 static const char *LOAD_PLUGIN_FUNC = "loadPlugin";
 
@@ -37,15 +44,29 @@ static const char *brush_img  = "resources/imgs/brush.png";
 static const char *circle_img = "resources/imgs/circle.png";
 static const char *rect_img   = "resources/imgs/rect.png";
 static const char *text_img   = "resources/imgs/text.png";
+// static const char *TOOL_IMGS[] = {line_img, fill_img, brush_img, circle_img, rect_img, text_img};
 
 static const int FULL_SCREEN_WIDTH          = 1920;
 static const int FULL_SCREEN_HEIGHT         = 1080;
 static const int LIGHT_DELTA_CHANGE         = 5;
 static const int SATURATION_DELTA_CHANGE    = 5;
 
-typedef plug::Plugin *(loadPluginFunc) (size_t type);
+struct ButtonImg 
+{
+    Sprite *pressed_ = nullptr;
+    Sprite *released_ = nullptr;
+
+    ButtonImg (Sprite *pressed, Sprite *released) : pressed_ (pressed), released_ (released) {};
+    ~ButtonImg () = default;
+};
+
+typedef plug::Plugin *(loadPluginFunc) ();
 
 bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, Master_window &m_window, Tool_palette &palette);
+void clean_filters (M_vector<plug::Filter *> &filters, List_button &filter_list);
+bool fill_tools (M_vector<plug::Tool *> &tools, M_vector<ButtonImg *> &button_imgs, Tool_palette &palette);
+bool fill_tool_buttons (const M_vector<plug::Tool *> &tools, const M_vector<ButtonImg *> &button_imgs, Button_palette &button_palette, Master_window &main_window);
+bool fill_color_buttons (M_vector<plug::Color> &colors, Button_palette &button_palette, Master_window &main_window);
 
 plug::Filter *getFilter (const char *plugin_path);
 plug::Tool   *getTool   (const char *plugin_path);
@@ -74,8 +95,8 @@ int main ()
     widget_manager.add_widget (&main_window);
     widget_manager.add_widget (&clock_button);
 
-    Window *child_window  = new Window (600, 600, plug::Vec2d (200, 200), "window_1");
-    Window *child_window_2 = new Window (600, 600, plug::Vec2d (600, 600), "window_2");
+    Window *child_window    = new Window (600, 600, plug::Vec2d (200, 200), "window_1");
+    Window *child_window_2  = new Window (600, 600, plug::Vec2d (600, 600), "window_2");
     main_window.add_window (child_window);
     main_window.add_window (child_window_2);
 
@@ -92,149 +113,32 @@ int main ()
 
     clock_button.change_time (time_info->tm_sec, time_info->tm_min, time_info->tm_hour);
     
-    class Brush brush_tool; 
-    Line line_tool; 
-    Circle_shape circle_tool; 
-    Rect_shape rect_tool; 
-    Fill fill_tool; 
-    Text_tool text_tool;
-    plug::Tool *loaded_tool = getTool (TOOL_PATHS[0]);
+    M_vector<plug::Tool *> tools (nullptr);
+    M_vector<ButtonImg *> button_imgs (nullptr);
+    M_vector<plug::Color> colors (plug::Color (0, 0, 0));
 
-    palette.add_tool (&brush_tool);
-    palette.add_tool (&line_tool);
-    palette.add_tool (&circle_tool);
-    palette.add_tool (&rect_tool);
-    palette.add_tool (&fill_tool);
-    palette.add_tool (&text_tool);
-    palette.add_tool (loaded_tool);
-
+    colors.add (plug::Red);
+    colors.add (plug::Blue);
+    colors.add (plug::Green);
+    colors.add (plug::White);
+    colors.add (plug::Black);
+    colors.add (plug::Cyan);
+    colors.add (plug::Purple);
+    colors.add (plug::Yellow);
+    colors.add (plug::Brown);
+    colors.add (plug::Maroon);
+    
     Button_palette button_palette (plug::Vec2d (1650, 50), 200, 200, &palette); 
+    
+    fill_tools (tools, button_imgs, palette);
+    fill_tool_buttons (tools, button_imgs, button_palette, main_window);
+    fill_color_buttons (colors, button_palette, main_window);
 
-    // String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
-    // List_button filters_list (&filter_button);
-    
     M_vector<plug::Filter *> filters (nullptr);
-    String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
-    
+    String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);    
     List_button filter_buttons_list (&filter_button);
-    
     fill_filters (filters, filter_buttons_list, main_window, palette);
 
-    // String_button curves_button (plug::Vec2d (110, 0), 60, 20, "Curves", plug::Purple, plug::Purple, curves_func, &main_window, nullptr);
-    // Light_filter light_incr (LIGHT_DELTA_CHANGE);
-    // Light_filter light_decr (-LIGHT_DELTA_CHANGE);
-    // // Saturation_filter saturation_incr (SATURATION_DELTA_CHANGE);
-    // // Saturation_filter saturation_decr (-SATURATION_DELTA_CHANGE);
-    // Curve_filter curves (&curves_button);
-    // White_black_filter black_white;
-    // plug::Filter *loaded_filter = getFilter (FILTER_PATHS[0]);  
-
-    // Filter_tool light_incr_tool (&light_incr);
-    // Filter_tool light_decr_tool (&light_decr);
-    // // Filter_tool saturation_incr_tool (&saturation_incr);
-    // // Filter_tool saturation_decr_tool (&saturation_decr);
-    // Filter_tool curve_filter_tool (&curves);
-    // Filter_tool black_white_tool (&black_white);
-    // Filter_tool loaded_filter_tool (loaded_filter);
-
-    Sprite circle_pressed_texture;
-    Sprite  brush_pressed_texture;
-    Sprite   text_pressed_texture;
-    Sprite   rect_pressed_texture;
-    Sprite   line_pressed_texture;
-    Sprite   fill_pressed_texture;
-    Sprite circle_released_texture;
-    Sprite  brush_released_texture;
-    Sprite   rect_released_texture;
-    Sprite   text_released_texture;
-    Sprite   line_released_texture;
-    Sprite   fill_released_texture;
-
-    circle_released_texture.loadFromFile (circle_img);
-     brush_released_texture.loadFromFile (brush_img);
-      line_released_texture.loadFromFile (line_img);
-      fill_released_texture.loadFromFile (fill_img);
-      rect_released_texture.loadFromFile (rect_img);
-      text_released_texture.loadFromFile (text_img);
-     circle_pressed_texture.loadFromFile (circle_img);
-      brush_pressed_texture.loadFromFile (brush_img);
-       line_pressed_texture.loadFromFile (line_img);
-       text_pressed_texture.loadFromFile (text_img);
-       rect_pressed_texture.loadFromFile (rect_img);
-       fill_pressed_texture.loadFromFile (fill_img);
-
-    // Pair light_incr_args      = Pair((void *)&palette, &light_incr_tool);
-    // Pair light_decr_args      = Pair((void *)&palette, &light_decr_tool);
-    // // Pair saturation_incr_args = Pair((void *)&palette, &saturation_incr_tool);
-    // // Pair saturation_decr_args = Pair((void *)&palette, &saturation_decr_tool);
-    // // Pair curve_args = Pair((void *)&palette, &curve_tool);
-    // Pair black_white_args     = Pair((void *)&palette, &black_white_tool);
-    // Pair curve_filter_args     = Pair((void *)&palette, &curve_filter_tool);
-    // Pair loaded_filter_args     = Pair((void *)&palette, &loaded_filter_tool);
-    // const char *loaded_filter_name = loaded_filter->getPluginData ()->getName ();
-
-    Button red_button    (plug::Vec2d (0, 160),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Red,    plug::Red,    PRESS_BUTTON);
-    Button blue_button   (plug::Vec2d (20, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Blue,   plug::Blue,   PRESS_BUTTON);
-    Button green_button  (plug::Vec2d (40, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Green,  plug::Green,  PRESS_BUTTON);
-    Button white_button  (plug::Vec2d (60, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::White,  plug::White,  PRESS_BUTTON);
-    Button black_button  (plug::Vec2d (80, 160), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Black,  plug::Black,  PRESS_BUTTON);
-    Button cyan_button   (plug::Vec2d (0, 180),  20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Cyan,   plug::Cyan,   PRESS_BUTTON);
-    Button purple_button (plug::Vec2d (20, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Purple, plug::Purple, PRESS_BUTTON);
-    Button yellow_button (plug::Vec2d (40, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Yellow, plug::Yellow, PRESS_BUTTON);
-    Button brown_button  (plug::Vec2d (60, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Brown,  plug::Brown,  PRESS_BUTTON);
-    Button maroon_button (plug::Vec2d (80, 180), 20, 20, color_button_run_fn, (void *)&main_window, (void *)&plug::Maroon, plug::Maroon, PRESS_BUTTON);
-    
-    Texture_button brush_button  (plug::Vec2d (0, 0),   50, 50, brush_pressed_texture,  brush_released_texture,  tool_run_fn, (void *)&main_window, (void *)&brush_tool,  PRESS_BUTTON);
-    Texture_button line_button   (plug::Vec2d (50, 0),  50, 50, line_pressed_texture,   line_released_texture,   tool_run_fn, (void *)&main_window, (void *)&line_tool,   PRESS_BUTTON);
-    Texture_button circle_button (plug::Vec2d (100, 0), 50, 50, circle_pressed_texture, circle_released_texture, tool_run_fn, (void *)&main_window, (void *)&circle_tool, PRESS_BUTTON);
-    Texture_button rect_button   (plug::Vec2d (150, 0), 50, 50, rect_pressed_texture,   rect_released_texture,   tool_run_fn, (void *)&main_window, (void *)&rect_tool,   PRESS_BUTTON);
-    Texture_button fill_button   (plug::Vec2d (0, 50),  50, 50, fill_released_texture,  fill_released_texture,   tool_run_fn, (void *)&main_window, (void *)&fill_tool,   PRESS_BUTTON);
-    Texture_button text_button   (plug::Vec2d (50, 50), 50, 50, text_released_texture,  text_released_texture,   tool_run_fn, (void *)&main_window, (void *)&text_tool,   PRESS_BUTTON);
-    Texture_button loaded_tool_button   (plug::Vec2d (100, 50), 50, 50, rect_pressed_texture,  rect_pressed_texture,   tool_run_fn, (void *)&main_window, (void *)loaded_tool,   PRESS_BUTTON);
-    
-    // String_button light_incr_tool_button      (plug::Vec2d (0, 0),   60, 20, "light++",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_incr_args,        PRESS_BUTTON);
-    // String_button light_decr_tool_button      (plug::Vec2d (60, 0),  60, 20, "light--",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&light_decr_args,        PRESS_BUTTON);
-    // // String_button saturation_incr_tool_button (plug::Vec2d (120, 0), 60, 20, "satur++",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_incr_args,   PRESS_BUTTON);
-    // // String_button saturation_decr_tool_button (plug::Vec2d (180, 0), 60, 20, "satur--",     plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&saturation_decr_args,   PRESS_BUTTON);
-    // // String_button curve_tool_button           (plug::Vec2d (240, 0), 60, 20, "curves",      plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&curve_args,             PRESS_BUTTON);
-    // String_button black_white_tool_button     (plug::Vec2d (120, 0), 60, 20, "black-white", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&black_white_args,       PRESS_BUTTON);
-    // String_button curve_tool_button           (plug::Vec2d (180, 0), 60, 20, "curves", plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&curve_filter_args,       PRESS_BUTTON);
-    // String_button loaded_filter_tool_button   (plug::Vec2d (240, 0), 60, 20, loaded_filter_name,      plug::Purple, plug::Purple, tool_run_fn, (void *)&main_window, (void *)&loaded_filter_args,     PRESS_BUTTON);
-    
-    // main_window.add_menu_button (&filter_tool_button);
-    // String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
-    // List_button filters (&filter_button);
-    
-
-    // filter_buttons_list.add_button (&light_incr_tool_button);
-    // filter_buttons_list.add_button (&light_decr_tool_button);
-    // // filter_buttons_list.add_button (&saturation_incr_tool_button);
-    // // filter_buttons_list.add_button (&saturation_decr_tool_button);
-    // filter_buttons_list.add_button (&curve_tool_button);
-    // filter_buttons_list.add_button (&black_white_tool_button);
-    // filter_buttons_list.add_button (&loaded_filter_tool_button);
-
-    main_window.add_menu_button (&filter_buttons_list);
-    
-    button_palette.add_tool_button (&brush_button);
-    button_palette.add_tool_button (&line_button);
-    button_palette.add_tool_button (&circle_button);
-    button_palette.add_tool_button (&rect_button);
-    button_palette.add_tool_button (&fill_button);
-    button_palette.add_tool_button (&text_button);
-    button_palette.add_tool_button (&loaded_tool_button);
-    
-    button_palette.add_tool_button (&red_button);
-    button_palette.add_tool_button (&blue_button);
-    button_palette.add_tool_button (&green_button);
-    button_palette.add_tool_button (&white_button);
-    button_palette.add_tool_button (&black_button);
-    button_palette.add_tool_button (&cyan_button);
-    button_palette.add_tool_button (&purple_button);
-    button_palette.add_tool_button (&yellow_button);
-    button_palette.add_tool_button (&brown_button);
-    button_palette.add_tool_button (&maroon_button);
-        
     widget_manager.add_widget (&button_palette);
     
     String_button file_button (plug::Vec2d (0, 0), 50, 20, "File", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);
@@ -243,6 +147,7 @@ int main ()
     List_button file_list (&file_button);
     file_list.add_button (&save_button);
     main_window.add_menu_button (&file_list);
+    main_window.add_menu_button (&filter_buttons_list);
 
     //Button (pos + plug::Vec2d (0, 30), 50, 20, (Button_run_fn)tool_button_act, (void *)tool_palette, (void *)tool, Color (255, 0, 0, 255))
     //this button in run func just changes current tool in tool_palette to tool; ()it's one for all tool buttons;
@@ -258,7 +163,7 @@ int main ()
                 window.close();
                 break;
             }
-
+            
             float delta_time = clock.getElapsedTime ().asSeconds();
             widget_manager.onEvent (&event, delta_clock + delta_time);
             delta_clock = clock.getElapsedTime ().asSeconds() - delta_time;
@@ -285,6 +190,8 @@ int main ()
             status = false;
         }
     }
+    
+    clean_filters (filters, filter_buttons_list);
 
     return 0;
 }
@@ -317,7 +224,6 @@ bool save_file (void *widget, void *arg)
     return true;//status
 }
 
-
 bool curves_func (void *widget, void *arg)
 {
     Master_window *m_window = (Master_window *)widget;
@@ -329,8 +235,9 @@ bool curves_func (void *widget, void *arg)
     CurveTool *curve_tool = new CurveTool (curve_filter, active_canvas);
     curve_palette->add_tool (curve_tool);
 
-    Window *curve_window = new Window (522, 552, m_window->getLayoutBox ().getSize () / 2, "Curves", false, curve_palette);
+    CurveWindow *curve_window = new CurveWindow (562, 592, m_window->getLayoutBox ().getSize () / 2, "Curves", curve_palette, active_canvas, curve_filter, curve_tool);
     m_window->add_window (curve_window);
+
     CanvasView *view = curve_window->get_canvas ();
     assert (view);
     Canvas *canvas = view->getCanvas ();
@@ -381,6 +288,7 @@ bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, 
     
     for (size_t filter_idx = 0; filter_idx < Filter_num; ++filter_idx)
     {
+        filters[filter_idx]->addReference ();
         Filter_tool * cur_filter_tool  = new Filter_tool (filters[filter_idx]);
         assert (cur_filter_tool);
         Pair *cur_args = new Pair ((void *)&palette, cur_filter_tool);
@@ -398,6 +306,99 @@ bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, 
     return true;
 }
 
+bool fill_tools (M_vector<plug::Tool *> &tools, M_vector<ButtonImg *> &button_imgs, Tool_palette &palette)
+{
+    Sprite *brush_sprite_pressed    = new Sprite (brush_img);
+    Sprite *brush_sprite_released   = new Sprite (brush_img);
+    Sprite *line_sprite_pressed     = new Sprite (line_img);
+    Sprite *line_sprite_released    = new Sprite (line_img);
+    Sprite *circle_sprite_pressed   = new Sprite (circle_img);
+    Sprite *circle_sprite_released  = new Sprite (circle_img);
+    Sprite *rect_sprite_pressed     = new Sprite (rect_img);
+    Sprite *rect_sprite_released    = new Sprite (rect_img);
+    Sprite *fill_sprite_pressed     = new Sprite (fill_img);
+    Sprite *fill_sprite_released    = new Sprite (fill_img);
+    Sprite *text_sprite_pressed     = new Sprite (text_img);
+    Sprite *text_sprite_released    = new Sprite (text_img);
+
+    tools.add (new class Brush);
+    tools.add (new Line);
+    tools.add (new Circle_shape);
+    tools.add (new Rect_shape);
+    tools.add (new Fill);
+    tools.add (new Text_tool);
+
+    button_imgs.add (new ButtonImg (brush_sprite_pressed, brush_sprite_released));
+    button_imgs.add (new ButtonImg (line_sprite_pressed, line_sprite_released));
+    button_imgs.add (new ButtonImg (circle_sprite_pressed, circle_sprite_released));
+    button_imgs.add (new ButtonImg (rect_sprite_pressed, rect_sprite_released));
+    button_imgs.add (new ButtonImg (fill_sprite_pressed, fill_sprite_released));
+    button_imgs.add (new ButtonImg (text_sprite_pressed, text_sprite_released));
+
+    size_t load_tool_num = sizeof (TOOL_PATHS) / sizeof (TOOL_PATHS[0]);
+    for (size_t load_tool_idx = 0; load_tool_idx < load_tool_num; ++load_tool_idx)
+    {
+        plug::Tool *loaded_tool = getTool (TOOL_PATHS[load_tool_idx]);
+        if (!loaded_tool)
+            return false;
+        tools.add (loaded_tool);
+    }
+
+    size_t tool_num = tools.get_size ();
+    for (size_t tool_idx = 0; tool_idx < tool_num; ++tool_idx)
+    {
+        palette.add_tool (tools[tool_idx]);
+    }
+
+    return true;
+}
+
+bool fill_tool_buttons (const M_vector<plug::Tool *> &tools, const M_vector<ButtonImg *> &button_imgs, Button_palette &button_palette, Master_window &main_window)
+{
+    plug::Vec2d tool_button_size (50, 50);
+    size_t tools_in_row = button_palette.getLayoutBox ().getSize ().y / tool_button_size.y;
+    plug::Vec2d tool_button_pos;
+
+    for (size_t i = 0; i < tools.get_size (); ++i)
+    {
+        if (button_imgs[i] && button_imgs[i]->pressed_ && button_imgs[i]->released_)
+        {
+            button_palette.add_tool_button (new Texture_button (tool_button_pos, tool_button_size.x, tool_button_size.y, 
+                                                  *(button_imgs[i]->pressed_),  *(button_imgs[i]->released_),  
+                                                  tool_run_fn, (void *)&main_window, (void *)tools[i],  PRESS_BUTTON));
+        }
+        else if (tools[i]->getPluginData () && tools[i]->getPluginData ()->getName ())
+        {
+            button_palette.add_tool_button (new String_button (tool_button_pos, tool_button_size.x, tool_button_size.y, 
+                                                  tools[i]->getPluginData ()->getName (),  plug::Transparent, plug::Transparent, 
+                                                  tool_run_fn, (void *)&main_window, (void *)tools[i],  PRESS_BUTTON));
+        }
+        else 
+        {
+            return false;
+        }
+        tool_button_pos = (i + 1) % tools_in_row ? tool_button_pos + plug::Vec2d (tool_button_size.x, 0) : plug::Vec2d (0, tool_button_pos.y + tool_button_size.y);
+    }
+
+    return true;
+}
+
+bool fill_color_buttons (M_vector<plug::Color> &colors, Button_palette &button_palette, Master_window &main_window)
+{
+    plug::Vec2d color_button_size (20, 20);
+    size_t colors_in_row = 5;
+    plug::Vec2d color_button_pos (0, 160);
+    size_t color_num = colors.get_size ();
+
+    for (size_t idx = 0; idx < color_num; ++idx)
+    {
+        button_palette.add_tool_button (new Button (color_button_pos, color_button_size.x, color_button_size.y, color_button_run_fn, &main_window, &(colors[idx]), colors[idx], PRESS_BUTTON));
+        color_button_pos = (idx + 1) % colors_in_row ? color_button_pos + plug::Vec2d (color_button_size.x, 0) : plug::Vec2d (0, color_button_pos.y + color_button_size.y);
+    }
+
+    return true;
+}
+
 void clean_filters (M_vector<plug::Filter *> &filters, List_button &filter_list)
 {
     const size_t Filter_num = filters.get_size ();
@@ -405,13 +406,16 @@ void clean_filters (M_vector<plug::Filter *> &filters, List_button &filter_list)
     for (size_t filter_idx = 0; filter_idx < Filter_num; ++filter_idx)
     {
         Button *button = filter_list.buttons_[filter_idx];
-        Pair *args = (Pair *)button->get_arg ();
-        Filter_tool *filter_tool  = (Filter_tool *)args->arg_2;
+        Pair *args = (Pair *)(button->get_arg ());
+        Filter_tool *filter_tool  = (Filter_tool *)(args->arg_2);
 
         delete filter_tool;
         delete args;
         delete button;
-        delete filters[filter_idx];
+        filters[filter_idx]->release ();
+    }
+    for (size_t filter_idx = 0; filter_idx < Filter_num; ++filter_idx)
+    {
         filters.pop ();
         filter_list.buttons_.pop ();
     }
@@ -419,6 +423,8 @@ void clean_filters (M_vector<plug::Filter *> &filters, List_button &filter_list)
 
 plug::Filter *getFilter (const char *plugin_path)
 {
+    assert (plugin_path);
+
     void *dll_start = dlopen (plugin_path, RTLD_NOW | RTLD_NODELETE | RTLD_LOCAL);
     
     if (is_dl_error ())
@@ -435,7 +441,7 @@ plug::Filter *getFilter (const char *plugin_path)
         return nullptr;
     } 
 
-    plug::Filter *plugin = (plug::Filter *)plugin_func ((size_t)plug::PluginGuid::Filter);
+    plug::Filter *plugin = (plug::Filter *)plugin_func ();
     
     dlclose (dll_start);
     return plugin;
@@ -459,7 +465,7 @@ plug::Tool *getTool (const char *plugin_path)
         return nullptr;
     } 
 
-    plug::Tool *plugin = (plug::Tool *)plugin_func ((size_t)plug::PluginGuid::Tool);
+    plug::Tool *plugin = (plug::Tool *)plugin_func ();
     
     dlclose (dll_start);
     return plugin;
