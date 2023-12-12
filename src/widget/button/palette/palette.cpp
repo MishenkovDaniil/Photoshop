@@ -126,7 +126,8 @@ bool tool_run_fn (void *widget, void *args)
 
     Tool_palette *palette = (Tool_palette *)args_->arg_1;
     plug::Tool *new_active_tool = (plug::Tool *)args_->arg_2;
-    assert (palette && new_active_tool);
+    assert (palette);
+    assert (new_active_tool);
 
     if (!is_init)
     {

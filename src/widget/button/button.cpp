@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cassert>
-#include <SFML/Graphics.hpp>
 
 #include "button.h"
 #include "../../graphics/rendertexture/rendertexture.h"
@@ -75,9 +74,9 @@ void Button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC
 
 void Button::onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc)
 {
-    plug::Transform tr (layout_->getPosition ());
-    plug::Transform unite = tr.combine (ehc.stack.top ());
-    plug::Vec2d pos_ = unite.apply (event.pos);
+    // plug::Transform tr (layout_->getPosition ());
+    // plug::Transform unite = tr.combine (ehc.stack.top ());
+    // plug::Vec2d pos_ = unite.apply (event.pos);
 
     if (covers (ehc.stack, event.pos))
     {
@@ -133,7 +132,7 @@ void Button::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 
 Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, plug::Texture &pressed, plug::Texture &released, 
                                 Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
-    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask)
+    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (0, 0, 0), run_mask)
     // ,
     // pressed_texture_ (pressed),
     // released_texture_ (released) 
@@ -148,7 +147,7 @@ Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, pl
 
 Texture_button::Texture_button (plug::Vec2d lh_corner, int width, int height, Sprite &pressed, Sprite &released, 
                                 Button_run_fn func, void *controlled_widget, void *arg, int run_mask) : 
-    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (), run_mask)
+    Button (lh_corner, width, height, func, controlled_widget, arg, plug::Color (0, 0, 0), run_mask)
 {
     pressed_sprite_ = &pressed;
     released_sprite_ = &released;
@@ -269,7 +268,6 @@ void String_button::draw (plug::TransformStack &transform_stack, plug::RenderTar
     transform_stack.leave ();
 }
 
-
 void String_button::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
     Button::onMousePressed (event, ehc);
@@ -299,7 +297,6 @@ void String_button::onKeyboardReleased (const plug::KeyboardReleasedEvent &event
     Button::onKeyboardReleased (event, ehc);
     cur_color_ = is_pressed_ ? &pressed_color_ : &released_color_;
 }
-
 
 
 List_button::List_button (Button *list_button) :
@@ -334,7 +331,6 @@ void List_button::add_button (Button *button)
     
     buttons_.add (button);
 }
-
 
 void List_button::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {

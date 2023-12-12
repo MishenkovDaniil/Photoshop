@@ -2,7 +2,8 @@
 #define BUTTON_H
 
 
-#include <SFML/Graphics.hpp>
+// #include <SFML/Graphics.hpp>
+#include <cstring>
 
 #include "../constants.h"
 #include "../widget.h"
@@ -48,7 +49,7 @@ protected:
 
     bool is_pressed_ = false;
     plug::Vec2d press_pos_;
-    plug::Color fill_color_;
+    plug::Color fill_color_ = plug::Color (0, 0, 0);
 
     Button_run_fn run_fn_ = nullptr;
     void *controlled_widget_ = nullptr;
@@ -70,6 +71,7 @@ public:
     int           get_height        ()const {assert (layout_); return layout_->getSize ().get_y ();};
 
     void          set_arg           (void *arg) {arg_ = arg;};
+    void          *get_arg          ()  {return arg_;};
     
     bool run ();
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
@@ -89,9 +91,6 @@ public:
 class Texture_button : public Button
 {
 protected:
-    // SFMLTexture *cur_texture_ = nullptr;
-    // SFMLTexture &pressed_texture_;
-    // SFMLTexture &released_texture_;
     Sprite *pressed_sprite_ = nullptr;
     Sprite *released_sprite_ = nullptr;
     Sprite *cur_sprite_ = nullptr;
@@ -115,8 +114,8 @@ class String_button : public Button
 {
 protected:
     const plug::Color *cur_color_ = nullptr;
-    const plug::Color &pressed_color_;
-    const plug::Color &released_color_;
+    plug::Color pressed_color_;
+    plug::Color released_color_;
     
     char *string_ = nullptr;
     int str_size_ = 0;
@@ -125,6 +124,7 @@ public:
     String_button (plug::Vec2d lh_corner, int width, int height, const char *string, 
                 const plug::Color &pressed_color, const plug::Color &released_color, Button_run_fn func, 
                 void *controlled_widget, void *arg = nullptr, int run_mask = RELEASE_BUTTON);
+    String_button (String_button &other) = default;
     ~String_button ();
 
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
@@ -133,16 +133,34 @@ public:
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
+
+    String_button &operator = (const String_button &other) 
+        {
+            pressed_color_ = other.pressed_color_;
+            pressed_color_ = other.pressed_color_;
+            if (string_)
+                delete[] string_;
+            string_ = new char[strlen (other.string_) + 1];
+            strcpy (string_, other.string_);
+            str_size_ = other.str_size_;
+
+            if (layout_)
+                delete layout_;
+
+            layout_ = other.layout_->clone ();
+
+            return *this;
+        };
 };
 
 class List_button : public Button
 {
     Button *list_button_ = nullptr;
-    M_vector<Button *> buttons_ = M_vector<Button *> (nullptr);
     bool is_open_ = false;
     size_t relative_height_ = 0;
 
 public:
+    M_vector<Button *> buttons_ = M_vector<Button *> (nullptr);
     List_button (Button *list_button);
     ~List_button ();
 
@@ -155,6 +173,8 @@ public:
     void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &ehc) override;
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
+
+    int getSize () const {return buttons_.get_size ();};
 };
 
 #endif /* BUTTON_H */
