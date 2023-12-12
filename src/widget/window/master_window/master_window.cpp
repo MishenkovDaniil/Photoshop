@@ -11,6 +11,16 @@ Master_window::Master_window (int width, int height, plug::Vec2d lh_pos, const c
 Master_window::~Master_window ()
 {
     delete menu_;
+
+    size_t window_list_pos = first_;
+    for (int window_idx = 0; window_idx < windows.size; ++window_idx)
+    {
+        Window *window = (Window *)list_get (&windows, window_list_pos);
+        delete window;
+
+        window_list_pos = windows.elems[window_list_pos].next;
+    }
+
     list_dtor (&windows);
 }
 
@@ -47,6 +57,7 @@ bool Master_window::rm_window (Window *window_to_rm)
             }
 
             list_remove (&windows, window_list_pos);
+
             return true;
         }
         
@@ -54,7 +65,6 @@ bool Master_window::rm_window (Window *window_to_rm)
     }
     return false;
 }
-
 
 void Master_window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) 
 {
