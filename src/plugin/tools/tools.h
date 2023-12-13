@@ -16,13 +16,15 @@
 #include "../../graphics/circleshape/circleshape.h"
 #include "../../graphics/rectangleshape/rectangleshape.h"
 
-#include "../../graphics/curve_plot.h"
+#include "../../graphics/curve_plot/curve_plot.h"
 #include "../filter/filter.h"
 #include "../plugin_data.h"
 
 static const double DEFAULT_CIRCLE_THICKNESS    = 2.0;
 static const double    MIN_CIRCLE_THICKNESS     = 1.0;
 static const double DEFAULT_BRUSH_THICKNESS     = 2.0;
+static const double TEXT_CHARACTER_WIDTH_ = 8.4; //hardcode!!!
+static const double TEXT_CHARACTER_HEIGHT_ = 14;
 
 enum class BrushKeyPointsNum
 {
@@ -39,7 +41,7 @@ class Tool : public plug::Tool
 {    
 protected:
     plug::Widget *widget_ = nullptr;
-    plug::ControlState state_;
+    // plug::ControlState state_;
     plug::ColorPalette *color_palette_ = nullptr;
     plug::Canvas *active_canvas_ = nullptr;
     size_t ref_num_ = 0;
@@ -67,13 +69,13 @@ public:
 
     plug::Widget *getWidget () override {return widget_;};
 
-    virtual plug::Plugin *tryGetInterface (size_t type)     override 
+    virtual plug::Plugin *tryGetInterface (size_t type)     override final
         {return ((plug::PluginGuid)type == plug::PluginGuid::Tool) ? this : nullptr;};	
-    virtual void addReference ()                            override 
+    virtual void addReference ()                            override final
         {++ref_num_;};
-    virtual void release ()                                 override 
+    virtual void release ()                                 override final 
         {if (!(--ref_num_)) delete this;};
-    virtual const plug::PluginData *getPluginData () const  override 
+    virtual const plug::PluginData *getPluginData () const  override final 
         {return &plugin_data_;};
 };
 
@@ -179,8 +181,8 @@ class Fill : public Tool
     plug::Color *pixel_arr_ = nullptr;
     plug::Vec2d size_;
 
-    plug::Color fill_color_;
-    plug::Color cur_color_;
+    plug::Color fill_color_ = plug::Color (0, 0, 0);
+    plug::Color cur_color_ = plug::Color (0, 0, 0);
 
     Sprite draw_sprite_;
 
@@ -255,13 +257,14 @@ class Curve_filter;
 class CurveTool : public Tool 
 {
     CurvePlot plot;
-    Curve_filter *filter = nullptr;
+    const Curve_filter *filter = nullptr;
     plug::Vec2d prev_pos_ = plug::Vec2d (-1, -1);
     bool is_called_before = false;
     int last_point_idx = -1;
     plug::VertexArray vertices_ = plug::VertexArray (plug::Quads, 4);
+    plug::Canvas *filter_canvas_ = nullptr;
 public:
-    CurveTool ();
+    CurveTool (const Curve_filter *filter_, plug::Canvas *filter_canvas);
     ~CurveTool ();
 
     void onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos) override;
@@ -273,6 +276,7 @@ public:
     void onMove                (const plug::Vec2d &pos) override;
     void onConfirm             () override;
     void onCancel              () override;
+    CurvePlot &getPlot () {return plot;};
 private:
     void init_vertices (plug::Texture &texture);
 };
