@@ -9,29 +9,29 @@ namespace plug
     class Color 
     {
     public:
-    Color(void) {};
+    Color(void) : r (255), g (255), b (255), a (255) {};
 
     Color(uint8_t red_, uint8_t green_, uint8_t blue_, uint8_t alpha_ = 255)
         : red(red_), green(green_), blue(blue_), alpha(alpha_) {}
 
     union {
         uint8_t red; /*!< Red channel value 0 to 255 inclusive */
-        uint8_t r = 0;   /*!< Red channer value 0 to 255 inclusive */
+        uint8_t r;   /*!< Red channer value 0 to 255 inclusive */
     };
 
     union {
         uint8_t green; /*!< Green channel value 0 to 255 inclusive */
-        uint8_t g = 0;     /*!< Green channel value 0 to 255 inclusive */
+        uint8_t g;     /*!< Green channel value 0 to 255 inclusive */
     };
 
     union {
         uint8_t blue; /*!< Blue channel value 0 to 255 inclusive */
-        uint8_t b = 0;    /*!< Blue channel value 0 to 255 inclusive */
+        uint8_t b;    /*!< Blue channel value 0 to 255 inclusive */
     };
 
     union {
         uint8_t alpha; /*!< Alpha channel value 0 to 255 inclusive */
-        uint8_t a = 0;     /*!< Alpha channel value 0 to 255 inclusive */
+        uint8_t a;     /*!< Alpha channel value 0 to 255 inclusive */
     };
         Color operator *  (double mult) const;
         Color operator +  (const Color &color) const;
