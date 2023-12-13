@@ -46,7 +46,7 @@ class Canvas : public plug::Canvas
     int width_ = 0;
     int height_ = 0;
 
-    plug::Color color_;
+    plug::Color color_ = plug::Color (0, 0, 0);
 
     IntRect draw_rect_;
     SelectionMask selection;
@@ -124,6 +124,8 @@ public:
     void setDrawRectSize   (int width, int height);
     const plug::SelectionMask &getSelectionMask () {return view.getSelectionMask ();};
     const plug::Texture& getTexture(void) const {return view.getTexture ();};
+    
+    Canvas *getCanvas () {return &view;};
 
     friend bool change_canvas_rect_up_down  (void *window, void *arg);
     friend bool change_canvas_rect_mid      (void *window, void *arg);

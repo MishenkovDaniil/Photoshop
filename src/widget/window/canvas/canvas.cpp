@@ -107,12 +107,6 @@ const plug::Texture& Canvas::getTexture(void) const
     return canvas_img;
 }
 
-// unsigned int Canvas::getNativeHandle(void) const
-// {
-//     //TODO;
-//     return 0;
-// }               
-
 void Canvas::draw (const plug::VertexArray& vertex_array)                        
 {
     // for (size_t idx = 0; idx < vertex_array.getSize (); ++idx)
@@ -227,6 +221,7 @@ void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
+    //  TODO add draw rect to Danya preview 
 
     view.update_texture ();
 
@@ -245,7 +240,9 @@ void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget
             plug::Widget *widget = tool->getWidget ();
             if (widget)
             {
+                // transform_stack.enter (plug::Transform (plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
                 widget->draw (transform_stack, target);
+                // transform_stack.leave ();
             }
         }
     }
@@ -257,8 +254,8 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
 {
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (ehc.stack.top ());
-    
     plug::Vec2d pos_ = unite.apply (event.pos);
+    
     if (!covers (ehc.stack, event.pos))
         return;
     
@@ -275,7 +272,9 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
             // if (tool->get_widget ()->get_layout_box ().getPosition ())
             // transform_stack.enter (unite);
             
+            // ehc.stack.enter (plug::Transform (plug::Vec2d (view.getDrawRect ().getWidth (), view.getDrawRect ().getHeight ())));
             tool->getWidget ()->onEvent (event, ehc);
+            // ehc.stack.leave ();
             bool status = ehc.stopped;
             is_focused = status;
             // transform_stack.leave ();
