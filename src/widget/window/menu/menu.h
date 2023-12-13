@@ -30,7 +30,10 @@ public:
     virtual ~Menu ();
 
     void add_button (Button *button);
-    
+    size_t getButtonNum () {return buttons.get_size ();};
+    virtual Button *popButton () {assert(buttons.get_size ()); Button *button = buttons.top (); buttons.pop ();};
+
+
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
     void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc) override;

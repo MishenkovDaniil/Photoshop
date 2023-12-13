@@ -34,6 +34,7 @@ class Button_palette : public Menu
 public:
     Button_palette (plug::Vec2d lh_pos, int width, int height, Tool_palette *palette);
     ~Button_palette ();
+    Button *popButton () override;
 
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;

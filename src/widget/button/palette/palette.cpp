@@ -81,6 +81,19 @@ void Button_palette::onKeyboardReleased (const plug::KeyboardReleasedEvent &even
     return;
 }
 
+Button *Button_palette::popButton ()
+{
+    assert (buttons.get_size ());
+    Button *tool_button = buttons.top ();
+    assert (tool_button);
+
+    Pair *button_args = (Pair *)tool_button->arg_;
+    tool_button->arg_ = ((Pair *)tool_button->arg_)->arg_2;
+
+    delete button_args;
+    buttons.pop ();
+    return tool_button;
+}
 
 void Button_palette::add_tool_button (Button *tool_button)
 {
