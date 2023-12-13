@@ -7,10 +7,13 @@
 #include "../../widget/window/window.h"
 #include "../../standard/plug_filter.h"
 #include "../../standard/plug_canvas.h"
+#include "../../widget/button/button.h"
 #include "../plugin_data.h"
 
 static const double MIN_SATURATION_VAL = 0.05;
 static const double MIN_LIGHT_VAL = 0.05;
+
+class Master_window;
 
 class Filter : public plug::Filter
 {
@@ -59,13 +62,14 @@ public:
 //     void applyFilter (plug::Canvas &canvas) const override;
 // };
 
+typedef bool (*Curve_func) (void *window, void *arg);
 
 class Curve_filter : public Filter
 {
     Button *curve_manage_button_ = nullptr;
 public:
-    Curve_filter (Button *curve_manage_button) : Filter ( "curves"), curve_manage_button_ (curve_manage_button) {};
-    ~Curve_filter () = default;
+    Curve_filter (Curve_func func, Master_window &window);
+    ~Curve_filter ();
 
     void applyFilter (plug::Canvas &canvas) const override;
     void applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const;

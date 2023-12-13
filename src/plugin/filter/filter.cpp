@@ -73,6 +73,16 @@ void Light_filter::applyFilter (plug::Canvas &canvas) const
 //         }
 //     }
 // }
+Curve_filter::Curve_filter (Curve_func func, Master_window &window) : 
+    Filter ( "curves"),
+    curve_manage_button_ (new Button (plug::Vec2d (), 0, 0, func, &window, nullptr, plug::Transparent)) {};
+
+Curve_filter::~Curve_filter () 
+{
+    if (curve_manage_button_) 
+        delete curve_manage_button_; 
+    curve_manage_button_ = nullptr;
+};
 
 void Curve_filter::applyFilter (plug::Canvas &canvas) const
 {
