@@ -73,7 +73,10 @@ public:
 
     void applyFilter (plug::Canvas &canvas) const override;
     void applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const;
+private:
+    int find_component (uint8_t &val, int component[256], CurvePlot &plot) const;
 };
+
 
 class White_black_filter : public Filter
 {

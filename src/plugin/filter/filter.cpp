@@ -93,40 +93,60 @@ void Curve_filter::applyFilter (plug::Canvas &canvas) const
 
 void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const
 {  
-    unsigned int width  = canvas.getSize ().x;
-    unsigned int height = canvas.getSize ().y;
+    // unsigned int canvas_width  = canvas.getSize ().x;
+    // unsigned int canvas_height = canvas.getSize ().y;
+    // printf ("canvas_width = %u, canvas_height = %u\n", canvas_width, canvas_height);
     
     const plug::Texture &texture_img = canvas.getTexture ();
     const plug::Texture &curve_texture = plot.getRenderTexture ().getTexture ();
+
+    unsigned int width  = texture_img.width;
+    unsigned int height = texture_img.height;
+    
+    // printf ("width = %u, height = %u\n", width, height);
+
+    IntRect prev_rect = ((Canvas &)canvas).getDrawRect ();
+
+    ((Canvas &)canvas).setDrawRectOffset (0, 0);
 
     unsigned int curve_width  = plot.getSize ().x;
     unsigned int curve_height = plot.getSize ().y;
     
     plug::Vec2d curve_scale = plot.getScale ();
 
-    int color_table[256];
+    int r_color_table[256];
+    int g_color_table[256];
+    int b_color_table[256];
+    
     for (int i = 0; i < 256; ++i)
     {
-        color_table[i] = -1;
+        r_color_table[i] = g_color_table[i] = b_color_table[i] = -1;
     }
+
     for (int idx = 0; idx < width * height; ++idx)
     {
         plug::Color prev_color = canvas.getPixel (idx % width, idx / width);
-        plug::Color new_color  = prev_color;
-        int new_red = -1;
         
-        if (color_table[prev_color.r] == -1)
-        {
-            new_red = color_table[prev_color.r] = plot.getValue (prev_color.r);
-        }
-        else
-        {
-            new_red = color_table[prev_color.r];
-        }
+        uint8_t new_red     = find_component (prev_color.r, r_color_table, plot);
+        uint8_t new_green   = find_component (prev_color.g, g_color_table, plot);
+        uint8_t new_blue    = find_component (prev_color.b, b_color_table, plot);
 
-        new_color.r = new_red;
+        plug::Color new_color  (new_red, new_green, new_blue);
+
         canvas.setPixel (idx % width, idx / width, new_color);
     }
+
+    ((Canvas &)canvas).setDrawRectOffset (prev_rect.getLeftCorner (), prev_rect.getTopCorner ());
+}
+
+int Curve_filter::find_component (uint8_t &val, int component[256], CurvePlot &plot) const
+{
+    if (component[val] == -1)
+    {
+        return component[val] = plot.getValue (val);
+    }
+
+    return component[val];
 }
 
 void White_black_filter::applyFilter (plug::Canvas &canvas) const
