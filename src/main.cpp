@@ -25,7 +25,7 @@
 
 static const char *FILTER_PATHS[]   = 
     {
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/test_filter.so",
+        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
         "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
         "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
         "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
@@ -64,6 +64,7 @@ typedef plug::Plugin *(loadPluginFunc) ();
 
 bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, Master_window &m_window, Tool_palette &palette);
 void clean_filters (M_vector<plug::Filter *> &filters, List_button &filter_list);
+void clean_tool (M_vector<plug::Tool *> &tools, M_vector<ButtonImg *> &button_imgs, Tool_palette &palette, Button_palette &button_palette);
 bool fill_tools (M_vector<plug::Tool *> &tools, M_vector<ButtonImg *> &button_imgs, Tool_palette &palette);
 bool fill_tool_buttons (const M_vector<plug::Tool *> &tools, const M_vector<ButtonImg *> &button_imgs, Button_palette &button_palette, Master_window &main_window);
 bool fill_color_buttons (M_vector<plug::Color> &colors, Button_palette &button_palette, Master_window &main_window);
@@ -191,7 +192,11 @@ int main ()
         }
     }
     
+
+    delete child_window;
+    delete child_window_2;
     clean_filters (filters, filter_buttons_list);
+    clean_tool (tools, button_imgs, palette, button_palette);
 
     return 0;
 }
@@ -256,13 +261,11 @@ bool curves_func (void *widget, void *arg)
 
 bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, Master_window &main_window, Tool_palette &palette)
 {
-    String_button *curves_button = new String_button (plug::Vec2d (110, 0), 60, 20, "Curves", plug::Purple, plug::Purple, curves_func, &main_window, nullptr);
-    
     plug::Filter *my_filter = new Light_filter (LIGHT_DELTA_CHANGE);
     filters.add (my_filter);
                   my_filter = new Light_filter (-LIGHT_DELTA_CHANGE);
     filters.add (my_filter);
-                  my_filter = new Curve_filter (curves_button);
+                  my_filter = new Curve_filter (curves_func, main_window);
     filters.add (my_filter);
                   my_filter = new White_black_filter;
     filters.add (my_filter);
@@ -381,6 +384,50 @@ bool fill_tool_buttons (const M_vector<plug::Tool *> &tools, const M_vector<Butt
     }
 
     return true;
+}
+
+void clean_tool (M_vector<plug::Tool *> &tools, M_vector<ButtonImg *> &button_imgs, Tool_palette &palette, Button_palette &button_palette)
+{
+    size_t tool_button_num = button_palette.getButtonNum ();
+    for (size_t tool_button_idx = 0; tool_button_idx < tool_button_num; ++tool_button_idx)
+    {
+        delete button_palette.popButton ();
+    }
+
+    size_t img_num = button_imgs.get_size ();
+    for (size_t img_idx= 0; img_idx < img_num; ++img_idx)
+    {
+        ButtonImg *img = button_imgs.top ();
+        assert (img);
+        assert (img->pressed_ && img->released_);
+
+        if (img->pressed_ == img->released_)
+        {
+            delete img->pressed_;
+        }
+        else 
+        {
+            delete img->pressed_;
+            delete img->released_;
+        }
+
+        img->pressed_ = img->released_;
+        delete img;
+        img = nullptr;
+
+        button_imgs.pop ();
+    }
+
+    size_t tool_num = tools.get_size ();
+    for (size_t tool_idx= 0; tool_idx < tool_num; ++tool_idx)
+    {
+        plug::Tool *tool = tools.top ();
+        assert (tool);
+
+        delete tool;
+        tool = nullptr;
+        tools.pop ();
+    }
 }
 
 bool fill_color_buttons (M_vector<plug::Color> &colors, Button_palette &button_palette, Master_window &main_window)
