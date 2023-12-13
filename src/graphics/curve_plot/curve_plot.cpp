@@ -123,7 +123,7 @@ void CurvePlot::update_texture ()
 
 void CurvePlot::draw_neutral ()
 {
-    draw_line (plug::Vec2d (0, 0), plug::Vec2d (width_, height_), plug::Color (150, 150, 150));
+    draw_line (plug::Vec2d (0, 0), plug::Vec2d (width_, height_), plug::Color (100, 100, 100));
 }
 
 void CurvePlot::draw_coords ()
@@ -132,16 +132,16 @@ void CurvePlot::draw_coords ()
     draw_vector (plug::Vec2d (0, 0), plug::Vec2d (width_, 0));
 
     size_t x = 0;
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < line_num; ++i)
     {
-        x += width_ / 4;
+        x += width_ / line_num;
         draw_line (plug::Vec2d (x, 0), plug::Vec2d (x, height_), plug::Color (200, 200, 200));
     }
 
     size_t y = 0;
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < line_num; ++i)
     {
-        y += height_ / 4;
+        y += height_ / line_num;
         draw_line (plug::Vec2d (0, y), plug::Vec2d (width_, y), plug::Color (200, 200, 200));
     }
 }

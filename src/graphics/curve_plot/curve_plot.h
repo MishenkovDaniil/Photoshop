@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-#include "../graphic_structures/vector/vector.h"
-#include "../graphic_structures/color/color.h"
-#include "rendertexture/rendertexture.h"
-#include "../standard/standard.h"
-#include "../vector.h"
+#include "../../graphic_structures/vector/vector.h"
+#include "../../graphic_structures/color/color.h"
+#include "../rendertexture/rendertexture.h"
+#include "../../standard/standard.h"
+#include "../../vector.h"
 
 static const plug::Vec2d DEFAULT_CURVE_SIZE = plug::Vec2d (256 * 2, 256 * 2);
 
@@ -33,6 +33,7 @@ class CurvePlot
 {
     size_t width_ = DEFAULT_CURVE_SIZE.x;
     size_t height_ = DEFAULT_CURVE_SIZE.y;
+    size_t line_num = 8;
     
     M_vector<plug::Vertex> key_vertices_ = M_vector<plug::Vertex> (plug::Vertex ());    
 
