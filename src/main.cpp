@@ -98,6 +98,11 @@ int main ()
 
     Window *child_window    = new Window (600, 600, plug::Vec2d (200, 200), "window_1");
     Window *child_window_2  = new Window (600, 600, plug::Vec2d (600, 600), "window_2");
+    sf::Image image;
+    image.loadFromFile ("resources/imgs/photoshop_default_img.jpg");
+    plug::Texture default_canvas_img (image.getSize ().x, image.getSize ().y, (plug::Color *)image.getPixelsPtr ());
+
+    child_window->setCanvasImage (default_canvas_img);
     main_window.add_window (child_window);
     main_window.add_window (child_window_2);
 
