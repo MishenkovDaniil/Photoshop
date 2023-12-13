@@ -29,7 +29,7 @@ class Header : public Widget
     int str_len = 0;
     
     const char *font_file_ = DEFAULT_FONT_FILE;
-    plug::Color background_color;
+    plug::Color background_color = plug::Color (0, 0, 0);
     Window *parent_window_ = nullptr;
     
     bool is_moving_ = false;

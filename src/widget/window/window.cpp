@@ -59,7 +59,7 @@ void Window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &ta
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     RectangleShape rect (plug::Vec2d (width_, height_));
-    rect.setFillColor (plug::Color (0, 0,0,0));
+    rect.setFillColor (plug::Color (0, 0, 0, 0));
     rect.setOutlineColor (plug::Color (50, 50, 50));
     rect.setOutlineThickness (-1);
     rect.setPosition (lh_pos);
@@ -77,7 +77,6 @@ void Window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &ta
 
     transform_stack.leave ();
 }
-
 
 
 void Window::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)

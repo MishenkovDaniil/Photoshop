@@ -6,9 +6,6 @@
 #include "header/header.h"
 #include "canvas/canvas.h"
 #include "../../plugin/tools/palette/palette.h"
-// #include "scrollbar/scrollbar.h"
-
-/// TODO : FRAME
 
 class CanvasView;
 class Master_window;
@@ -28,7 +25,6 @@ protected:
 
     M_vector<Widget *> contained_widgets;
     Master_window *parent_window_ = nullptr;
-    // Transform transform_;
     
 public:
     Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, bool need_scrollbar = true, Tool_palette *palette = nullptr);
@@ -55,5 +51,3 @@ public:
 };
 
 #endif /* WINDOW_H */
-//TODO:make 2 constructors: one with window parameters only and default canvas and menu parameters (calc by window width and height)
-        //  another with user all parameters

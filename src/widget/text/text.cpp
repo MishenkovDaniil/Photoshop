@@ -120,14 +120,12 @@ void M_text::onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::
     // if (!is_pressed)
     //     return false;
 
-    char sign = convert_key_to_char (event.key_id, latest_key_);
-    latest_key_ = event.key_id;
+    char sign = convert_key_to_char (event, event.key_id);
     if (!sign)
     {
         ehc.stopped = true;
         return;
     }
-
 
     sprintf (buf_ + len_, "%c", sign);
     ++len_;
@@ -161,16 +159,15 @@ void M_text::onTick             (const plug::TickEvent &event, plug::EHC &ehc)
 
 
 
-char M_text::convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_)
+char M_text::convert_key_to_char (const plug::KeyboardPressedEvent &event, plug::KeyCode key)
 {
-    if (latest_key_ == plug::KeyCode::LShift || 
-        latest_key_ == plug::KeyCode::RShift)
-        return convert_key_to_char_shift (key, latest_key_);
+    if (event.shift)
+        return convert_key_to_char_shift (key);
     else 
-        return convert_key_to_char_default (key, latest_key_);
+        return convert_key_to_char_default (key);
 }
 
-char M_text::convert_key_to_char_shift (plug::KeyCode key, plug::KeyCode latest_key_)
+char M_text::convert_key_to_char_shift (plug::KeyCode key)
 {
     if (key >= plug::KeyCode::A && key <= plug::KeyCode::Z)
     {
@@ -231,7 +228,7 @@ char M_text::convert_key_to_char_shift (plug::KeyCode key, plug::KeyCode latest_
     }
 }
 
-char M_text::convert_key_to_char_default (plug::KeyCode key, plug::KeyCode latest_key_)
+char M_text::convert_key_to_char_default (plug::KeyCode key)
 {
     if (key >= plug::KeyCode::A && key <= plug::KeyCode::Z)
     {
@@ -271,13 +268,13 @@ char M_text::convert_key_to_char_default (plug::KeyCode key, plug::KeyCode lates
         }
         default:
         {
-            run_managing_keys (key, latest_key_);    
+            run_managing_keys (key);    
             return 0;
         }
     }
 }
 
-void M_text::run_managing_keys (plug::KeyCode key, plug::KeyCode latest_key_)
+void M_text::run_managing_keys (plug::KeyCode key)
 {
     switch (key)
     {

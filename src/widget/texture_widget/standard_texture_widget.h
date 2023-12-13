@@ -4,6 +4,7 @@
 #define PLUGRENDERTEXTURE_WIDGET_H
 
 #include "../../standard/plug_widget.h"
+#include "../../vector.h"
 
 class PlugRenderTexture : public plug::Widget
 {
@@ -11,10 +12,8 @@ class PlugRenderTexture : public plug::Widget
     M_vector <plug::VertexArray> arrays = M_vector <plug::VertexArray> (plug::VertexArray (plug::Points, 0));
 
 public:
-
-    PlugRenderTexture (int width, int height, plug::Color color)  {};
+    PlugRenderTexture ()  {};
     ~PlugRenderTexture () = default;
-
 
     void onEvent(const plug::Event &event, plug::EHC &context)  {};
     void onParentUpdate(const plug::LayoutBox &parent_box)  {};
@@ -33,7 +32,7 @@ public:
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) {return;};
     
     void draw (plug::VertexArray& array) {arrays.push (array);};
-    void clear (plug::Color color) {while (arrays.get_size ()) arrays.pop ();};
+    void clear () {while (arrays.get_size ()) arrays.pop ();};
 };
 
 #endif /* PLUGRENDERTEXTURE_WIDGET_H */

@@ -26,7 +26,6 @@ class M_text : public Widget
     bool is_filled_ = false;
     size_t cur_height = 0;
     plug::Color  text_color_ = plug::Transparent;
-    plug::KeyCode latest_key_ = plug::KeyCode::Unknown;
 
     size_t cursor_pos = 0;
     Font text_font_;
@@ -49,13 +48,14 @@ public:
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
 private:
-    char convert_key_to_char (plug::KeyCode key, plug::KeyCode latest_key_);
-    char convert_key_to_char_shift (plug::KeyCode key, plug::KeyCode latest_key_);
-    char convert_key_to_char_default (plug::KeyCode key, plug::KeyCode latest_key_);
-    void run_managing_keys (plug::KeyCode key, plug::KeyCode latest_key_);
+    char convert_key_to_char (const plug::KeyboardPressedEvent &event, plug::KeyCode key);
+    char convert_key_to_char_shift (plug::KeyCode key);
+    char convert_key_to_char_default (plug::KeyCode key);
+    void run_managing_keys (plug::KeyCode key);
 
     void check_string ();
     void set_last_symbol (char symbol) {assert (buf_); buf_[len_] = symbol;};
 };
 //add len on picture
+
 #endif /* TEXT_WIDGET_H */
