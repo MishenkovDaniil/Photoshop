@@ -1,9 +1,10 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+#include "../../graphics/curve_plot/curve_plot.h"
 #include "../../widget/widget.h"
 #include "../../widget/window/canvas/canvas.h"
-
+#include "../../widget/window/window.h"
 #include "../../standard/plug_filter.h"
 #include "../../standard/plug_canvas.h"
 #include "../plugin_data.h"
@@ -15,7 +16,7 @@ class Filter : public plug::Filter
 {
     plug::Widget *filter_widget = nullptr;
     size_t ref_num_ = 0;
-    MishenkovPluginData plugin_data_;
+    MDNPluginData plugin_data_;
 
 public:
     Filter (const char *name, const char *texture_path = nullptr) : plugin_data_ (name, texture_path) {};
@@ -47,25 +48,37 @@ public:
     void applyFilter (plug::Canvas &canvas) const override;
 };
 
-class Saturation_filter : public Filter
-{
-    double delta_saturation_ = 0; ///in percent
-public:
-    Saturation_filter (double delta_saturation) :   Filter (((delta_saturation > 0) ? "satur++" : "satur--")), 
-                                                    delta_saturation_ (delta_saturation) {};
-    ~Saturation_filter () = default;
-
-    void applyFilter (plug::Canvas &canvas) const override;
-};
-
-// class White_black_filter : public Filter
+// class Saturation_filter : public Filter
 // {
+//     double delta_saturation_ = 0; ///in percent
 // public:
-//     White_black_filter () {};
-//     ~White_black_filter () = default;
+//     Saturation_filter (double delta_saturation = 10) :   Filter (((delta_saturation > 0) ? "satur++" : "satur--")), 
+//                                                         delta_saturation_ (delta_saturation) {};
+//     ~Saturation_filter () = default;
 
 //     void applyFilter (plug::Canvas &canvas) const override;
 // };
+
+
+class Curve_filter : public Filter
+{
+    Button *curve_manage_button_ = nullptr;
+public:
+    Curve_filter (Button *curve_manage_button) : Filter ( "curves"), curve_manage_button_ (curve_manage_button) {};
+    ~Curve_filter () = default;
+
+    void applyFilter (plug::Canvas &canvas) const override;
+    void applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const;
+};
+
+class White_black_filter : public Filter
+{
+public:
+    White_black_filter () : Filter ("white&black") {};
+    ~White_black_filter () = default;
+
+    void applyFilter (plug::Canvas &canvas) const override;
+};
 
 class Filter_palette 
 {
