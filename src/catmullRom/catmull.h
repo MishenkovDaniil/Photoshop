@@ -1,3 +1,6 @@
+#ifndef CATMULL_ROM_H
+#define CATMULL_ROM_H
+
 #include <iostream>
 #include <cmath>
 
@@ -23,3 +26,5 @@ void catmullRomLeftSplineDraw    (const plug::Vec2d &point_1, const plug::Vec2d 
 void catmullRomLineDraw          (const plug::Vec2d &point_1, const plug::Vec2d &point_2,
                                   double thickness, M_render_texture &widget, 
                                   const plug::Color draw_color, double alpha = 0.5);
+
+#endif /* CATMULL_ROM_H */
