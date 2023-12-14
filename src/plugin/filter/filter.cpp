@@ -94,26 +94,15 @@ void Curve_filter::applyFilter (plug::Canvas &canvas) const
 
 void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const
 {  
-    // unsigned int canvas_width  = canvas.getSize ().x;
-    // unsigned int canvas_height = canvas.getSize ().y;
-    // printf ("canvas_width = %u, canvas_height = %u\n", canvas_width, canvas_height);
-    
     const plug::Texture &texture_img = canvas.getTexture ();
     const plug::Texture &curve_texture = plot.getTexture ();
 
     unsigned int width  = texture_img.width;
     unsigned int height = texture_img.height;
     
-    // printf ("width = %u, height = %u\n", width, height);
-
     IntRect prev_rect = ((Canvas &)canvas).getDrawRect ();
 
     ((Canvas &)canvas).setDrawRectOffset (0, 0);
-
-    unsigned int curve_width  = plot.getSize ().x;
-    unsigned int curve_height = plot.getSize ().y;
-    
-    plug::Vec2d curve_scale = plot.getScale ();
 
     int r_color_table[256];
     int g_color_table[256];
@@ -126,7 +115,7 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
 
     for (int idx = 0; idx < width * height; ++idx)
     {
-        plug::Color prev_color = canvas.getPixel (idx % width, idx / width);
+        plug::Color prev_color = canvas.getPixel(idx % width, idx / width);
         
         uint8_t new_red     = find_component (prev_color.r, r_color_table, plot);
         uint8_t new_green   = find_component (prev_color.g, g_color_table, plot);
@@ -134,7 +123,7 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
 
         plug::Color new_color  (new_red, new_green, new_blue);
 
-        canvas.setPixel (idx % width, idx / width, new_color);
+        canvas.setPixel(idx % width, idx / width, new_color);
     }
 
     ((Canvas &)canvas).setDrawRectOffset (prev_rect.getLeftCorner (), prev_rect.getTopCorner ());
