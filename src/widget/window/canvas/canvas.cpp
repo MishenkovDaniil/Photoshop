@@ -95,13 +95,11 @@ void Canvas::setPixel(size_t x, size_t y, const plug::Color& color)
 
 const plug::Texture& Canvas::getTexture(void) const
 {
-    // plug::Texture texture = canvas_texture.getTexture ();
     if (is_changed_texture)
     {
         plug::Texture texture = canvas_texture.getTexture ();
 
         memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
-        // is_changed_img = false;
     }
 
     return canvas_img;
@@ -125,26 +123,24 @@ void Canvas::update_texture ()
     if (is_changed_img)
     {
         plug::VertexArray vertices (plug::Quads, 4);
+        
+        plug::Vec2d full_size = getFullSize ();
 
         vertices[0].position = plug::Vec2d (0, 0);
-        vertices[1].position = plug::Vec2d (width_, 0);
-        vertices[2].position = plug::Vec2d (width_, height_);
-        vertices[3].position = plug::Vec2d (0, height_);
-        // Sprite sprite (canvas.getTexture ());
-        vertices[0].color = getPixel (0, 0);
-        vertices[1].color = getPixel (width_ - 1, 0);
-        vertices[2].color = getPixel (width_ - 1, height_ - 1);
-        vertices[3].color = getPixel (0, height_ - 1);
+        vertices[1].position = plug::Vec2d (full_size.x, 0);
+        vertices[2].position = plug::Vec2d (full_size.x, full_size.y);
+        vertices[3].position = plug::Vec2d (0, full_size.y);
 
-        // for (int i = 0; i < 4; ++i)
-        // {
-        //     printf ("vertex color = %d %d %d %d\n", vertices[i].color.r, vertices[i].color.g, vertices[i].color.b, vertices[i].color.a);
-        // }
+        vertices[0].color = getPixel (0, 0);
+        vertices[1].color = getPixel (full_size.x - 1, 0);
+        vertices[2].color = getPixel (full_size.x - 1, full_size.y - 1);
+        vertices[3].color = getPixel (0, full_size.y - 1);
 
         vertices[0].tex_coords = plug::Vec2d (0, 0);
-        vertices[1].tex_coords = plug::Vec2d (width_ - 1, 0);
-        vertices[2].tex_coords = plug::Vec2d (width_ - 1, height_ - 1);
-        vertices[3].tex_coords = plug::Vec2d (0, height_ - 1);
+        vertices[1].tex_coords = plug::Vec2d (full_size.x - 1, 0);
+        vertices[2].tex_coords = plug::Vec2d (full_size.x - 1, full_size.y - 1);
+        vertices[3].tex_coords = plug::Vec2d (0, full_size.y - 1);
+       
         canvas_texture.draw (vertices, canvas_img);
         is_changed_img = false;
     }
