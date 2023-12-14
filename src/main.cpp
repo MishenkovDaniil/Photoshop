@@ -259,6 +259,7 @@ bool curves_func (void *widget, void *arg)
     state.state = plug::State::Pressed;
     plug::Vec2d pos;
     curve_tool->onMainButton (state, pos);
+    curve_tool->onConfirm ();
     curve_palette->cur_tool_ = curve_tool;
 
     return true;
