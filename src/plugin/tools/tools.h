@@ -258,9 +258,10 @@ class CurveTool : public Tool
 {
     CurvePlot plot;
     const Curve_filter *filter = nullptr;
-    plug::Vec2d prev_pos_ = plug::Vec2d (-1, -1);
+    
     bool is_called_before = false;
     int last_point_idx = -1;
+
     plug::VertexArray vertices_ = plug::VertexArray (plug::Quads, 4);
     plug::Canvas *filter_canvas_ = nullptr;
 public:

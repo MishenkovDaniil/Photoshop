@@ -3,6 +3,7 @@
 
 plug::Filter *Filter_palette::get_last_filter () 
 {
+
     return last_filter_;
 }
 
@@ -98,7 +99,7 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
     // printf ("canvas_width = %u, canvas_height = %u\n", canvas_width, canvas_height);
     
     const plug::Texture &texture_img = canvas.getTexture ();
-    const plug::Texture &curve_texture = plot.getRenderTexture ().getTexture ();
+    const plug::Texture &curve_texture = plot.getTexture ();
 
     unsigned int width  = texture_img.width;
     unsigned int height = texture_img.height;

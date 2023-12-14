@@ -1,6 +1,7 @@
 #include "curve_plot.h"
 
 CurvePlot::CurvePlot (size_t width, size_t height) : 
+    M_render_texture (width, height),
     plot_img_ (new plug::Texture (width, height))
 {
     assert (plot_img_);
@@ -8,7 +9,8 @@ CurvePlot::CurvePlot (size_t width, size_t height) :
     plug::Vec2d shift ((width - DEFAULT_CURVE_SIZE.x) / 2, (height - DEFAULT_CURVE_SIZE.y) / 2);
     converter = CoordConverter (plug::Vec2d (shift.x, shift.y + height_), width_, height_);
 
-    plot_texture_.create (width, height); init_texture ();
+    // plot_texture_.create (width, height);
+     init_texture ();
 };
 
 void CurvePlot::create (size_t width, size_t height) 
@@ -19,7 +21,8 @@ void CurvePlot::create (size_t width, size_t height)
     plug::Vec2d shift ((width - DEFAULT_CURVE_SIZE.x) / 2, (height - DEFAULT_CURVE_SIZE.y) / 2);
     converter = CoordConverter (plug::Vec2d (shift.x, shift.y + height_), width_, height_);
 
-    plot_texture_.create (width, height); 
+    // plot_texture_.create (width, height); 
+    M_render_texture::create (width, height);
     init_texture ();
 };
 
@@ -97,7 +100,7 @@ void CurvePlot::change_key_point (size_t idx, plug::Vertex &vertex)
 
 void CurvePlot::update_texture ()
 {
-    plot_texture_.clear (plug::White);
+    clear (plug::White);
     draw_neutral ();
     draw_coords ();
 
@@ -109,14 +112,14 @@ void CurvePlot::update_texture ()
         vertices[i] = key_vertices_[(i + 1) / 2];
     }
 
-    plot_texture_.draw (vertices);
+    draw (vertices);
     
     CircleShape circle (4);
     circle.setFillColor (plug::Red);
     for (int i = 0; i < key_vertices_.get_size (); ++i)
     {
         circle.setPosition (key_vertices_[i].position - plug::Vec2d (4, 4));
-        plot_texture_.draw (circle);
+        draw (circle);
     }
     is_changed_texture = true;
 }
@@ -173,9 +176,9 @@ void CurvePlot::draw_vector (plug::Vec2d coord_start_, plug::Vec2d coord_end_, p
     arrow_l[1].position = arrow_l[0].position + arrow_l_vec;
     arrow_r[1].position = arrow_r[0].position + arrow_r_vec;
 
-    plot_texture_.draw (line);
-    plot_texture_.draw (arrow_l);
-    plot_texture_.draw (arrow_r);
+    draw (line);
+    draw (arrow_l);
+    draw (arrow_r);
 }
 
 void CurvePlot::draw_line (plug::Vec2d coord_start_, plug::Vec2d coord_end_, plug::Color color)
@@ -190,19 +193,20 @@ void CurvePlot::draw_line (plug::Vec2d coord_start_, plug::Vec2d coord_end_, plu
     line[0].position = texture_start;
     line[1].position = texture_end;
 
-    plot_texture_.draw (line);
+    draw (line);
 }
 
 int CurvePlot::getValue (const int val) // x value
 {
     if (is_changed_texture)
     {
-        plot_texture_.getTexture (*plot_img_);
+        texture_.display ();
+        texture_.getTexture (*plot_img_);
         is_changed_texture = false;
     }
     
     plug::Vec2d scale = getScale ();
-    size_t texture_width = plot_texture_.getSize ().x;
+    size_t texture_width = texture_.getSize ().x;
 
     int x = val * scale.x;
 

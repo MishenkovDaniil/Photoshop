@@ -929,6 +929,10 @@ CurveTool::~CurveTool ()
 
 void CurveTool::onMainButton         (const plug::ControlState &control_state, const plug::Vec2d &pos)
 {
+    if (control_state.state != plug::State::Pressed)
+        return;
+    widget_ = &plot;
+    
     if (is_called_before == false)
     {
         plug::Vec2d canvas_size = active_canvas_->getSize ();
@@ -939,7 +943,7 @@ void CurveTool::onMainButton         (const plug::ControlState &control_state, c
 
         init_vertices (texture);
 
-        (active_canvas_)->draw (vertices_, texture);
+        // plot.draw (vertices_, texture);
         is_called_before = true;
         return;
     }
@@ -963,14 +967,6 @@ void CurveTool::onMainButton         (const plug::ControlState &control_state, c
         new_vertex.position = pos;
         new_vertex.color = plug::Red;
         last_point_idx = plot.add_key_point (new_vertex);
-        // printf ("new_point %d\n", last_point_idx);
-
-        prev_pos_ = pos;
-    }
-    else 
-    {
-        prev_pos_ = pos;
-        // printf ("contains %d\n", last_point_idx);
     }
 }
 
@@ -999,38 +995,34 @@ void CurveTool::onMove                (const plug::Vec2d &pos)
     if (last_point_idx < 0)
         return;
     
-    // printf ("pos = %lf %lf\n", pos.x, pos.y);
-
     plug::Vertex new_vertex;
     new_vertex.position = pos;
     new_vertex.color = plug::Red;
     plot.change_key_point (last_point_idx, new_vertex);
 
-    plug::Vec2d canvas_size = active_canvas_->getSize ();
+    // plug::Vec2d canvas_size = active_canvas_->getSize ();
             
-    const RenderTexture &r_texture = plot.getRenderTexture ();
+    // const RenderTexture &r_texture = plot.getRenderTexture ();
 
-    plug::Texture texture = r_texture.getTexture ();
+    // plug::Texture texture = r_texture.getTexture ();
 
-    (active_canvas_)->draw (vertices_, texture);
+    // plot.draw (vertices_, texture);
 }
 
 void CurveTool::onConfirm             ()
 {
-    // printf ("onConfirm\n");
     plug::Vec2d canvas_size = active_canvas_->getSize ();
             
     const RenderTexture &r_texture = plot.getRenderTexture ();
-
     plug::Texture texture = r_texture.getTexture ();
 
-    (active_canvas_)->draw (vertices_, texture);
-    // filter->applyCurveFilter (*filter_canvas_, plot);
+    active_canvas_->draw (vertices_, texture);
+    widget_ = nullptr;
 }
 
 void CurveTool::onCancel              ()
 {
-    // printf ("onCancel\n");
+    widget_ = nullptr;
 }
 
 void CurveTool::init_vertices (plug::Texture &texture)

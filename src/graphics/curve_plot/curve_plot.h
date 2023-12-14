@@ -8,6 +8,7 @@
 #include "../rendertexture/rendertexture.h"
 #include "../../standard/standard.h"
 #include "../../vector.h"
+#include "../../widget/texture_widget/texture_widget.h"
 
 static const plug::Vec2d DEFAULT_CURVE_SIZE = plug::Vec2d (256 * 2, 256 * 2);
 
@@ -29,7 +30,7 @@ public:
     plug::Vec2d getCoordPos     (int x, int y)              {return getCoordPos (plug::Vec2d (x, y));}; ///SFML-only
 };
 
-class CurvePlot 
+class CurvePlot : public M_render_texture
 {
     size_t width_ = DEFAULT_CURVE_SIZE.x;
     size_t height_ = DEFAULT_CURVE_SIZE.y;
@@ -39,7 +40,7 @@ class CurvePlot
 
     bool is_changed_texture = false;
     plug::Texture *plot_img_;
-    RenderTexture plot_texture_;
+    // RenderTexture plot_texture_;
     CoordConverter converter;
 
 public:
@@ -51,7 +52,7 @@ public:
     int contains (const plug::Vec2d &point);
     int add_key_point (plug::Vertex &vertex);
     void change_key_point (size_t idx, plug::Vertex &vertex);
-    const RenderTexture &getRenderTexture () {plot_texture_.display (); return plot_texture_;}; 
+    const RenderTexture &getRenderTexture () {texture_.display (); return texture_;}; 
     plug::Vec2d getSize ()  {return plug::Vec2d (width_, height_);};
     plug::Vec2d getScale () {return plug::Vec2d ((double)width_ / 256.0, (double)height_ / 256.0);};
     int getValue (const int val);
