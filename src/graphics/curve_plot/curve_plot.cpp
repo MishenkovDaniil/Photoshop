@@ -85,10 +85,17 @@ int CurvePlot::add_key_point (plug::Vertex &vertex)
 
 void CurvePlot::change_key_point (size_t idx, plug::Vertex &vertex)
 {
-    if (converter.getCoordPos (key_vertices_[idx].position).x == 0 ||
-        converter.getCoordPos (key_vertices_[idx].position).x == width_)
+    if (idx == 0 || idx == key_vertices_.get_size () - 1)
     {
         vertex.position.x = key_vertices_[idx].position.x;
+    }
+    else if (vertex.position.x < key_vertices_[idx - 1].position.x)
+    {  
+        vertex.position.x = key_vertices_[idx - 1].position.x + 1;
+    }
+    else if (vertex.position.x > key_vertices_[idx + 1].position.x)
+    {  
+        vertex.position.x = key_vertices_[idx + 1].position.x - 1;
     }
 
     vertex.position.y = std::min (converter.getTexturePos (0, 0).y,       vertex.position.y);
