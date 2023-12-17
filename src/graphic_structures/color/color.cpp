@@ -51,3 +51,14 @@ plug::Color plug::Color::operator = (const plug::Color &other)
 
        return *this;   
 }
+
+bool  plug::Color::operator == (const Color &other) const
+{
+       if    (r == other.r &&
+              g == other.g &&
+              b == other.b &&
+              a == other.a)
+              return true;
+
+       return false;
+}

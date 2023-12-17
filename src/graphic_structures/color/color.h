@@ -37,6 +37,7 @@ namespace plug
         Color operator +  (const Color &color) const;
         Color operator += (const Color &color);
         Color operator = (const Color &color);
+        bool  operator == (const Color &color) const;
     };
 
     static const Color Transparent  = Color (0, 0, 0, 0);
