@@ -81,24 +81,40 @@ Curve_filter::Curve_filter (Curve_func func, Master_window &window) :
 Curve_filter::~Curve_filter () 
 {
     if (curve_manage_button_) 
+    {
         delete curve_manage_button_; 
-    curve_manage_button_ = nullptr;
+        curve_manage_button_ = nullptr;
+    }
+
+    if (active_texture)
+    {
+        delete active_texture;
+        active_texture = nullptr;
+    }
 };
 
 void Curve_filter::applyFilter (plug::Canvas &canvas) const
 {
     assert (curve_manage_button_);
+    
+    if (active_texture)
+    {
+        delete active_texture;
+        active_texture = nullptr;
+    }
+    active_texture = new plug::Texture (canvas.getTexture ());
+    assert (active_texture);
+
     curve_manage_button_->set_arg (new std::pair<void *, void *>(&canvas, (void *)this));
     curve_manage_button_->run ();
 }
 
 void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const
 {  
-    const plug::Texture &texture_img = canvas.getTexture ();
     const plug::Texture &curve_texture = plot.getTexture ();
 
-    unsigned int width  = texture_img.width;
-    unsigned int height = texture_img.height;
+    unsigned int width  = active_texture->width;
+    unsigned int height = active_texture->height;
     
     IntRect prev_rect = ((Canvas &)canvas).getDrawRect ();
 
@@ -115,7 +131,7 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
 
     for (int idx = 0; idx < width * height; ++idx)
     {
-        plug::Color prev_color = canvas.getPixel(idx % width, idx / width);
+        plug::Color prev_color = active_texture->getPixel(idx % width, idx / width);
         
         uint8_t new_red     = find_component (prev_color.r, r_color_table, plot);
         uint8_t new_green   = find_component (prev_color.g, g_color_table, plot);

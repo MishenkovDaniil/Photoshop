@@ -67,6 +67,7 @@ typedef bool (*Curve_func) (void *window, void *arg);
 class Curve_filter : public Filter
 {
     Button *curve_manage_button_ = nullptr;
+    mutable plug::Texture *active_texture = nullptr;
 public:
     Curve_filter (Curve_func func, Master_window &window);
     ~Curve_filter ();
