@@ -49,7 +49,7 @@ public:
     ~CurvePlot () = default;
 
     void create (size_t width, size_t height);
-    
+
     const RenderTexture &getRenderTexture () {texture_.display (); return texture_;}; 
     plug::Vec2d getSize ()  {return plug::Vec2d (width_, height_);};
     plug::Vec2d getScale () {return plug::Vec2d ((double)width_ / 256.0, (double)height_ / 256.0);};
@@ -59,6 +59,8 @@ public:
     int remove_key_point (size_t idx);
     int add_key_point (plug::Vertex &vertex);
     void change_key_point (size_t idx, plug::Vertex &vertex);
+
+    void draw (const Drawable &drawable) override;
 
 private:
     void draw_coords ();

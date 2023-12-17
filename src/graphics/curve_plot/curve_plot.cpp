@@ -229,9 +229,9 @@ void CurvePlot::draw_vector (plug::Vec2d coord_start_, plug::Vec2d coord_end_, p
     arrow_l[1].position = arrow_l[0].position + arrow_l_vec;
     arrow_r[1].position = arrow_r[0].position + arrow_r_vec;
 
-    draw (line);
-    draw (arrow_l);
-    draw (arrow_r);
+    M_render_texture::draw (line);
+    M_render_texture::draw (arrow_l);
+    M_render_texture::draw (arrow_r);
 }
 
 void CurvePlot::draw_line (plug::Vec2d coord_start_, plug::Vec2d coord_end_, plug::Color color)
@@ -246,7 +246,7 @@ void CurvePlot::draw_line (plug::Vec2d coord_start_, plug::Vec2d coord_end_, plu
     line[0].position = texture_start;
     line[1].position = texture_end;
 
-    draw (line);
+    M_render_texture::draw (line);
 }
 
 int CurvePlot::getValue (const int val) // x value
@@ -270,9 +270,39 @@ int CurvePlot::getValue (const int val) // x value
 
         if (color1.r == 255 && color1.g == 0 && color1.b == 0)
         {
+            printf ("val = %d, return %d\n", val, (y + (int)scale.y / 2) / (int)scale.y);
+            assert (val == (y + (int)scale.y / 2) / (int)scale.y);
             return  (y + scale.y / 2) / scale.y;
         }
     }
 
     return 0;
+}
+
+void CurvePlot::draw (const Drawable &drawable)
+{   
+    plug::Vec2d pos = drawable.getPosition ();
+    plug::Vec2d start_pos = converter.getTexturePos(0, 0);
+    plug::Vec2d end_pos = converter.getTexturePos(width_, height_);
+    
+    pos.x = std::max (pos.x, start_pos.x);
+    pos.x = std::min (pos.x, end_pos.x);
+
+    pos.y = std::max (pos.y, end_pos.y);
+    pos.y = std::min (pos.y, start_pos.y);
+
+    if (pos.x != drawable.getPosition ().x || 
+        pos.y != drawable.getPosition ().y)
+    
+    {
+        Drawable *new_drawable = drawable.clone ();
+        new_drawable->setPosition (pos);
+        M_render_texture::draw (*new_drawable);
+
+        delete new_drawable;
+    }
+    else 
+    {
+        M_render_texture::draw (drawable);
+    }
 }
