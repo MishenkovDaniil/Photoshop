@@ -9,6 +9,7 @@
 #include "../../standard/standard.h"
 #include "../../vector.h"
 #include "../../widget/texture_widget/texture_widget.h"
+#include "../../catmullRom/catmull.h"
 
 static const plug::Vec2d DEFAULT_CURVE_SIZE = plug::Vec2d (256 * 2, 256 * 2);
 
@@ -40,7 +41,6 @@ class CurvePlot : public M_render_texture
 
     bool is_changed_texture = false;
     plug::Texture *plot_img_;
-    // RenderTexture plot_texture_;
     CoordConverter converter;
 
 public:
@@ -49,13 +49,16 @@ public:
     ~CurvePlot () = default;
 
     void create (size_t width, size_t height);
-    int contains (const plug::Vec2d &point);
-    int add_key_point (plug::Vertex &vertex);
-    void change_key_point (size_t idx, plug::Vertex &vertex);
+    
     const RenderTexture &getRenderTexture () {texture_.display (); return texture_;}; 
     plug::Vec2d getSize ()  {return plug::Vec2d (width_, height_);};
     plug::Vec2d getScale () {return plug::Vec2d ((double)width_ / 256.0, (double)height_ / 256.0);};
     int getValue (const int val);
+    
+    int contains (const plug::Vec2d &point);
+    int remove_key_point (size_t idx);
+    int add_key_point (plug::Vertex &vertex);
+    void change_key_point (size_t idx, plug::Vertex &vertex);
 
 private:
     void draw_coords ();

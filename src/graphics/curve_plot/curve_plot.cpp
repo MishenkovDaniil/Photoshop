@@ -9,8 +9,7 @@ CurvePlot::CurvePlot (size_t width, size_t height) :
     plug::Vec2d shift ((width - DEFAULT_CURVE_SIZE.x) / 2, (height - DEFAULT_CURVE_SIZE.y) / 2);
     converter = CoordConverter (plug::Vec2d (shift.x, shift.y + height_), width_, height_);
 
-    // plot_texture_.create (width, height);
-     init_texture ();
+    init_texture ();
 };
 
 void CurvePlot::create (size_t width, size_t height) 
@@ -21,7 +20,6 @@ void CurvePlot::create (size_t width, size_t height)
     plug::Vec2d shift ((width - DEFAULT_CURVE_SIZE.x) / 2, (height - DEFAULT_CURVE_SIZE.y) / 2);
     converter = CoordConverter (plug::Vec2d (shift.x, shift.y + height_), width_, height_);
 
-    // plot_texture_.create (width, height); 
     M_render_texture::create (width, height);
     init_texture ();
 };
@@ -54,6 +52,20 @@ int CurvePlot::contains (const plug::Vec2d &point)
     }
 
     return -1;
+}
+
+int CurvePlot::remove_key_point (size_t idx)
+{
+    size_t size = key_vertices_.get_size ();
+
+    if (idx == 0 || idx == size - 1)
+        return size;
+    
+    key_vertices_.erase (idx);
+
+    update_texture ();
+    
+    return key_vertices_.get_size ();
 }
 
 int CurvePlot::add_key_point (plug::Vertex &vertex)
@@ -111,15 +123,49 @@ void CurvePlot::update_texture ()
     draw_neutral ();
     draw_coords ();
 
-    size_t vertex_num = 2 * (key_vertices_.get_size () - 1);
-    plug::VertexArray vertices (plug::Lines, vertex_num);
-    
-    for (int i = 0; i < vertex_num; ++i)
-    {
-        vertices[i] = key_vertices_[(i + 1) / 2];
-    }
+    size_t vertex_num = key_vertices_.get_size ();
 
-    draw (vertices);
+    double thickness = 2;
+    plug::Vec2d offset (thickness, thickness);
+
+    if (vertex_num == 2)
+    {
+        catmullRomLineDraw (key_vertices_[0].position - offset, 
+                            key_vertices_[1].position - offset, 
+                            thickness, *this, plug::Red);
+    }
+    else if (vertex_num == 3)
+    {
+        catmullRomLeftSplineDraw (  key_vertices_[0].position - offset, 
+                                    key_vertices_[1].position - offset, 
+                                    key_vertices_[2].position - offset, 
+                                    thickness, *this, plug::Red);
+        catmullRomRightSplineDraw ( key_vertices_[0].position - offset, 
+                                    key_vertices_[1].position - offset, 
+                                    key_vertices_[2].position - offset, 
+                                    thickness, *this, plug::Red);
+    }
+    else
+    {
+        catmullRomLeftSplineDraw (  key_vertices_[0].position - offset, 
+                                    key_vertices_[1].position - offset, 
+                                    key_vertices_[2].position - offset, 
+                                    thickness, *this, plug::Red);
+
+        for (int i = 0; i < vertex_num - 3; ++i)
+        {
+            catmullRomCentralSplineDraw (   key_vertices_[i + 0].position - offset, 
+                                            key_vertices_[i + 1].position - offset, 
+                                            key_vertices_[i + 2].position - offset, 
+                                            key_vertices_[i + 3].position - offset, 
+                                            thickness, *this, plug::Red);
+        }
+
+        catmullRomRightSplineDraw ( key_vertices_[vertex_num - 3].position - offset, 
+                                    key_vertices_[vertex_num - 2].position - offset, 
+                                    key_vertices_[vertex_num - 1].position - offset, 
+                                    thickness, *this, plug::Red);
+    }
     
     CircleShape circle (4);
     circle.setFillColor (plug::Red);
