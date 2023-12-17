@@ -15,8 +15,11 @@ class Sprite : public Drawable
 public:
     Sprite ();
     Sprite (const plug::Texture &texture);
+    Sprite (const char *path) {drawable = new sf::Sprite; assert (drawable); loadFromFile (path);};
     ~Sprite ();
 
+    Sprite *clone () const override {return nullptr;};
+    
     void setTexture (const plug::Texture &texture);
     void setTextureRect (IntRect &rect);
     void setPosition (const plug::Vec2d pos) override;

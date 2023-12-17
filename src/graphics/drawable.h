@@ -14,6 +14,7 @@ public:
     sf::Drawable *drawable;
     virtual ~Drawable () = default;
 
+    virtual Drawable *clone () const = 0;
     virtual void setPosition (const plug::Vec2d pos) = 0;
     virtual void setPosition (double x, double y) = 0;
     virtual plug::Vec2d getPosition () const = 0;

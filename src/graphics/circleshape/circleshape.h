@@ -9,7 +9,7 @@
 
 
 class CircleShape : public Shape
-{
+{   
 public:
     CircleShape (double radius = 0, size_t point_count = 30);
     ~CircleShape ();
@@ -22,6 +22,7 @@ public:
     void setPosition (plug::Vec2d pos);
     void setScale (const plug::Vec2d factors);
     void setPointCount (size_t point_count);
+    CircleShape *clone () const override;
 
     double getRadius () const;
     plug::Color getFillColor () const;

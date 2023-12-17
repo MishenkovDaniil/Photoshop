@@ -95,3 +95,17 @@ size_t CircleShape::getPointCount () const
     return ((sf::CircleShape *)drawable)->getPointCount ();
 }
 
+
+CircleShape *CircleShape::clone () const
+{
+    CircleShape *circle = new CircleShape (getRadius (), getPointCount ());
+    assert (circle);
+
+    circle->setFillColor (getFillColor ());
+    circle->setScale (getScale ());
+    circle->setPosition (getPosition ());
+    circle->setOutlineColor (getOutlineColor ());
+    circle->setOutlineThickness (getOutlineThickness ());
+
+    return circle;
+};

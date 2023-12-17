@@ -18,6 +18,8 @@ public:
     Text ();
     ~Text ();
 
+    Text *clone () const override {return nullptr;};
+
     void setString (const char *string);
     void setFont (const Font &font);
     void setFillColor (const plug::Color &color);

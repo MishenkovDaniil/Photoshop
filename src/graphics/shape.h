@@ -27,6 +27,8 @@ public:
     virtual void setOutlineThickness (double thickness) = 0;
     virtual void setScale (const plug::Vec2d factors) = 0;
 
+    Shape *clone () const override = 0;
+
     virtual plug::Color getFillColor () const = 0;
     virtual plug::Color getOutlineColor () const = 0;
     virtual double getOutlineThickness () const = 0;
