@@ -8,7 +8,7 @@
 #include "../graphic_structures/color/color.h"
 #include "../widget/texture_widget/texture_widget.h"
 
-static const double CATMULL_ROM_DELTA = 0.01;
+static const double CATMULL_ROM_DELTA = 0.001;
 
 double calcT (const plug::Vec2d &point_1, const plug::Vec2d &point_2, double t, double alpha);
 inline double iterateT (double start, double end, double delta);
