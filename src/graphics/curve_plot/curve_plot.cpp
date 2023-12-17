@@ -270,8 +270,8 @@ int CurvePlot::getValue (const int val) // x value
 
         if (color1.r == 255 && color1.g == 0 && color1.b == 0)
         {
-            printf ("val = %d, return %d\n", val, (y + (int)scale.y / 2) / (int)scale.y);
-            assert (val == (y + (int)scale.y / 2) / (int)scale.y);
+            // printf ("val = %d, return %d\n", val, (y + (int)scale.y / 2) / (int)scale.y);
+            // assert (val == (y + (int)scale.y / 2) / (int)scale.y);
             return  (y + scale.y / 2) / scale.y;
         }
     }
