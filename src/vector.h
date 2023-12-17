@@ -22,17 +22,19 @@ public:
     M_vector (T empty, int capacity = INIT_CAPACITY);
     ~M_vector ();
 
-    bool add  (T &val);
-    bool push (T &val);
+    bool add  (const T &val);
+    bool push (const T &val);
     bool rm   (int num);
     bool pop  ();
     T    top () const;
-    void insert (size_t idx, T &val);
+    void insert (const size_t idx, const T &val);
+    bool erase (size_t idx);
 
     int get_size () const {return size_;};
     int get_capacity () const {return capacity_;};
-    T &operator [] (size_t num) const {return arr_[num];};
-
+    const T &operator [] (size_t num) const {return arr_[num];};
+    T &operator [] (size_t num) {return arr_[num];};
+    
 private:
     bool recalloc ();
 };
@@ -95,7 +97,7 @@ template <typename T> bool M_vector<T>::rm (int rm_idx)
     return true;
 }
 
-template <typename T> bool M_vector<T>::add (T &val)
+template <typename T> bool M_vector<T>::add (const T &val)
 {
     assert (arr_);
 
@@ -109,7 +111,27 @@ template <typename T> bool M_vector<T>::add (T &val)
     return true;
 }
 
-template <typename T> bool M_vector<T>::push (T &val)
+template <typename T> bool M_vector<T>::erase (size_t idx)
+{
+    assert (arr_);
+    assert (idx < size_);
+
+    if (idx >= size_)
+    {
+        return false;
+    }
+
+    for (size_t i = idx; i < size_ - 1; ++i)
+    {
+        arr_[i] = arr_[i + 1];
+    }
+
+    arr_[--size_] = EMPTY;
+
+    return true;
+}
+
+template <typename T> bool M_vector<T>::push (const T &val)
 {
     return add (val);
 }
@@ -130,7 +152,7 @@ template <typename T> bool M_vector<T>::pop ()
     return true;
 }
 
-template <typename T> void M_vector<T>::insert (size_t idx, T &val)
+template <typename T> void M_vector<T>::insert (const size_t idx, const T &val)
 {
     assert (arr_);
     assert (idx <= size_);
