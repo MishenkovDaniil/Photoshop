@@ -282,7 +282,23 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
         control_state.state = plug::State::Pressed;
 
         tool->setActiveCanvas (view);
-        tool->onMainButton (control_state, pos_);
+        switch (event.button_id)
+        {
+            case plug::MouseButton::Left:
+            {
+                tool->onMainButton (control_state, pos_);
+                break;
+            }
+            case plug::MouseButton::Right:
+            {
+                tool->onSecondaryButton (control_state, pos_);
+                break;
+            }
+            default:
+            {
+                return;
+            }
+        }
         is_focused = true;
         ehc.stopped = true;
 
