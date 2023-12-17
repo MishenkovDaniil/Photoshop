@@ -954,8 +954,8 @@ void CurveTool::onMainButton         (const plug::ControlState &control_state, c
     {
         plug::Texture texture = plot.getRenderTexture ().getTexture ();
        
-        plug::Color color1 = texture.data[(int)(pos.get_x ()) + (int)(pos.get_y ()) * texture.width];
-        plug::Color color2 = texture.data[(int)(pos.get_x () + 1) + (int)(pos.get_y ()) * texture.width];
+        plug::Color color1 = texture.data[(int)(pos.get_x ())     + (int)(pos.get_y ())     * texture.width];
+        plug::Color color2 = texture.data[(int)(pos.get_x () + 1) + (int)(pos.get_y ())     * texture.width];
         plug::Color color3 = texture.data[(int)(pos.get_x () + 1) + (int)(pos.get_y () + 1) * texture.width];
        
         if ((color1.r == 255 && color1.g == 255 && color1.b == 255) &&
@@ -966,13 +966,22 @@ void CurveTool::onMainButton         (const plug::ControlState &control_state, c
         plug::Vertex new_vertex;
         new_vertex.position = pos;
         new_vertex.color = plug::Red;
+
         last_point_idx = plot.add_key_point (new_vertex);
     }
 }
 
 void CurveTool::onSecondaryButton    (const plug::ControlState &control_state, const plug::Vec2d &pos)
 {
-
+    if (control_state.state == plug::State::Pressed)
+    {
+        last_point_idx = plot.contains (pos);
+        if (last_point_idx != -1)
+        {
+            plot.remove_key_point (last_point_idx);
+            last_point_idx = -1;
+        }
+    }
 }
 
 void CurveTool::onModifier1          (const plug::ControlState &control_state)
@@ -999,14 +1008,6 @@ void CurveTool::onMove                (const plug::Vec2d &pos)
     new_vertex.position = pos;
     new_vertex.color = plug::Red;
     plot.change_key_point (last_point_idx, new_vertex);
-
-    // plug::Vec2d canvas_size = active_canvas_->getSize ();
-            
-    // const RenderTexture &r_texture = plot.getRenderTexture ();
-
-    // plug::Texture texture = r_texture.getTexture ();
-
-    // plot.draw (vertices_, texture);
 }
 
 void CurveTool::onConfirm             ()
