@@ -23,7 +23,7 @@ Window::Window (int width, int height, plug::Vec2d lh_pos, const char *w_name, b
 
     if (need_scrollbar)
     {
-        scrollbar_ = new Scrollbar (plug::Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->getSize ().y, height - HEADER_HEIGHT, this);
+        scrollbar_ = new Scrollbar (plug::Vec2d (width, HEADER_HEIGHT), height - HEADER_HEIGHT, canvas_->getViewSize ().y, height - HEADER_HEIGHT, this);
         assert (scrollbar_ && "failed to allocate window scrollbar \n");
 
         Widget *scrollbar = scrollbar_;
@@ -51,6 +51,30 @@ Window::~Window ()
         parent_window_->rm_window (this);
     }
 }
+
+void Window::setCanvasImage (plug::Texture &new_texture)
+{
+    plug::VertexArray vertices (plug::Quads, 4);
+    const plug::Texture &texture = canvas_->getCanvas ()->canvas_img;
+
+    
+    vertices[0].position = plug::Vec2d (0, 0);
+    vertices[1].position = plug::Vec2d (0, texture.height);
+    vertices[2].position = plug::Vec2d (texture.width, texture.height);
+    vertices[3].position = plug::Vec2d (texture.width, 0);
+
+    vertices[0].color = plug::White;
+    vertices[1].color = plug::White;
+    vertices[2].color = plug::White;
+    vertices[3].color = plug::White;
+    
+    vertices[0].tex_coords = plug::Vec2d (0, 0);
+    vertices[1].tex_coords = plug::Vec2d (0, new_texture.height - 1);
+    vertices[2].tex_coords = plug::Vec2d (new_texture.width - 1, new_texture.height - 1);
+    vertices[3].tex_coords = plug::Vec2d (new_texture.width - 1, 0);
+    canvas_->getCanvas ()->draw (vertices, new_texture);
+}
+
 
 void Window::draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)
 {

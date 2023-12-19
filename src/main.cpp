@@ -24,17 +24,19 @@
 // рекурсивный поиск плагинов по папке (с ограничением)
 
 static const char *FILTER_PATHS[]   = 
-    {
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so"
-    };
+{
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so"
+};
 static const char *TOOL_PATHS[]     = 
-    {
-        "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/SelectionTool/SelectionTool.so"
-    };
+{
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/SelectionTool/SelectionTool.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/CircleTool/CircleTool.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/LineTool.so"
+};
 
 static const char *LOAD_PLUGIN_FUNC = "loadPlugin";
 
@@ -44,7 +46,6 @@ static const char *brush_img  = "resources/imgs/brush.png";
 static const char *circle_img = "resources/imgs/circle.png";
 static const char *rect_img   = "resources/imgs/rect.png";
 static const char *text_img   = "resources/imgs/text.png";
-// static const char *TOOL_IMGS[] = {line_img, fill_img, brush_img, circle_img, rect_img, text_img};
 
 static const int FULL_SCREEN_WIDTH          = 1920;
 static const int FULL_SCREEN_HEIGHT         = 1080;

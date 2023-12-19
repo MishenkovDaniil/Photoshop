@@ -41,6 +41,7 @@ public:
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
     void set_parent (Master_window *parent_window) {parent_window_ = parent_window;};
+    void setCanvasImage (plug::Texture &new_texture);
 
     friend bool change_canvas_rect_up_down  (void *window,  void *arg);
     friend bool change_canvas_rect_mid      (void *window,  void *arg);

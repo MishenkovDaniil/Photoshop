@@ -197,7 +197,7 @@ bool change_canvas_rect_up_down (void *window_, void *arg)
         case plug::KeyCode::Down:
         {
             top = std::min ((unsigned int)(rect.getTopCorner () + UP_DOWN_CANVAS_CHANGE), 
-                            (unsigned int)(window->canvas_->getFullSize ().y - window->canvas_->getSize ().y));
+                            (unsigned int)(window->canvas_->getSize ().y - window->canvas_->getViewSize ().y));
             break;
         }
         default:
@@ -216,8 +216,8 @@ bool change_canvas_rect_mid (void *window_, void *arg)
     double val = *(double *)arg;
     static double good_top = 0;
 
-    int texture_height = window->canvas_->getFullSize ().y;
-    int real_height = window->canvas_->getSize ().y;
+    int texture_height = window->canvas_->getSize ().y;
+    int real_height = window->canvas_->getViewSize ().y;
 
     IntRect &rect = window->canvas_->getDrawRect ();
 
