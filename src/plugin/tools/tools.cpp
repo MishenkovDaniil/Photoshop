@@ -225,7 +225,7 @@ void Circle_shape::onMainButton         (const plug::ControlState &control_state
     {
         center_ = last_center_ = latest_pos_ = pos;
         
-        plug::Vec2d canvas_size = active_canvas_->getSize ();
+        plug::Vec2d canvas_size = ((Canvas *)active_canvas_)->getSize ();
         widget_ = new M_render_texture (canvas_size.get_x (), canvas_size.get_y (), plug::Transparent);
         assert (widget_);
         
@@ -519,8 +519,6 @@ void Rect_shape::onConfirm             ()
     assert (active_canvas_);
 
     plug::Texture texture = ((M_render_texture *)widget_)->getTexture ();
-
-    plug::Vec2d canvas_size = active_canvas_->getSize ();
     plug::VertexArray vertices (plug::Quads, 4);
     
     vertices[0].position = plug::Vec2d (0, 0);
@@ -540,7 +538,6 @@ void Rect_shape::onConfirm             ()
 
     active_canvas_->draw (vertices, texture);
 
-    // ((Canvas *)active_canvas_)->draw (rect_);
     center_ = last_center_;
     
     delete widget_;
@@ -856,7 +853,7 @@ void Text_tool::onConfirm ()
             (latest_pos_.get_x () > (rect_tool.center_.get_x () + size.get_x ())) || 
             (latest_pos_.get_y () > (rect_tool.center_.get_y () + size.get_y ())))
         {
-            plug::Vec2d canvas_size = active_canvas_->getSize ();
+            plug::Vec2d canvas_size = ((Canvas *)active_canvas_)->getSize ();
             
             TransformStack stack;
 
@@ -935,7 +932,7 @@ void CurveTool::onMainButton         (const plug::ControlState &control_state, c
     
     if (is_called_before == false)
     {
-        plug::Vec2d canvas_size = active_canvas_->getSize ();
+        plug::Vec2d canvas_size = ((Canvas *)active_canvas_)->getViewSize ();
         plot.create (canvas_size.x, canvas_size.y);
             
         const RenderTexture &r_texture = plot.getRenderTexture ();
@@ -1012,7 +1009,7 @@ void CurveTool::onMove                (const plug::Vec2d &pos)
 
 void CurveTool::onConfirm             ()
 {
-    plug::Vec2d canvas_size = active_canvas_->getSize ();
+    plug::Vec2d canvas_size = ((Canvas *)active_canvas_)->getViewSize ();
             
     const RenderTexture &r_texture = plot.getRenderTexture ();
     plug::Texture texture = r_texture.getTexture ();

@@ -3,7 +3,11 @@
 bool SelectionMask::getPixel (size_t x, size_t y) const
 {
     assert (mask && "nullptr filter mask\n");
-    assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
+    if ((x >= width_) || (y >= height_))
+    {
+        return false;
+    }
+    // assert ((x < width_) && (y < height_) && "invalid pixel coord\n");
 
     return mask[x + y * width_];
 }  
@@ -29,7 +33,7 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     width_ (width),
     height_ (height),
     color_ (color),
-    selection (width, height),
+    selection (width, height * 2),
     canvas_img (width, height * 2)
 {
     if (width <= 0 || height <= 0)
@@ -107,11 +111,6 @@ const plug::Texture& Canvas::getTexture(void) const
 
 void Canvas::draw (const plug::VertexArray& vertex_array)                        
 {
-    // for (size_t idx = 0; idx < vertex_array.getSize (); ++idx)
-    // {
-    //     vertex_array[idx].position += plug::Vec2d (draw_rect_.getLeftCorner, draw_rect_.getTopCorner ());
-    // }
-    
     update_texture ();
     canvas_texture.draw (vertex_array, canvas_sprite);
     is_changed_texture = true;
@@ -124,7 +123,7 @@ void Canvas::update_texture ()
     {
         plug::VertexArray vertices (plug::Quads, 4);
         
-        plug::Vec2d full_size = getFullSize ();
+        plug::Vec2d full_size = getSize ();
 
         vertices[0].position = plug::Vec2d (0, 0);
         vertices[1].position = plug::Vec2d (full_size.x, 0);
@@ -183,9 +182,6 @@ void Canvas::draw (Drawable &drawable)
 {
     update_texture ();
 
-    plug::Vec2d real_pos = drawable.getPosition () + plug::Vec2d (draw_rect_.getLeftCorner (), draw_rect_.getTopCorner ());
-    drawable.setPosition (real_pos);
-
     canvas_texture.draw (drawable, canvas_sprite);
     is_changed_texture = true;
 
@@ -236,24 +232,38 @@ void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget
             plug::Widget *widget = tool->getWidget ();
             if (widget)
             {
-                // transform_stack.enter (plug::Transform (plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
-                widget->draw (transform_stack, target);
                 // transform_stack.leave ();
+                // transform_stack.leave ();
+                // transform_stack.enter (plug::Transform (-plug::Vec2d (layout_->getSize ())));
+                transform_stack.enter (plug::Transform (-plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
+                widget->draw (transform_stack, target);
+                transform_stack.leave ();
+                // transform_stack.enter (plug::Transform (layout_->getPosition ()));
+            
             }
         }
-    }
+        // else
+        // {
+        //     transform_stack.leave ();
 
-    transform_stack.leave ();
+        // }
+    }
+    // else
+    // {
+        transform_stack.leave ();
+    // }
 }
 
 void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
 {
+    if (!covers (ehc.stack, event.pos))
+        return;
+
+    ehc.stack.enter (plug::Transform (-plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (ehc.stack.top ());
     plug::Vec2d pos_ = unite.apply (event.pos);
-    
-    if (!covers (ehc.stack, event.pos))
-        return;
+    ehc.stack.leave ();
     
     if (!palette_)
     {
@@ -268,9 +278,8 @@ void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug:
             // if (tool->get_widget ()->get_layout_box ().getPosition ())
             // transform_stack.enter (unite);
             
-            // ehc.stack.enter (plug::Transform (plug::Vec2d (view.getDrawRect ().getWidth (), view.getDrawRect ().getHeight ())));
             tool->getWidget ()->onEvent (event, ehc);
-            // ehc.stack.leave ();
+            
             bool status = ehc.stopped;
             is_focused = status;
             // transform_stack.leave ();
@@ -329,10 +338,12 @@ void CanvasView::onMouseReleased    (const plug::MouseReleasedEvent &event, plug
 
 void CanvasView::onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &ehc)
 {
+    ehc.stack.enter (plug::Transform (-plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
     plug::Transform tr (layout_->getPosition ());
     plug::Transform unite = tr.combine (ehc.stack.top ());
-
     plug::Vec2d pos_ = unite.apply (event.pos);
+
+    ehc.stack.leave ();
 
     if (!(palette_ && is_focused))
         return;

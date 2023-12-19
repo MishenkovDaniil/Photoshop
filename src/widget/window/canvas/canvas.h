@@ -50,10 +50,10 @@ class Canvas : public plug::Canvas
 
     IntRect draw_rect_;
     SelectionMask selection;
-    plug::Texture canvas_img;
     Sprite canvas_sprite;
 
 public:
+    plug::Texture canvas_img;
     bool is_changed_img = false;
     bool is_changed_texture = false;
     RenderTexture canvas_texture;
@@ -63,7 +63,7 @@ public:
     ~Canvas () = default;
 
     plug::Vec2d getSize () const                                                    override 
-        {return plug::Vec2d (width_, height_);};
+        {return canvas_texture.getSize ();};
 
     plug::SelectionMask &getSelectionMask ()                                        override 
         {return selection;};
@@ -77,7 +77,8 @@ public:
     void draw (const plug::VertexArray& vertex_array, const plug::Texture &texture) override;
     void draw (Drawable &drawable);
     
-    plug::Vec2d getFullSize () const {return canvas_texture.getSize ();};
+    // plug::Vec2d getFullSize () const {return canvas_texture.getSize ();};
+    plug::Vec2d getViewSize () const {return plug::Vec2d (width_, height_);};
     IntRect &getDrawRect () {return draw_rect_;};
     void setDrawRectOffset (int left, int top);
     void setDrawRectSize   (int width, int height);
@@ -97,8 +98,8 @@ class CanvasView : public Widget
     Tool_palette *palette_;
     bool is_focused = false;
 
-    Canvas view;
 public: 
+    Canvas view;
     CanvasView (int width, int height, const plug::Color color, const plug::Vec2d lh_pos, Tool_palette *palette = nullptr);
     ~CanvasView ();
 
@@ -116,7 +117,7 @@ public:
     void setLayoutBox (plug::LayoutBox &new_layout) {layout_ = &new_layout;};
 
     plug::Vec2d getSize () const {return view.getSize ();};
-    plug::Vec2d getFullSize () const {return view.getFullSize ();};
+    plug::Vec2d getViewSize () const {return view.getViewSize ();};
     void setSize (const plug::Vec2d &size) {layout_->setSize (size); view.setSize (size);}
 
     IntRect &getDrawRect () {return view.getDrawRect ();};
