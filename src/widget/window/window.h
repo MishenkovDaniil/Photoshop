@@ -31,6 +31,7 @@ public:
     virtual ~Window ();
 
     CanvasView *get_canvas () {return canvas_;};
+    Header *get_header () {return header_;};
 
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)  override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
