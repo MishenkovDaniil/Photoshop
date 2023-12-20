@@ -56,7 +56,7 @@ public:
     plug::Texture canvas_img;
     bool is_changed_img = false;
     bool is_changed_texture = false;
-    RenderTexture canvas_texture;
+    mutable RenderTexture canvas_texture;
 
 public:
     Canvas (int width, int height, const plug::Color color);
@@ -69,7 +69,6 @@ public:
         {return selection;};
     void setSize(const plug::Vec2d &size)                                           override 
         {width_ = size.x; height_ = size.y;};
-    // unsigned int getNativeHandle(void) const                                        override;                
     plug::Color getPixel(size_t x, size_t y) const                                  override;                
     const plug::Texture& getTexture(void) const                                     override;
     void setPixel(size_t x, size_t y, const plug::Color& color)                     override;   
@@ -77,7 +76,6 @@ public:
     void draw (const plug::VertexArray& vertex_array, const plug::Texture &texture) override;
     void draw (Drawable &drawable);
     
-    // plug::Vec2d getFullSize () const {return canvas_texture.getSize ();};
     plug::Vec2d getViewSize () const {return plug::Vec2d (width_, height_);};
     IntRect &getDrawRect () {return draw_rect_;};
     void setDrawRectOffset (int left, int top);

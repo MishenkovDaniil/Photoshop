@@ -52,6 +52,7 @@ Canvas::Canvas (int width, int height, const plug::Color color) :
     canvas_texture.display ();
     
     selection.fill (true); 
+    // canvas_texture.display ();
     plug::Texture texture = canvas_texture.getTexture ();
     memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
 }
@@ -82,17 +83,11 @@ void Canvas::setDrawRectSize   (int width, int height)
 
 plug::Color Canvas::getPixel(size_t x, size_t y) const
 {
-    x += draw_rect_.getLeftCorner ();
-    y += draw_rect_.getTopCorner ();
-
     return canvas_img.data[x + y * width_];
 }
 
 void Canvas::setPixel(size_t x, size_t y, const plug::Color& color)
 {
-    x += draw_rect_.getLeftCorner ();
-    y += draw_rect_.getTopCorner ();
-
     canvas_img.data[x + y * width_] = color;
     is_changed_img = true;
 }
@@ -101,6 +96,7 @@ const plug::Texture& Canvas::getTexture(void) const
 {
     if (is_changed_texture)
     {
+        // canvas_texture.display ();
         plug::Texture texture = canvas_texture.getTexture ();
 
         memcpy (canvas_img.data, texture.data, sizeof (plug::Color) * texture.width * texture.height);
@@ -149,6 +145,7 @@ void Canvas::update_img ()
 {
     if (is_changed_texture)
     {
+        // canvas_texture.display ();
         canvas_texture.getTexture (canvas_img);
         is_changed_texture = false;
     }
@@ -213,7 +210,6 @@ void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget
 {
     transform_stack.enter (plug::Transform (layout_->getPosition ()));
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
-    //  TODO add draw rect to Danya preview 
 
     view.update_texture ();
 
@@ -232,26 +228,13 @@ void CanvasView::draw (plug::TransformStack &transform_stack, plug::RenderTarget
             plug::Widget *widget = tool->getWidget ();
             if (widget)
             {
-                // transform_stack.leave ();
-                // transform_stack.leave ();
-                // transform_stack.enter (plug::Transform (-plug::Vec2d (layout_->getSize ())));
                 transform_stack.enter (plug::Transform (-plug::Vec2d (view.getDrawRect ().getLeftCorner (), view.getDrawRect ().getTopCorner ())));
                 widget->draw (transform_stack, target);
                 transform_stack.leave ();
-                // transform_stack.enter (plug::Transform (layout_->getPosition ()));
-            
             }
         }
-        // else
-        // {
-        //     transform_stack.leave ();
-
-        // }
     }
-    // else
-    // {
-        transform_stack.leave ();
-    // }
+    transform_stack.leave ();
 }
 
 void CanvasView::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &ehc)
