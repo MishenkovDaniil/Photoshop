@@ -111,14 +111,11 @@ void Curve_filter::applyFilter (plug::Canvas &canvas) const
 
 void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const
 {  
+    const plug::SelectionMask *filter_mask = &(canvas.getSelectionMask ());
     const plug::Texture &curve_texture = plot.getTexture ();
 
-    unsigned int width  = active_texture->width;
-    unsigned int height = active_texture->height;
-    
-    IntRect prev_rect = ((Canvas &)canvas).getDrawRect ();
-
-    ((Canvas &)canvas).setDrawRectOffset (0, 0);
+    unsigned int width  = canvas.getSize ().get_x ();
+    unsigned int height = canvas.getSize ().get_y ();
 
     int r_color_table[256];
     int g_color_table[256];
@@ -131,18 +128,19 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
 
     for (int idx = 0; idx < width * height; ++idx)
     {
-        plug::Color prev_color = active_texture->getPixel(idx % width, idx / width);
-        
-        uint8_t new_red     = find_component (prev_color.r, r_color_table, plot);
-        uint8_t new_green   = find_component (prev_color.g, g_color_table, plot);
-        uint8_t new_blue    = find_component (prev_color.b, b_color_table, plot);
+        if (filter_mask->getPixel(idx % width, idx / width))
+        {
+            plug::Color prev_color = active_texture->getPixel(idx % width, idx / width);
+            
+            uint8_t new_red     = find_component (prev_color.r, r_color_table, plot);
+            uint8_t new_green   = find_component (prev_color.g, g_color_table, plot);
+            uint8_t new_blue    = find_component (prev_color.b, b_color_table, plot);
 
-        plug::Color new_color  (new_red, new_green, new_blue);
+            plug::Color new_color  (new_red, new_green, new_blue);
 
-        canvas.setPixel(idx % width, idx / width, new_color);
+            canvas.setPixel(idx % width, idx / width, new_color);
+        }
     }
-
-    ((Canvas &)canvas).setDrawRectOffset (prev_rect.getLeftCorner (), prev_rect.getTopCorner ());
 }
 
 int Curve_filter::find_component (uint8_t &val, int component[256], CurvePlot &plot) const
