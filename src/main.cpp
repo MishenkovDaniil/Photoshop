@@ -25,13 +25,12 @@
 
 static const char *FILTER_PATHS[]   = 
 {
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so",
-    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/edge_detect_filter/edge_detect.so"
-
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/edge_detect_filter/edge_detect.so"
 };
 
 static const char *TOOL_PATHS[]     = 
@@ -145,7 +144,7 @@ int main ()
     fill_color_buttons (colors, button_palette, main_window);
 
     M_vector<plug::Filter *> filters (nullptr);
-    String_button filter_button (plug::Vec2d (50, 0), 60, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);    
+    String_button filter_button (plug::Vec2d (50, 0), 120, 20, "Filters", plug::Purple, plug::Purple, nullptr, nullptr, nullptr);    
     List_button filter_buttons_list (&filter_button);
     fill_filters (filters, filter_buttons_list, main_window, palette);
 
@@ -299,7 +298,7 @@ bool fill_filters (M_vector<plug::Filter *> &filters, List_button &filter_list, 
 
     const size_t Filter_num = filters.get_size ();
     plug::Vec2d pos;
-    plug::Vec2d button_size (60, 20);
+    plug::Vec2d button_size (120, 20);
     
     for (size_t filter_idx = 0; filter_idx < Filter_num; ++filter_idx)
     {
