@@ -55,7 +55,7 @@ class Canvas : public plug::Canvas
 public:
     plug::Texture canvas_img;
     bool is_changed_img = false;
-    bool is_changed_texture = false;
+    mutable bool is_changed_texture = false;
     mutable RenderTexture canvas_texture;
 
 public:
