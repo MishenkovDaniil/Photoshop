@@ -49,6 +49,7 @@ public:
     void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &ehc) override;
     void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &ehc) override;
 
+    bool closeWindow ();
     friend Window;
 };
 

@@ -144,3 +144,8 @@ bool close_window (void *widget, void *arg)
     }
     return false;
 }
+
+bool Header::closeWindow () 
+{
+    return close_button ? close_button->run () : false;
+};
