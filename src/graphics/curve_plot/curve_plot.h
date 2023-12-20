@@ -55,6 +55,8 @@ public:
     plug::Vec2d getScale () {return plug::Vec2d ((double)width_ / 256.0, (double)height_ / 256.0);};
     int getValue (const int val);
     
+    void reset ();
+
     int contains (const plug::Vec2d &point);
     int remove_key_point (size_t idx);
     int add_key_point (plug::Vertex &vertex);

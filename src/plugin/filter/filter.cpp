@@ -143,6 +143,28 @@ void Curve_filter::applyCurveFilter (plug::Canvas &canvas, CurvePlot &plot) cons
     }
 }
 
+void Curve_filter::resetCurveFilter (plug::Canvas &canvas, CurvePlot &plot) const
+{
+    plug::VertexArray array (plug::Quads, 4);
+    array[0].position = plug::Vec2d (0, 0);
+    array[1].position = plug::Vec2d (0, active_texture->height);
+    array[2].position = plug::Vec2d (active_texture->width, active_texture->height);
+    array[3].position = plug::Vec2d (active_texture->width, 0);
+
+    array[0].color = plug::White;
+    array[1].color = plug::White;
+    array[2].color = plug::White;
+    array[3].color = plug::White;
+
+    array[0].tex_coords = plug::Vec2d (0, 0);
+    array[1].tex_coords = plug::Vec2d (0, active_texture->height - 1);
+    array[2].tex_coords = plug::Vec2d (active_texture->width - 1, active_texture->height - 1);
+    array[3].tex_coords = plug::Vec2d (active_texture->width - 1, 0);
+
+    canvas.draw (array, *active_texture);
+}
+
+
 int Curve_filter::find_component (uint8_t &val, int component[256], CurvePlot &plot) const
 {
     if (component[val] == -1)

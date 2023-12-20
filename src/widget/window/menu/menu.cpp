@@ -29,8 +29,8 @@ void Menu::draw (plug::TransformStack &transform_stack, plug::RenderTarget &targ
     plug::Vec2d lh_pos = transform_stack.top ().getOffset ();
 
     RectangleShape rect (plug::Vec2d (width_, height_));
-    rect.setFillColor    (plug::Color (200, 200, 200));
-    rect.setOutlineColor (plug::Color (50, 50, 50));
+    rect.setFillColor    (fill_color_);
+    rect.setOutlineColor (outline_color_);
     rect.setOutlineThickness (-1);
     rect.setPosition (lh_pos + plug::Vec2d (0, -1));
     ((RenderTexture &)target).draw (rect);
@@ -72,6 +72,8 @@ void Menu::onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &
         assert (button);
 
         button->onMousePressed (event, ehc);
+        if (ehc.stopped)
+            break;
     }
 
     ehc.stack.leave ();

@@ -18,7 +18,7 @@
 #include "../../graphics/sprite/sfml_texture.h"
 
 static const int START_CAPACITY = 10;
-static const int BUTTON_TEXT_SIZE = 10;
+static const int BUTTON_TEXT_SIZE = 12;
 
 typedef bool (*Button_run_fn) (void *widget, void *arg);
 
@@ -72,6 +72,8 @@ public:
 
     void          set_arg           (void *arg) {arg_ = arg;};
     void          *get_arg          ()  {return arg_;};
+    void          *get_widget          ()  {return controlled_widget_;};
+    void          *set_widget          (void *widget)  {controlled_widget_ = widget;};
     
     bool run ();
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target) override;

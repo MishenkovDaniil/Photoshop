@@ -268,10 +268,8 @@ int CurvePlot::getValue (const int val) // x value
         plug::Vec2d texture_pos = converter.getTexturePos (x, y);
         plug::Color color1 = plot_img_->data[(int)texture_pos.x + texture_width * (int)texture_pos.y];
 
-        if (color1.r == 255 && color1.g == 0 && color1.b == 0)
+        if (color1 == plug::Red)
         {
-            // printf ("val = %d, return %d\n", val, (y + (int)scale.y / 2) / (int)scale.y);
-            // assert (val == (y + (int)scale.y / 2) / (int)scale.y);
             return  (y + scale.y / 2) / scale.y;
         }
     }
@@ -305,4 +303,14 @@ void CurvePlot::draw (const Drawable &drawable)
     {
         M_render_texture::draw (drawable);
     }
+}
+
+void CurvePlot::reset ()
+{
+    size_t vertex_num = key_vertices_.get_size ();
+    for (int i = 0; i < vertex_num; ++i)
+    {
+        key_vertices_.pop ();
+    }
+    init_texture ();
 }

@@ -25,17 +25,21 @@
 
 static const char *FILTER_PATHS[]   = 
 {
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so"
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/TimAFilter/DeltaFilter.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/DanyaKFilter/ContrastFilter.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/saturation_filter/saturFilter.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/PosterizeFilter/PosterizeFilter.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BlackWhiteFilter/BlackWhiteFilter.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/edge_detect_filter/edge_detect.so"
+
 };
+
 static const char *TOOL_PATHS[]     = 
 {
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/SelectionTool/SelectionTool.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/CircleTool/CircleTool.so",
-    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/LineTool.so"
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/SelectionTool/SelectionTool.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/CircleTool/CircleTool.so",
+    // "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/LineTool.so",
+    "/home/daniil/programming/code/C++_projects/photoshop/src/Plugins/BrushTool.so"
 };
 
 static const char *LOAD_PLUGIN_FUNC = "loadPlugin";
@@ -77,7 +81,6 @@ bool is_dl_error ();
 bool save_file (void *widget, void *arg);
 bool curves_func (void *widget, void *arg);
 
-
 int main ()
 {
     sf::RenderWindow window (sf::VideoMode (FULL_SCREEN_WIDTH, FULL_SCREEN_HEIGHT), "w_manager");//, sf::Style::Fullscreen);
@@ -100,7 +103,7 @@ int main ()
     Window *child_window    = new Window (600, 600, plug::Vec2d (200, 200), "window_1");
     Window *child_window_2  = new Window (600, 600, plug::Vec2d (600, 600), "window_2");
     sf::Image image;
-    image.loadFromFile ("resources/imgs/photoshop_default_img.jpg");
+    image.loadFromFile ("resources/imgs/photoshop.png");
     plug::Texture default_canvas_img (image.getSize ().x, image.getSize ().y, (plug::Color *)image.getPixelsPtr ());
 
     child_window->setCanvasImage (default_canvas_img);
@@ -246,7 +249,7 @@ bool curves_func (void *widget, void *arg)
     CurveTool *curve_tool = new CurveTool (curve_filter, active_canvas);
     curve_palette->add_tool (curve_tool);
 
-    CurveWindow *curve_window = new CurveWindow (562, 592, m_window->getLayoutBox ().getSize () / 2, "Curves", curve_palette, active_canvas, curve_filter, curve_tool);
+    CurveWindow *curve_window = new CurveWindow (700, 592, m_window->getLayoutBox ().getSize () / 2, "Curves", curve_palette, active_canvas, curve_filter, curve_tool);
     m_window->add_window (curve_window);
 
     CanvasView *view = curve_window->get_canvas ();
@@ -256,8 +259,10 @@ bool curves_func (void *widget, void *arg)
 
     curve_tool->setActiveCanvas (*canvas);
     curve_tool->setColorPalette (curve_palette->color_palette_);
+    
     plug::ControlState state;
     state.state = plug::State::Pressed;
+
     plug::Vec2d pos;
     curve_tool->onMainButton (state, pos);
     curve_tool->onConfirm ();

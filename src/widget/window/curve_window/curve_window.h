@@ -3,6 +3,7 @@
 
 #include "../window.h"
 #include "../canvas/canvas.h"
+#include "../menu/menu.h"
 
 enum class CurveCanvas
 {
@@ -12,15 +13,21 @@ enum class CurveCanvas
 };
 
 bool apply_filter_button (void *widget, void *arg);
+bool cancel_filter_button (void *widget, void *arg);
+bool reset_filter_button (void *widget, void *arg);
 
 class CurveWindow : public Window
 {
     String_button apply_button;
+    String_button cancel_button;
+    String_button reset_button;
+
+    Menu menu_;
 
 public:
     CurveWindow (int width, int height, plug::Vec2d lh_pos, const char *w_name, 
                               Tool_palette *palette, plug::Canvas *edited_canvas, Curve_filter *curve_filter, CurveTool *curve_tool);
-    ~CurveWindow () = default;
+    ~CurveWindow ();
 
     void draw (plug::TransformStack &transform_stack, plug::RenderTarget &target)  override;
     void onTick             (const plug::TickEvent &event, plug::EHC &ehc) override;
